@@ -1,33 +1,42 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
-import { Streamdown } from 'streamdown';
+import { APP_TITLE, getLoginUrl } from "@/const";
+import Overview from "./Overview";
 
-/**
- * All content in this page are only for example, replace with your own feature implementation
- * When building pages, remember your instructions in Frontend Workflow, Frontend Best Practices, Design Guide and Common Pitfalls
- */
 export default function Home() {
-  // The userAuth hooks provides authentication state
-  // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
-  let { user, loading, error, isAuthenticated, logout } = useAuth();
+  const { loading, isAuthenticated } = useAuth();
 
-  // If theme is switchable in App.tsx, we can implement theme toggling like this:
-  // const { theme, toggleTheme } = useTheme();
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
-  // Use APP_LOGO (as image src) and APP_TITLE if needed
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background to-muted">
+        <div className="max-w-md w-full mx-auto p-8 space-y-6 text-center">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold tracking-tight">{APP_TITLE}</h1>
+            <p className="text-muted-foreground">
+              Real-time analytics dashboard for the 31-Day Wisdom Challenge campaign
+            </p>
+          </div>
+          <div className="space-y-4">
+            <Button asChild size="lg" className="w-full">
+              <a href={getLoginUrl()}>Sign In to Continue</a>
+            </Button>
+            <p className="text-sm text-muted-foreground">
+              Track your $2M paid media campaign performance in real-time
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  return (
-    <div className="min-h-screen flex flex-col">
-      <main>
-        {/* Example: lucide-react for icons */}
-        <Loader2 className="animate-spin" />
-        Example Page
-        {/* Example: Streamdown for markdown rendering */}
-        <Streamdown>Any **markdown** content</Streamdown>
-        <Button variant="default">Example Button</Button>
-      </main>
-    </div>
-  );
+  return <Overview />;
 }
