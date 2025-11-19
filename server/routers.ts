@@ -9,6 +9,9 @@ import {
   getLeadsWithAttribution,
   getOrdersWithAttribution,
   getAdPerformanceByCampaign,
+  getAdPerformanceDetailed,
+  getAdHierarchy,
+  getLandingPageMetrics,
   getDailyAttendance,
   getEmailEngagement,
 } from "./supabase";
@@ -102,6 +105,42 @@ export const appRouter = router({
       const engagement = await getEmailEngagement();
       return engagement;
     }),
+
+    // Get ad performance with full granularity (campaign + ad set + ad)
+    adPerformanceDetailed: protectedProcedure
+      .input(
+        z.object({
+          startDate: z.string().optional(),
+          endDate: z.string().optional(),
+          campaignId: z.string().optional(),
+          adsetId: z.string().optional(),
+          adId: z.string().optional(),
+          platform: z.string().optional(),
+        }).optional()
+      )
+      .query(async ({ input }) => {
+        const performance = await getAdPerformanceDetailed(input);
+        return performance;
+      }),
+
+    // Get ad hierarchy (campaigns, ad sets, ads) for filters
+    adHierarchy: protectedProcedure.query(async () => {
+      const hierarchy = await getAdHierarchy();
+      return hierarchy;
+    }),
+
+    // Get landing page view rate metrics
+    landingPageMetrics: protectedProcedure
+      .input(
+        z.object({
+          startDate: z.string().optional(),
+          endDate: z.string().optional(),
+        }).optional()
+      )
+      .query(async ({ input }) => {
+        const metrics = await getLandingPageMetrics(input?.startDate, input?.endDate);
+        return metrics;
+      }),
   }),
 });
 

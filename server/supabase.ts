@@ -158,6 +158,140 @@ export async function getAdPerformanceByCampaign(startDate?: string, endDate?: s
 }
 
 /**
+ * Helper to fetch ad performance with full granularity (campaign + ad set + ad)
+ */
+export async function getAdPerformanceDetailed(filters?: {
+  startDate?: string;
+  endDate?: string;
+  campaignId?: string;
+  adsetId?: string;
+  adId?: string;
+  platform?: string;
+}) {
+  let query = supabase
+    .from('ad_performance')
+    .select('*')
+    .order('date', { ascending: false });
+
+  if (filters?.startDate) {
+    query = query.gte('date', filters.startDate);
+  }
+  if (filters?.endDate) {
+    query = query.lte('date', filters.endDate);
+  }
+  if (filters?.campaignId) {
+    query = query.eq('campaign_id', filters.campaignId);
+  }
+  if (filters?.adsetId) {
+    query = query.eq('adset_id', filters.adsetId);
+  }
+  if (filters?.adId) {
+    query = query.eq('ad_id', filters.adId);
+  }
+  if (filters?.platform) {
+    query = query.eq('platform', filters.platform);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error('[Supabase] Error fetching detailed ad performance:', error);
+    throw new Error(`Failed to fetch detailed ad performance: ${error.message}`);
+  }
+
+  return data || [];
+}
+
+/**
+ * Helper to get unique campaigns, ad sets, and ads for filters
+ */
+export async function getAdHierarchy() {
+  const { data, error } = await supabase
+    .from('ad_performance')
+    .select('campaign_id, campaign_name, adset_id, adset_name, ad_id, ad_name, platform')
+    .order('campaign_name', { ascending: true });
+
+  if (error) {
+    console.error('[Supabase] Error fetching ad hierarchy:', error);
+    throw new Error(`Failed to fetch ad hierarchy: ${error.message}`);
+  }
+
+  // Deduplicate and structure the hierarchy
+  const campaigns = new Map<string, any>();
+  
+  data?.forEach((row: any) => {
+    if (!campaigns.has(row.campaign_id)) {
+      campaigns.set(row.campaign_id, {
+        id: row.campaign_id,
+        name: row.campaign_name,
+        platform: row.platform,
+        adsets: new Map<string, any>(),
+      });
+    }
+    
+    const campaign = campaigns.get(row.campaign_id);
+    if (!campaign) return;
+    
+    if (row.adset_id && !campaign.adsets.has(row.adset_id)) {
+      campaign.adsets.set(row.adset_id, {
+        id: row.adset_id,
+        name: row.adset_name,
+        ads: new Map<string, any>(),
+      });
+    }
+    
+    if (row.adset_id && row.ad_id) {
+      const adset = campaign.adsets.get(row.adset_id);
+      if (adset && !adset.ads.has(row.ad_id)) {
+        adset.ads.set(row.ad_id, {
+          id: row.ad_id,
+          name: row.ad_name,
+        });
+      }
+    }
+  });
+
+  // Convert Maps to arrays
+  return Array.from(campaigns.values()).map((campaign: any) => ({
+    id: campaign.id,
+    name: campaign.name,
+    platform: campaign.platform,
+    adsets: Array.from(campaign.adsets.values()).map((adset: any) => ({
+      id: adset.id,
+      name: adset.name,
+      ads: Array.from(adset.ads.values()),
+    })),
+  }));
+}
+
+/**
+ * Helper to get landing page view rate metrics
+ */
+export async function getLandingPageMetrics(startDate?: string, endDate?: string) {
+  let query = supabase
+    .from('ad_performance')
+    .select('campaign_name, adset_name, ad_name, inline_link_clicks, landing_page_view_per_link_click, date')
+    .not('landing_page_view_per_link_click', 'is', null)
+    .order('date', { ascending: false });
+
+  if (startDate) {
+    query = query.gte('date', startDate);
+  }
+  if (endDate) {
+    query = query.lte('date', endDate);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error('[Supabase] Error fetching landing page metrics:', error);
+    throw new Error(`Failed to fetch landing page metrics: ${error.message}`);
+  }
+
+  return data || [];
+}
+
+/**
  * Helper to fetch daily attendance
  */
 export async function getDailyAttendance(startDate?: string, endDate?: string) {

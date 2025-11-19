@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import DailyAnalysis from "./pages/DailyAnalysis";
 import EngagementSales from "./pages/EngagementSales";
+import AdPerformance from "./pages/AdPerformance";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 import { DashboardNav } from "./components/DashboardNav";
@@ -102,6 +103,7 @@ function Router() {
         <Route path={"/"} component={Home} />
         <Route path={"/daily"} component={DailyAnalysis} />
         <Route path={"/engagement"} component={EngagementSales} />
+        <Route path={"/ad-performance"} component={AdPerformance} />
         <Route path={"/404"} component={NotFound} />
         <Route component={NotFound} />
       </Switch>

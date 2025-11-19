@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { BarChart3, Calendar, Users } from "lucide-react";
+import { BarChart3, Calendar, Users, TrendingUp } from "lucide-react";
 
 const navItems = [
   {
@@ -17,6 +17,11 @@ const navItems = [
     title: "Engagement & Sales",
     href: "/engagement",
     icon: Users,
+  },
+  {
+    title: "Ad Performance",
+    href: "/ad-performance",
+    icon: TrendingUp,
   },
 ];
 

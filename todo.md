@@ -42,3 +42,32 @@
 - [ ] Document n8n workflow configuration
 - [ ] Create deployment guide
 - [ ] Prepare final delivery package
+
+
+## n8n Workflow Updates
+- [ ] Rewrite Keap workflow to use webhook trigger instead of polling
+- [ ] Document webhook URL configuration in Keap
+- [ ] Test webhook trigger with sample tag application
+
+
+## n8n Workflow Updates
+- [x] Rewrite Keap workflow to use webhook trigger instead of polling
+- [x] Create step-by-step guide for configuring HTTP Post in Keap automation
+- [x] Document webhook URL and payload structure
+- [x] Test webhook trigger with sample tag application
+
+- [x] Update Keap webhook workflow to use email as primary key instead of contact_id
+
+- [x] Fix Meta Ads workflow to use simplified fields (campaign_name, spend, clicks, impressions only)
+
+## Database Schema Updates (Campaign + Ad Set + Ad Granularity)
+- [x] Remove UTM fields from ad_performance table (utm_campaign, utm_source, utm_medium)
+- [x] Add adset_id, adset_name fields for ad set level tracking
+- [x] Add ad_id, ad_name fields for individual ad tracking
+- [x] Add landing_page_view_per_link_click field (measures load speed & relevance)
+- [x] Add inline_link_clicks field for accurate click tracking
+- [x] Update campaign_id and campaign_name fields
+- [x] Create migration SQL script for Supabase
+- [x] Update Meta Ads workflow to fetch campaign + adset + ad level data
+- [x] Update dashboard to show ad set and ad level breakdowns
+- [x] Add landing page view rate visualization to dashboard
