@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { trpc } from "@/lib/trpc";
 import { DATE_RANGES, type DateRange } from "@shared/constants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -267,9 +267,9 @@ export default function DailyAnalysis() {
                   </thead>
                   <tbody>
                     {Object.entries(groupedMetrics).map(([category, categoryMetrics]) => (
-                      <>
+                      <Fragment key={category}>
                         {/* Category Header */}
-                        <tr key={category} className="bg-muted/50">
+                        <tr className="bg-muted/50">
                           <td colSpan={2 + (dailyData?.length || 0)} className="p-3 font-bold text-[#560BAD]">
                             {category}
                           </td>
@@ -290,7 +290,7 @@ export default function DailyAnalysis() {
                             ))}
                           </tr>
                         ))}
-                      </>
+                      </Fragment>
                     ))}
                   </tbody>
                 </table>

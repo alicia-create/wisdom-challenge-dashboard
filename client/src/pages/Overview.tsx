@@ -3,10 +3,11 @@ import { trpc } from "@/lib/trpc";
 import { DATE_RANGES, type DateRange } from "@shared/constants";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { Users, DollarSign, ShoppingCart, TrendingUp } from "lucide-react";
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
+import { Users, DollarSign, ShoppingCart, TrendingUp, Info } from "lucide-react";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { DashboardHeader } from "@/components/DashboardHeader";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function Overview() {
   const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.LAST_30_DAYS);
@@ -61,7 +62,17 @@ export default function Overview() {
           {/* Total Leads */}
           <Card className="border-l-4 border-l-[#560BAD]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Leads</CardTitle>
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-sm font-medium">Total Leads</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Total number of leads generated from all campaigns</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <Users className="h-5 w-5 text-[#560BAD]" />
             </CardHeader>
             <CardContent>
@@ -76,7 +87,17 @@ export default function Overview() {
           {/* Total VIP Sales */}
           <Card className="border-l-4 border-l-[#B5179E]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total VIP Sales</CardTitle>
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-sm font-medium">Total VIP Sales</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Number of VIP ($1-$10) purchases from challenge participants</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <ShoppingCart className="h-5 w-5 text-[#B5179E]" />
             </CardHeader>
             <CardContent>
@@ -91,7 +112,17 @@ export default function Overview() {
           {/* Total Ad Spend */}
           <Card className="border-l-4 border-l-[#3A0CA3]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Ad Spend</CardTitle>
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-sm font-medium">Total Ad Spend</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Combined ad spend from Meta Ads + Google Ads</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <DollarSign className="h-5 w-5 text-[#3A0CA3]" />
             </CardHeader>
             <CardContent>
@@ -106,7 +137,17 @@ export default function Overview() {
           {/* Total Revenue */}
           <Card className="border-l-4 border-l-[#4361EE]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Total revenue from VIP sales only (excludes high-ticket)</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <TrendingUp className="h-5 w-5 text-[#4361EE]" />
             </CardHeader>
             <CardContent>
@@ -124,7 +165,17 @@ export default function Overview() {
           {/* Cost Per Lead */}
           <Card className="border-l-2 border-l-[#560BAD]">
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-medium text-muted-foreground">Cost Per Lead</CardTitle>
+              <div className="flex items-center gap-1">
+                <CardTitle className="text-xs font-medium text-muted-foreground">Cost Per Lead</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-3 w-3 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Total Spend ÷ Total Leads</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
             </CardHeader>
             <CardContent>
               {metricsLoading ? (
@@ -138,7 +189,17 @@ export default function Overview() {
           {/* Cost Per Purchase */}
           <Card className="border-l-2 border-l-[#7209B7]">
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-medium text-muted-foreground">Cost Per Purchase</CardTitle>
+              <div className="flex items-center gap-1">
+                <CardTitle className="text-xs font-medium text-muted-foreground">Cost Per Purchase</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-3 w-3 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Total Spend ÷ Total VIP Sales</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
             </CardHeader>
             <CardContent>
               {metricsLoading ? (
@@ -152,7 +213,17 @@ export default function Overview() {
           {/* AOV */}
           <Card className="border-l-2 border-l-[#B5179E]">
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-medium text-muted-foreground">AOV</CardTitle>
+              <div className="flex items-center gap-1">
+                <CardTitle className="text-xs font-medium text-muted-foreground">AOV</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-3 w-3 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Average Order Value: Total Revenue ÷ Total VIP Sales</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
             </CardHeader>
             <CardContent>
               {metricsLoading ? (
@@ -166,7 +237,17 @@ export default function Overview() {
           {/* ROAS */}
           <Card className="border-l-2 border-l-[#3A0CA3]">
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-medium text-muted-foreground">ROAS</CardTitle>
+              <div className="flex items-center gap-1">
+                <CardTitle className="text-xs font-medium text-muted-foreground">ROAS</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-3 w-3 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Return on Ad Spend: Total Revenue ÷ Total Spend</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
             </CardHeader>
             <CardContent>
               {metricsLoading ? (
@@ -180,7 +261,17 @@ export default function Overview() {
           {/* VIP Take Rate */}
           <Card className="border-l-2 border-l-[#4361EE]">
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-medium text-muted-foreground">VIP Take Rate</CardTitle>
+              <div className="flex items-center gap-1">
+                <CardTitle className="text-xs font-medium text-muted-foreground">VIP Take Rate</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-3 w-3 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Conversion rate: Total VIP Sales ÷ Total Leads</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
             </CardHeader>
             <CardContent>
               {metricsLoading ? (
@@ -194,7 +285,17 @@ export default function Overview() {
           {/* Welcome Email Click Rate */}
           <Card className="border-l-2 border-l-[#4895EF]">
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-medium text-muted-foreground">Email Click Rate</CardTitle>
+              <div className="flex items-center gap-1">
+                <CardTitle className="text-xs font-medium text-muted-foreground">Email Click Rate</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-3 w-3 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>% of leads who clicked the welcome email link</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
             </CardHeader>
             <CardContent>
               {metricsLoading ? (
@@ -229,7 +330,7 @@ export default function Overview() {
                     <XAxis dataKey="date" />
                     <YAxis yAxisId="left" />
                     <YAxis yAxisId="right" orientation="right" />
-                    <Tooltip />
+                    <RechartsTooltip />
                     <Legend />
                     <Bar yAxisId="left" dataKey="spend" fill="#560BAD" name="Spend ($)" />
                     <Bar yAxisId="right" dataKey="leads" fill="#4895EF" name="Leads" />
@@ -254,7 +355,7 @@ export default function Overview() {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" />
                     <YAxis />
-                    <Tooltip />
+                    <RechartsTooltip />
                     <Legend />
                     <Line type="monotone" dataKey="roas" stroke="#B5179E" strokeWidth={2} name="ROAS" />
                   </LineChart>

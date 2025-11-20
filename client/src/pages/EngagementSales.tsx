@@ -5,9 +5,10 @@ import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/lib/trpc";
 import { DATE_RANGES, type DateRange } from "@shared/constants";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { Calendar, Users, TrendingUp, DollarSign, Download } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
+import { Calendar, Users, TrendingUp, DollarSign, Download, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 
 export default function EngagementSales() {
@@ -122,7 +123,17 @@ export default function EngagementSales() {
           {/* Today's Attendance */}
           <Card className="border-l-4 border-l-[#560BAD]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Today's Attendance</CardTitle>
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-sm font-medium">Today's Attendance</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Total participants today (YouTube + Zoom)</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <Users className="h-5 w-5 text-[#560BAD]" />
             </CardHeader>
             <CardContent>
@@ -142,7 +153,17 @@ export default function EngagementSales() {
           {/* High-Ticket Sales (Today) */}
           <Card className="border-l-4 border-l-[#B5179E]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">High-Ticket Sales (Today)</CardTitle>
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-sm font-medium">High-Ticket Sales (Today)</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Number of high-ticket ($1000+) sales made today</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <TrendingUp className="h-5 w-5 text-[#B5179E]" />
             </CardHeader>
             <CardContent>
@@ -162,7 +183,17 @@ export default function EngagementSales() {
           {/* Cost Per Acquisition (HT) */}
           <Card className="border-l-4 border-l-[#3A0CA3]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Cost per Acquisition (HT)</CardTitle>
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-sm font-medium">Cost per Acquisition (HT)</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Total Ad Spend ÷ High-Ticket Sales</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <DollarSign className="h-5 w-5 text-[#3A0CA3]" />
             </CardHeader>
             <CardContent>
@@ -182,7 +213,17 @@ export default function EngagementSales() {
           {/* ROAS (Full Funnel) */}
           <Card className="border-l-4 border-l-[#4361EE]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">ROAS (Full Funnel)</CardTitle>
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-sm font-medium">ROAS (Full Funnel)</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>(VIP Revenue + HT Revenue) ÷ Total Ad Spend</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <TrendingUp className="h-5 w-5 text-[#4361EE]" />
             </CardHeader>
             <CardContent>
@@ -223,7 +264,7 @@ export default function EngagementSales() {
                     tickFormatter={(date) => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   />
                   <YAxis />
-                  <Tooltip 
+                  <RechartsTooltip 
                     labelFormatter={(date) => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     formatter={(value: number) => formatNumber(value)}
                   />

@@ -105,3 +105,6 @@
 - [x] Implement View 3 "Engagement & Sales" page with attendance tracking and high-ticket sales
 
 - [x] Fix date ordering in Overview charts to display chronologically (left to right)
+
+- [x] Fix React key prop error in DailyAnalysis page
+- [x] Add informative tooltips to KPI cards explaining metric calculations
