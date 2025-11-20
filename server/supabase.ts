@@ -786,3 +786,95 @@ export async function getFullFunnelMetrics(startDate?: string, endDate?: string)
     htSalesCount: totalHtSales,
   };
 }
+
+/**
+ * Get performance comparison by channel (Meta vs Google)
+ */
+export async function getChannelPerformance(startDate?: string, endDate?: string) {
+  // Fetch Meta ad performance
+  let metaQuery = supabase
+    .from('ad_performance')
+    .select('spend, reported_leads, reported_purchases')
+    .eq('platform', 'meta')
+    .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`);
+  
+  if (startDate) metaQuery = metaQuery.gte('date', startDate);
+  if (endDate) metaQuery = metaQuery.lte('date', endDate);
+  
+  const { data: metaAds, error: metaError } = await metaQuery;
+  if (metaError) console.error('[Supabase] Error fetching Meta ads:', metaError);
+
+  // Fetch Google ad performance
+  let googleQuery = supabase
+    .from('ad_performance')
+    .select('spend, reported_leads, reported_purchases')
+    .eq('platform', 'google')
+    .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`);
+  
+  if (startDate) googleQuery = googleQuery.gte('date', startDate);
+  if (endDate) googleQuery = googleQuery.lte('date', endDate);
+  
+  const { data: googleAds, error: googleError } = await googleQuery;
+  if (googleError) console.error('[Supabase] Error fetching Google ads:', googleError);
+
+  // Get Meta leads to calculate revenue
+  const { data: metaLeadsData } = await supabase
+    .from('Lead')
+    .select('id')
+    .eq('utm_source', 'meta');
+  
+  const metaLeadIds = metaLeadsData?.map(l => l.id) || [];
+  
+  const { data: metaOrders } = await supabase
+    .from('Order')
+    .select('order_total')
+    .in('lead_id', metaLeadIds);
+  
+  const metaRevenue = (metaOrders || []).reduce((sum, o) => sum + parseFloat(o.order_total || '0'), 0);
+
+  // Get Google leads to calculate revenue
+  const { data: googleLeadsData } = await supabase
+    .from('Lead')
+    .select('id')
+    .eq('utm_source', 'google');
+  
+  const googleLeadIds = googleLeadsData?.map(l => l.id) || [];
+  
+  const { data: googleOrders } = await supabase
+    .from('Order')
+    .select('order_total')
+    .in('lead_id', googleLeadIds);
+  
+  const googleRevenue = (googleOrders || []).reduce((sum, o) => sum + parseFloat(o.order_total || '0'), 0);
+
+  // Calculate Meta metrics
+  const metaSpend = (metaAds || []).reduce((sum, row) => sum + parseFloat(row.spend || '0'), 0);
+  const metaLeads = (metaAds || []).reduce((sum, row) => sum + parseInt(row.reported_leads || '0', 10), 0);
+  const metaVips = (metaAds || []).reduce((sum, row) => sum + parseInt(row.reported_purchases || '0', 10), 0);
+
+  // Calculate Google metrics
+  const googleSpend = (googleAds || []).reduce((sum, row) => sum + parseFloat(row.spend || '0'), 0);
+  const googleLeads = (googleAds || []).reduce((sum, row) => sum + parseInt(row.reported_leads || '0', 10), 0);
+  const googleVips = (googleAds || []).reduce((sum, row) => sum + parseInt(row.reported_purchases || '0', 10), 0);
+
+  return {
+    meta: {
+      channel: 'Meta',
+      spend: metaSpend,
+      leads: metaLeads,
+      cpl: metaLeads > 0 ? metaSpend / metaLeads : 0,
+      vips: metaVips,
+      cpp: metaVips > 0 ? metaSpend / metaVips : 0,
+      roas: metaSpend > 0 ? metaRevenue / metaSpend : 0,
+    },
+    google: {
+      channel: 'Google',
+      spend: googleSpend,
+      leads: googleLeads,
+      cpl: googleLeads > 0 ? googleSpend / googleLeads : 0,
+      vips: googleVips,
+      cpp: googleVips > 0 ? googleSpend / googleVips : 0,
+      roas: googleSpend > 0 ? googleRevenue / googleSpend : 0,
+    },
+  };
+}

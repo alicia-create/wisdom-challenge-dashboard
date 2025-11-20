@@ -25,6 +25,11 @@ export default function Overview() {
   // Fetch email engagement
   const { data: emailEngagement } = trpc.overview.emailEngagement.useQuery();
 
+  // Fetch channel performance (Meta vs Google)
+  const { data: channelPerformance, isLoading: channelLoading } = trpc.overview.channelPerformance.useQuery({
+    dateRange,
+  });
+
   // Format currency
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -37,6 +42,11 @@ export default function Overview() {
   // Format percentage
   const formatPercent = (value: number) => {
     return `${value.toFixed(2)}%`;
+  };
+
+  // Format number with commas
+  const formatNumber = (value: number) => {
+    return new Intl.NumberFormat('en-US').format(value);
   };
 
   // Prepare chart data (reverse to show oldest to newest, left to right)
@@ -364,6 +374,66 @@ export default function Overview() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Performance by Channel Table */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Performance by Channel</CardTitle>
+            <CardDescription>Meta vs Google comparison</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {channelLoading ? (
+              <Skeleton className="h-[150px] w-full" />
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-3 px-4 font-medium">Channel</th>
+                      <th className="text-right py-3 px-4 font-medium">Spend ($)</th>
+                      <th className="text-right py-3 px-4 font-medium">Leads</th>
+                      <th className="text-right py-3 px-4 font-medium">CPL ($)</th>
+                      <th className="text-right py-3 px-4 font-medium">VIPs</th>
+                      <th className="text-right py-3 px-4 font-medium">CPP ($)</th>
+                      <th className="text-right py-3 px-4 font-medium">ROAS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {channelPerformance?.meta && (
+                      <tr className="border-b hover:bg-muted/50">
+                        <td className="py-3 px-4 font-medium">{channelPerformance.meta.channel}</td>
+                        <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.meta.spend)}</td>
+                        <td className="text-right py-3 px-4">{formatNumber(channelPerformance.meta.leads)}</td>
+                        <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.meta.cpl)}</td>
+                        <td className="text-right py-3 px-4">{formatNumber(channelPerformance.meta.vips)}</td>
+                        <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.meta.cpp)}</td>
+                        <td className="text-right py-3 px-4">{channelPerformance.meta.roas.toFixed(2)}x</td>
+                      </tr>
+                    )}
+                    {channelPerformance?.google && (
+                      <tr className="hover:bg-muted/50">
+                        <td className="py-3 px-4 font-medium">{channelPerformance.google.channel}</td>
+                        <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.google.spend)}</td>
+                        <td className="text-right py-3 px-4">{formatNumber(channelPerformance.google.leads)}</td>
+                        <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.google.cpl)}</td>
+                        <td className="text-right py-3 px-4">{formatNumber(channelPerformance.google.vips)}</td>
+                        <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.google.cpp)}</td>
+                        <td className="text-right py-3 px-4">{channelPerformance.google.roas.toFixed(2)}x</td>
+                      </tr>
+                    )}
+                    {(!channelPerformance?.meta && !channelPerformance?.google) && (
+                      <tr>
+                        <td colSpan={7} className="text-center py-8 text-muted-foreground">
+                          No ad performance data available yet
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

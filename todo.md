@@ -108,3 +108,5 @@
 
 - [x] Fix React key prop error in DailyAnalysis page
 - [x] Add informative tooltips to KPI cards explaining metric calculations
+
+- [x] Implement Performance by Channel Table in Overview page (Meta vs Google comparison)

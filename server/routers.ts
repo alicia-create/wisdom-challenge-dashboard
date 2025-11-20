@@ -19,6 +19,7 @@ import {
   getEngagementMetrics,
   getHighTicketSales,
   getFullFunnelMetrics,
+  getChannelPerformance,
 } from "./supabase";
 
 export const appRouter = router({
@@ -67,6 +68,19 @@ export const appRouter = router({
     emailEngagement: publicProcedure.query(async () => {
       return await getEmailEngagement();
     }),
+
+    // Get performance comparison by channel (Meta vs Google)
+    channelPerformance: publicProcedure
+      .input(z.object({
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        const { startDate, endDate } = input?.dateRange 
+          ? getDateRangeValues(input.dateRange)
+          : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
+        
+        return await getChannelPerformance(startDate, endDate);
+      }),
   }),
 
   // Daily Analysis queries
