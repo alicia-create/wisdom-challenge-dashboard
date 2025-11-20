@@ -1,20 +1,7 @@
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
-import { z } from "zod";
-import {
-  getDailyKpis,
-  getOverviewMetrics,
-  getLeadsWithAttribution,
-  getOrdersWithAttribution,
-  getAdPerformanceByCampaign,
-  getAdPerformanceDetailed,
-  getAdHierarchy,
-  getLandingPageMetrics,
-  getDailyAttendance,
-  getEmailEngagement,
-} from "./supabase";
+import { publicProcedure, router } from "./_core/trpc";
 
 export const appRouter = router({
   system: systemRouter,
@@ -29,119 +16,7 @@ export const appRouter = router({
     }),
   }),
 
-  // Dashboard data routers
-  dashboard: router({
-    // Get overview metrics (total leads, spend, ROAS, etc.)
-    overview: protectedProcedure.query(async () => {
-      const metrics = await getOverviewMetrics();
-      return metrics;
-    }),
-
-    // Get daily KPIs with optional date range filter
-    dailyKpis: protectedProcedure
-      .input(
-        z.object({
-          startDate: z.string().optional(),
-          endDate: z.string().optional(),
-        }).optional()
-      )
-      .query(async ({ input }) => {
-        const kpis = await getDailyKpis(input?.startDate, input?.endDate);
-        return kpis;
-      }),
-
-    // Get leads with UTM attribution
-    leads: protectedProcedure
-      .input(
-        z.object({
-          limit: z.number().default(100),
-        }).optional()
-      )
-      .query(async ({ input }) => {
-        const leads = await getLeadsWithAttribution(input?.limit || 100);
-        return leads;
-      }),
-
-    // Get orders with UTM attribution
-    orders: protectedProcedure
-      .input(
-        z.object({
-          limit: z.number().default(100),
-        }).optional()
-      )
-      .query(async ({ input }) => {
-        const orders = await getOrdersWithAttribution(input?.limit || 100);
-        return orders;
-      }),
-
-    // Get ad performance by campaign
-    adPerformance: protectedProcedure
-      .input(
-        z.object({
-          startDate: z.string().optional(),
-          endDate: z.string().optional(),
-        }).optional()
-      )
-      .query(async ({ input }) => {
-        const performance = await getAdPerformanceByCampaign(input?.startDate, input?.endDate);
-        return performance;
-      }),
-
-    // Get daily attendance
-    attendance: protectedProcedure
-      .input(
-        z.object({
-          startDate: z.string().optional(),
-          endDate: z.string().optional(),
-        }).optional()
-      )
-      .query(async ({ input }) => {
-        const attendance = await getDailyAttendance(input?.startDate, input?.endDate);
-        return attendance;
-      }),
-
-    // Get email engagement metrics
-    emailEngagement: protectedProcedure.query(async () => {
-      const engagement = await getEmailEngagement();
-      return engagement;
-    }),
-
-    // Get ad performance with full granularity (campaign + ad set + ad)
-    adPerformanceDetailed: protectedProcedure
-      .input(
-        z.object({
-          startDate: z.string().optional(),
-          endDate: z.string().optional(),
-          campaignId: z.string().optional(),
-          adsetId: z.string().optional(),
-          adId: z.string().optional(),
-          platform: z.string().optional(),
-        }).optional()
-      )
-      .query(async ({ input }) => {
-        const performance = await getAdPerformanceDetailed(input);
-        return performance;
-      }),
-
-    // Get ad hierarchy (campaigns, ad sets, ads) for filters
-    adHierarchy: protectedProcedure.query(async () => {
-      const hierarchy = await getAdHierarchy();
-      return hierarchy;
-    }),
-
-    // Get landing page view rate metrics
-    landingPageMetrics: protectedProcedure
-      .input(
-        z.object({
-          startDate: z.string().optional(),
-          endDate: z.string().optional(),
-        }).optional()
-      )
-      .query(async ({ input }) => {
-        const metrics = await getLandingPageMetrics(input?.startDate, input?.endDate);
-        return metrics;
-      }),
-  }),
+  // Feature routers will be added here as we build each page
 });
 
 export type AppRouter = typeof appRouter;

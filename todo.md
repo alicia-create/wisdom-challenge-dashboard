@@ -71,3 +71,11 @@
 - [x] Update Meta Ads workflow to fetch campaign + adset + ad level data
 - [x] Update dashboard to show ad set and ad level breakdowns
 - [x] Add landing page view rate visualization to dashboard
+
+## Google Ads & Meta Ads Workflow Normalization
+- [x] Research Google Ads API fields at ad-level granularity
+- [x] Find Google Ads equivalent to landing_page_view_per_link_click (NÃO EXISTE - deixar NULL)
+- [x] Map Google Ads Ad Group to adset_id/adset_name fields
+- [x] Create field mapping document (Meta vs Google)
+- [x] Build Google Ads workflow with ad-level data
+- [ ] Test both workflows with sample data (pending user testing)
