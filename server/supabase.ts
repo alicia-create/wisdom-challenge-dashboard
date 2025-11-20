@@ -400,3 +400,233 @@ export async function getEmailEngagement() {
     clickRate,
   };
 }
+
+
+/**
+ * Helper to fetch daily analysis metrics for spreadsheet view
+ * Returns data grouped by date with separate metrics for Meta and Google
+ */
+export async function getDailyAnalysisMetrics(startDate?: string, endDate?: string) {
+  // Build date filter
+  const dateFilter: any = {};
+  if (startDate) dateFilter.gte = startDate;
+  if (endDate) dateFilter.lte = endDate;
+
+  // Fetch daily leads grouped by date
+  const { data: dailyLeads, error: leadsError } = await supabase
+    .from('Lead')
+    .select('created_at')
+    .order('created_at', { ascending: true });
+
+  if (leadsError) {
+    console.error('[Supabase] Error fetching daily leads:', leadsError);
+  }
+
+  // Fetch daily orders grouped by date
+  const { data: dailyOrders, error: ordersError } = await supabase
+    .from('Order')
+    .select('created_at, order_total')
+    .order('created_at', { ascending: true });
+
+  if (ordersError) {
+    console.error('[Supabase] Error fetching daily orders:', ordersError);
+  }
+
+  // Fetch daily ad performance
+  let adQuery = supabase
+    .from('ad_performance')
+    .select('*')
+    .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`)
+    .order('date', { ascending: true });
+
+  if (startDate) {
+    adQuery = adQuery.gte('date', startDate);
+  }
+  if (endDate) {
+    adQuery = adQuery.lte('date', endDate);
+  }
+
+  const { data: adPerformance, error: adError } = await adQuery;
+
+  if (adError) {
+    console.error('[Supabase] Error fetching ad performance:', adError);
+  }
+
+  // Group data by date
+  const dateMap = new Map<string, any>();
+
+  // Process leads by date
+  dailyLeads?.forEach((lead: any) => {
+    const date = lead.created_at?.split('T')[0];
+    if (!date) return;
+    
+    if (!dateMap.has(date)) {
+      dateMap.set(date, {
+        date,
+        totalOptins: 0,
+        totalVipSales: 0,
+        totalVipRevenue: 0,
+        metaSpend: 0,
+        metaClicks: 0,
+        metaImpressions: 0,
+        metaLinkClicks: 0,
+        metaReportedLeads: 0,
+        metaReportedPurchases: 0,
+        metaLandingPageViews: 0,
+        googleSpend: 0,
+        googleClicks: 0,
+        googleImpressions: 0,
+        googleLinkClicks: 0,
+        googleReportedLeads: 0,
+        googleReportedPurchases: 0,
+      });
+    }
+
+    const dayData = dateMap.get(date);
+    dayData.totalOptins += 1;
+  });
+
+  // Process orders by date
+  dailyOrders?.forEach((order: any) => {
+    const date = order.created_at?.split('T')[0];
+    if (!date) return;
+
+    if (!dateMap.has(date)) {
+      dateMap.set(date, {
+        date,
+        totalOptins: 0,
+        totalVipSales: 0,
+        totalVipRevenue: 0,
+        metaSpend: 0,
+        metaClicks: 0,
+        metaImpressions: 0,
+        metaLinkClicks: 0,
+        metaReportedLeads: 0,
+        metaReportedPurchases: 0,
+        metaLandingPageViews: 0,
+        googleSpend: 0,
+        googleClicks: 0,
+        googleImpressions: 0,
+        googleLinkClicks: 0,
+        googleReportedLeads: 0,
+        googleReportedPurchases: 0,
+      });
+    }
+
+    const dayData = dateMap.get(date);
+    dayData.totalVipSales += 1;
+    dayData.totalVipRevenue += parseFloat(order.order_total || '0');
+  });
+
+  // Process ad performance by date and platform
+  adPerformance?.forEach((ad: any) => {
+    const date = ad.date;
+    if (!date) return;
+
+    if (!dateMap.has(date)) {
+      dateMap.set(date, {
+        date,
+        totalOptins: 0,
+        totalVipSales: 0,
+        totalVipRevenue: 0,
+        metaSpend: 0,
+        metaClicks: 0,
+        metaImpressions: 0,
+        metaLinkClicks: 0,
+        metaReportedLeads: 0,
+        metaReportedPurchases: 0,
+        metaLandingPageViews: 0,
+        googleSpend: 0,
+        googleClicks: 0,
+        googleImpressions: 0,
+        googleLinkClicks: 0,
+        googleReportedLeads: 0,
+        googleReportedPurchases: 0,
+      });
+    }
+
+    const dayData = dateMap.get(date);
+    const platform = ad.platform?.toLowerCase();
+
+    if (platform === 'meta' || platform === 'facebook') {
+      dayData.metaSpend += parseFloat(ad.spend || '0');
+      dayData.metaClicks += parseInt(ad.clicks || '0');
+      dayData.metaImpressions += parseInt(ad.impressions || '0');
+      dayData.metaLinkClicks += parseInt(ad.link_clicks || '0');
+      dayData.metaReportedLeads += parseInt(ad.reported_leads || '0');
+      dayData.metaReportedPurchases += parseInt(ad.reported_purchases || '0');
+      // Calculate landing page views from link clicks and ratio
+      const lpViewRatio = parseFloat(ad.landing_page_view_per_link_click || '0');
+      dayData.metaLandingPageViews += Math.round(parseInt(ad.link_clicks || '0') * lpViewRatio);
+    } else if (platform === 'google') {
+      dayData.googleSpend += parseFloat(ad.spend || '0');
+      dayData.googleClicks += parseInt(ad.clicks || '0');
+      dayData.googleImpressions += parseInt(ad.impressions || '0');
+      dayData.googleLinkClicks += parseInt(ad.link_clicks || '0');
+      dayData.googleReportedLeads += parseInt(ad.reported_leads || '0');
+      dayData.googleReportedPurchases += parseInt(ad.reported_purchases || '0');
+    }
+  });
+
+  // Convert map to array and calculate derived metrics
+  const dailyData = Array.from(dateMap.values()).map(day => {
+    const totalSpend = day.metaSpend + day.googleSpend;
+    const vipTakeRate = day.totalOptins > 0 ? (day.totalVipSales / day.totalOptins) * 100 : 0;
+    const trueCPL = day.totalOptins > 0 ? totalSpend / day.totalOptins : 0;
+    const trueCPP = day.totalVipSales > 0 ? totalSpend / day.totalVipSales : 0;
+    const roas = totalSpend > 0 ? day.totalVipRevenue / totalSpend : 0;
+    const profitLoss = day.totalVipRevenue - totalSpend;
+
+    // Meta metrics
+    const metaCPL = day.metaReportedLeads > 0 ? day.metaSpend / day.metaReportedLeads : 0;
+    const metaCPP = day.metaReportedPurchases > 0 ? day.metaSpend / day.metaReportedPurchases : 0;
+    const metaConnectRate = day.metaClicks > 0 ? (day.metaLandingPageViews / day.metaClicks) * 100 : 0;
+    const metaClickToLeadRate = day.metaClicks > 0 ? (day.metaReportedLeads / day.metaClicks) * 100 : 0;
+    const metaClickToPurchaseRate = day.metaClicks > 0 ? (day.metaReportedPurchases / day.metaClicks) * 100 : 0;
+
+    // Google metrics
+    const googleCPL = day.googleReportedLeads > 0 ? day.googleSpend / day.googleReportedLeads : 0;
+    const googleCPP = day.googleReportedPurchases > 0 ? day.googleSpend / day.googleReportedPurchases : 0;
+    const googleClickToLeadRate = day.googleClicks > 0 ? (day.googleReportedLeads / day.googleClicks) * 100 : 0;
+    const googleClickToPurchaseRate = day.googleClicks > 0 ? (day.googleReportedPurchases / day.googleClicks) * 100 : 0;
+
+    return {
+      date: day.date,
+      // Summary Data
+      totalOptins: day.totalOptins,
+      totalVipSales: day.totalVipSales,
+      vipTakeRate,
+      totalVipRevenue: day.totalVipRevenue,
+      // Costs & ROAS
+      totalSpend,
+      trueCPL,
+      trueCPP,
+      roas,
+      profitLoss,
+      // Meta Ads
+      metaSpend: day.metaSpend,
+      metaCPL,
+      metaCPP,
+      metaOptins: day.metaReportedLeads,
+      metaVipSales: day.metaReportedPurchases,
+      metaClicks: day.metaClicks,
+      metaImpressions: day.metaImpressions,
+      metaLandingPageViews: day.metaLandingPageViews,
+      metaConnectRate,
+      metaClickToLeadRate,
+      metaClickToPurchaseRate,
+      // Google Ads
+      googleSpend: day.googleSpend,
+      googleCPL,
+      googleCPP,
+      googleOptins: day.googleReportedLeads,
+      googleVipSales: day.googleReportedPurchases,
+      googleClicks: day.googleClicks,
+      googleImpressions: day.googleImpressions,
+      googleClickToLeadRate,
+      googleClickToPurchaseRate,
+    };
+  });
+
+  return dailyData;
+}

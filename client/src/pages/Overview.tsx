@@ -3,12 +3,15 @@ import { trpc } from "@/lib/trpc";
 import { DATE_RANGES, type DateRange } from "@shared/constants";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { Users, DollarSign, ShoppingCart, TrendingUp, Target, Percent, Mail } from "lucide-react";
+import { Users, DollarSign, ShoppingCart, TrendingUp } from "lucide-react";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
+import { useLocation } from "wouter";
 
 export default function Overview() {
   const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.LAST_30_DAYS);
+  const [, setLocation] = useLocation();
 
   // Fetch overview metrics with date range
   const { data: metrics, isLoading: metricsLoading } = trpc.overview.metrics.useQuery({
@@ -59,7 +62,15 @@ export default function Overview() {
                 Real-time analytics and performance metrics
               </p>
             </div>
-            <DateRangeFilter value={dateRange} onChange={setDateRange} />
+            <div className="flex gap-4 items-center">
+              <Button 
+                variant="outline" 
+                onClick={() => setLocation('/daily-analysis')}
+              >
+                View Daily Analysis
+              </Button>
+              <DateRangeFilter value={dateRange} onChange={setDateRange} />
+            </div>
           </div>
         </div>
 

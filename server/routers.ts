@@ -15,6 +15,7 @@ import {
   getLandingPageMetrics,
   getDailyAttendance,
   getEmailEngagement,
+  getDailyAnalysisMetrics,
 } from "./supabase";
 
 export const appRouter = router({
@@ -63,6 +64,22 @@ export const appRouter = router({
     emailEngagement: publicProcedure.query(async () => {
       return await getEmailEngagement();
     }),
+  }),
+
+  // Daily Analysis queries
+  dailyAnalysis: router({
+    // Get daily metrics for spreadsheet view
+    metrics: publicProcedure
+      .input(z.object({
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        const { startDate, endDate } = input?.dateRange 
+          ? getDateRangeValues(input.dateRange)
+          : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
+        
+        return await getDailyAnalysisMetrics(startDate, endDate);
+      }),
   }),
 
   // Leads queries
