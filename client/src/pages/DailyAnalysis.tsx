@@ -3,11 +3,74 @@ import { trpc } from "@/lib/trpc";
 import { DATE_RANGES, type DateRange } from "@shared/constants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { DashboardHeader } from "@/components/DashboardHeader";
+import { Download } from "lucide-react";
+import { toast } from "sonner";
 
 export default function DailyAnalysis() {
   const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.LAST_30_DAYS);
+
+  // Export to CSV function
+  const exportToCSV = () => {
+    if (!dailyData || dailyData.length === 0) {
+      toast.error("No data to export");
+      return;
+    }
+
+    // Build CSV header
+    const headers = ["Metric", "Total", ...dailyData.map(day => 
+      new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    )];
+
+    // Build CSV rows
+    const rows: string[][] = [];
+
+    // Add category headers and metrics
+    metrics.forEach((metric, idx) => {
+      // Check if this is a new category
+      const prevMetric = metrics[idx - 1];
+      if (!prevMetric || prevMetric.category !== metric.category) {
+        // Add category header row
+        rows.push([metric.category, "", ...dailyData.map(() => "")]);
+      }
+
+      // Add metric row
+      const row = [
+        metric.label,
+        formatValue(metric.totalValue, metric.format),
+        ...dailyData.map(day => formatValue((day as any)[metric.key], metric.format))
+      ];
+      rows.push(row);
+    });
+
+    // Convert to CSV string
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.map(cell => {
+        // Escape cells that contain commas or quotes
+        const cellStr = String(cell);
+        if (cellStr.includes(",") || cellStr.includes('"') || cellStr.includes("\n")) {
+          return `"${cellStr.replace(/"/g, '""')}`;
+        }
+        return cellStr;
+      }).join(","))
+    ].join("\n");
+
+    // Create download link
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `31DWC-Daily-Analysis-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast.success("CSV exported successfully");
+  };
 
   // Fetch daily analysis metrics
   const { data: dailyData, isLoading } = trpc.dailyAnalysis.metrics.useQuery({
@@ -162,8 +225,17 @@ export default function DailyAnalysis() {
       <DashboardHeader />
       
       <div className="container max-w-full py-6">
-        {/* Date Filter */}
-        <div className="flex justify-end mb-6">
+        {/* Date Filter and Export Button */}
+        <div className="flex justify-between items-center mb-6">
+          <Button
+            onClick={exportToCSV}
+            disabled={isLoading || !dailyData || dailyData.length === 0}
+            variant="outline"
+            className="gap-2"
+          >
+            <Download className="h-4 w-4" />
+            Export to CSV
+          </Button>
           <DateRangeFilter value={dateRange} onChange={setDateRange} />
         </div>
 
