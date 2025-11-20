@@ -43,7 +43,7 @@ export const appRouter = router({
           ? getDateRangeValues(input.dateRange)
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS); // Default to 30 days
         
-        return await getOverviewMetrics();
+        return await getOverviewMetrics(startDate, endDate);
       }),
 
     // Get daily KPIs for charts (spend & leads trend, ROAS trend)

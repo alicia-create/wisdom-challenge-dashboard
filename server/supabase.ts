@@ -47,21 +47,42 @@ export async function getDailyKpis(startDate?: string, endDate?: string) {
 /**
  * Helper to fetch overview metrics (aggregated totals)
  */
-export async function getOverviewMetrics() {
+export async function getOverviewMetrics(startDate?: string, endDate?: string) {
   // Get total leads
-  const { count: totalLeads, error: leadsError } = await supabase
+  let leadsQuery = supabase
     .from('Lead')
     .select('*', { count: 'exact', head: true });
+  
+  if (startDate) {
+    leadsQuery = leadsQuery.gte('created_at', startDate);
+  }
+  if (endDate) {
+    // Add one day to endDate to include the entire end date
+    const endDateTime = new Date(endDate);
+    endDateTime.setDate(endDateTime.getDate() + 1);
+    leadsQuery = leadsQuery.lt('created_at', endDateTime.toISOString().split('T')[0]);
+  }
+  
+  const { count: totalLeads, error: leadsError } = await leadsQuery;
 
   if (leadsError) {
     console.error('[Supabase] Error counting leads:', leadsError);
   }
 
   // Get total spend from ad_performance (filtered by campaign)
-  const { data: adData, error: adError } = await supabase
+  let adQuery = supabase
     .from('ad_performance')
     .select('spend')
     .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`);
+  
+  if (startDate) {
+    adQuery = adQuery.gte('date', startDate);
+  }
+  if (endDate) {
+    adQuery = adQuery.lte('date', endDate);
+  }
+  
+  const { data: adData, error: adError } = await adQuery;
 
   if (adError) {
     console.error('[Supabase] Error fetching ad spend:', adError);
@@ -69,19 +90,41 @@ export async function getOverviewMetrics() {
 
   const totalSpend = adData?.reduce((sum: number, row: any) => sum + parseFloat(row.spend || '0'), 0) || 0;
 
-  // Get VIP sales (orders)
-  const { count: vipSales, error: ordersCountError } = await supabase
+  // Get VIP sales count
+  let ordersCountQuery = supabase
     .from('Order')
     .select('*', { count: 'exact', head: true });
+  
+  if (startDate) {
+    ordersCountQuery = ordersCountQuery.gte('created_at', startDate);
+  }
+  if (endDate) {
+    const endDateTime = new Date(endDate);
+    endDateTime.setDate(endDateTime.getDate() + 1);
+    ordersCountQuery = ordersCountQuery.lt('created_at', endDateTime.toISOString().split('T')[0]);
+  }
+  
+  const { count: vipSales, error: ordersCountError } = await ordersCountQuery;
 
   if (ordersCountError) {
     console.error('[Supabase] Error counting orders:', ordersCountError);
   }
 
   // Get VIP revenue
-  const { data: ordersData, error: ordersError } = await supabase
+  let ordersQuery = supabase
     .from('Order')
     .select('order_total');
+  
+  if (startDate) {
+    ordersQuery = ordersQuery.gte('created_at', startDate);
+  }
+  if (endDate) {
+    const endDateTime = new Date(endDate);
+    endDateTime.setDate(endDateTime.getDate() + 1);
+    ordersQuery = ordersQuery.lt('created_at', endDateTime.toISOString().split('T')[0]);
+  }
+  
+  const { data: ordersData, error: ordersError } = await ordersQuery;
 
   if (ordersError) {
     console.error('[Supabase] Error fetching orders:', ordersError);
@@ -94,16 +137,19 @@ export async function getOverviewMetrics() {
   const cpp = vipSales && vipSales > 0 ? totalSpend / vipSales : 0;
   const roas = totalSpend > 0 ? vipRevenue / totalSpend : 0;
   const vipTakeRate = totalLeads && totalLeads > 0 ? (vipSales || 0) / totalLeads * 100 : 0;
+  const aov = vipSales && vipSales > 0 ? vipRevenue / vipSales : 0;
 
   return {
     totalLeads: totalLeads || 0,
     totalSpend,
-    cpl,
+    totalRevenue: vipRevenue,
     vipSales: vipSales || 0,
-    vipRevenue,
+    cpl,
     cpp,
+    aov,
     roas,
     vipTakeRate,
+    vipRevenue,
   };
 }
 

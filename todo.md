@@ -90,3 +90,10 @@
 - [x] Update Overview page to support date range filtering
 - [x] Pass date range to all tRPC queries
 - [x] Add date range helper functions in constants
+
+## UI Improvements
+- [ ] Reorganize KPIs into 2 rows: 4 large cards (Leads, Spend, Revenue, VIP Sales) + 6 small cards (CPL, CPP, AOV, ROAS, Take Rate, Email Click Rate)
+- [ ] Add Total Revenue KPI from Order table
+- [ ] Add AOV (Average Order Value) KPI
+- [ ] Fix Daily Spend & Leads chart - use different colors for bars (not both black)
+- [ ] Fix date range filter - queries not updating when filter changes
