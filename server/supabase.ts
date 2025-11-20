@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { CAMPAIGN_NAME_FILTER } from '@shared/constants';
 
 // Supabase connection details
 // Using the new publishable/secret key format (2025+)
@@ -56,10 +57,11 @@ export async function getOverviewMetrics() {
     console.error('[Supabase] Error counting leads:', leadsError);
   }
 
-  // Get total spend from ad_performance
+  // Get total spend from ad_performance (filtered by campaign)
   const { data: adData, error: adError } = await supabase
     .from('ad_performance')
-    .select('spend');
+    .select('spend')
+    .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`);
 
   if (adError) {
     console.error('[Supabase] Error fetching ad spend:', adError);
@@ -148,6 +150,7 @@ export async function getAdPerformanceByCampaign(startDate?: string, endDate?: s
   let query = supabase
     .from('ad_performance')
     .select('*')
+    .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`)
     .order('date', { ascending: false });
 
   if (startDate) {
@@ -181,6 +184,7 @@ export async function getAdPerformanceDetailed(filters?: {
   let query = supabase
     .from('ad_performance')
     .select('*')
+    .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`)
     .order('date', { ascending: false });
 
   if (filters?.startDate) {
@@ -219,6 +223,7 @@ export async function getAdHierarchy() {
   const { data, error } = await supabase
     .from('ad_performance')
     .select('campaign_id, campaign_name, adset_id, adset_name, ad_id, ad_name, platform')
+    .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`)
     .order('campaign_name', { ascending: true });
 
   if (error) {
@@ -281,6 +286,7 @@ export async function getLandingPageMetrics(startDate?: string, endDate?: string
   let query = supabase
     .from('ad_performance')
     .select('campaign_name, adset_name, ad_name, inline_link_clicks, landing_page_view_per_link_click, date')
+    .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`)
     .not('landing_page_view_per_link_click', 'is', null)
     .order('date', { ascending: false });
 

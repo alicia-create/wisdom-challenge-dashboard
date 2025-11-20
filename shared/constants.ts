@@ -1,0 +1,93 @@
+/**
+ * Global constants shared between client and server
+ */
+
+/**
+ * Campaign name filter - only show data for this campaign
+ * Used across all queries to filter ad_performance, leads, and orders
+ */
+export const CAMPAIGN_NAME_FILTER = '31DWC2026';
+
+/**
+ * Date formats
+ */
+export const DATE_FORMAT = 'YYYY-MM-DD';
+export const DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+
+/**
+ * Platforms
+ */
+export const PLATFORMS = {
+  META: 'Meta',
+  GOOGLE: 'Google',
+} as const;
+
+export type Platform = typeof PLATFORMS[keyof typeof PLATFORMS];
+
+/**
+ * Date range presets
+ */
+export const DATE_RANGES = {
+  TODAY: 'TODAY',
+  YESTERDAY: 'YESTERDAY',
+  LAST_7_DAYS: '7 DAYS',
+  LAST_14_DAYS: '14 DAYS',
+  LAST_30_DAYS: '30 DAYS',
+} as const;
+
+export type DateRange = typeof DATE_RANGES[keyof typeof DATE_RANGES];
+
+/**
+ * Get start and end dates for a given date range preset
+ * Returns dates in YYYY-MM-DD format
+ */
+export function getDateRangeValues(range: DateRange): { startDate: string; endDate: string } {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  
+  let startDate: Date;
+  let endDate: Date = today;
+  
+  switch (range) {
+    case DATE_RANGES.TODAY:
+      startDate = today;
+      endDate = today;
+      break;
+    case DATE_RANGES.YESTERDAY:
+      startDate = new Date(today);
+      startDate.setDate(startDate.getDate() - 1);
+      endDate = new Date(today);
+      endDate.setDate(endDate.getDate() - 1);
+      break;
+    case DATE_RANGES.LAST_7_DAYS:
+      startDate = new Date(today);
+      startDate.setDate(startDate.getDate() - 6); // Last 7 days including today
+      break;
+    case DATE_RANGES.LAST_14_DAYS:
+      startDate = new Date(today);
+      startDate.setDate(startDate.getDate() - 13); // Last 14 days including today
+      break;
+    case DATE_RANGES.LAST_30_DAYS:
+      startDate = new Date(today);
+      startDate.setDate(startDate.getDate() - 29); // Last 30 days including today
+      break;
+    default:
+      startDate = new Date(today);
+      startDate.setDate(startDate.getDate() - 29);
+  }
+  
+  return {
+    startDate: formatDate(startDate),
+    endDate: formatDate(endDate),
+  };
+}
+
+/**
+ * Format date to YYYY-MM-DD
+ */
+function formatDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}

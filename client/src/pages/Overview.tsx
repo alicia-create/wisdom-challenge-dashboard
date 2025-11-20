@@ -2,6 +2,9 @@ import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DollarSign, Users, TrendingUp, ShoppingCart, Mail, Target } from "lucide-react";
+import { DateRangeFilter } from "@/components/DateRangeFilter";
+import { DATE_RANGES, type DateRange } from "@shared/constants";
+import { useState } from "react";
 import {
   LineChart,
   Line,
@@ -26,8 +29,10 @@ import {
  * - ROAS Trend Chart
  */
 export default function Overview() {
-  const { data: metrics, isLoading: metricsLoading } = trpc.overview.metrics.useQuery();
-  const { data: dailyKpis, isLoading: kpisLoading } = trpc.overview.dailyKpis.useQuery();
+  const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.LAST_30_DAYS);
+  
+  const { data: metrics, isLoading: metricsLoading } = trpc.overview.metrics.useQuery({ dateRange });
+  const { data: dailyKpis, isLoading: kpisLoading } = trpc.overview.dailyKpis.useQuery({ dateRange });
   const { data: emailEngagement } = trpc.overview.emailEngagement.useQuery();
 
   // Format currency
@@ -58,12 +63,17 @@ export default function Overview() {
       <div className="container">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">
-            31-Day Wisdom Challenge Dashboard
-          </h1>
-          <p className="text-muted-foreground">
-            Real-time analytics and performance metrics
-          </p>
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h1 className="text-4xl font-bold text-foreground mb-2">
+                31-Day Wisdom Challenge Dashboard
+              </h1>
+              <p className="text-muted-foreground">
+                Real-time analytics and performance metrics
+              </p>
+            </div>
+            <DateRangeFilter value={dateRange} onChange={setDateRange} />
+          </div>
         </div>
 
         {/* KPI Cards Grid */}

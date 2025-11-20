@@ -79,3 +79,14 @@
 - [x] Create field mapping document (Meta vs Google)
 - [x] Build Google Ads workflow with ad-level data
 - [ ] Test both workflows with sample data (pending user testing)
+
+## Campaign Filtering
+- [x] Add global campaign name filter constant (31DWC2026)
+- [x] Update all Supabase queries to filter by campaign name
+- [ ] Test filtered queries and verify data accuracy
+
+## Date Range Filtering
+- [x] Add date range filter UI component (TODAY, YESTERDAY, 7 DAYS, 14 DAYS, 30 DAYS)
+- [x] Update Overview page to support date range filtering
+- [x] Pass date range to all tRPC queries
+- [x] Add date range helper functions in constants

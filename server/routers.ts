@@ -1,4 +1,5 @@
 import { COOKIE_NAME } from "@shared/const";
+import { DATE_RANGES, getDateRangeValues, type DateRange } from "@shared/constants";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
@@ -33,18 +34,29 @@ export const appRouter = router({
   // Overview page queries
   overview: router({
     // Get aggregated overview metrics (total leads, spend, CPL, ROAS, etc.)
-    metrics: publicProcedure.query(async () => {
-      return await getOverviewMetrics();
-    }),
+    metrics: publicProcedure
+      .input(z.object({
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        const { startDate, endDate } = input?.dateRange 
+          ? getDateRangeValues(input.dateRange)
+          : getDateRangeValues(DATE_RANGES.LAST_30_DAYS); // Default to 30 days
+        
+        return await getOverviewMetrics();
+      }),
 
     // Get daily KPIs for charts (spend & leads trend, ROAS trend)
     dailyKpis: publicProcedure
       .input(z.object({
-        startDate: z.string().optional(),
-        endDate: z.string().optional(),
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
       }).optional())
       .query(async ({ input }) => {
-        return await getDailyKpis(input?.startDate, input?.endDate);
+        const { startDate, endDate } = input?.dateRange 
+          ? getDateRangeValues(input.dateRange)
+          : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
+        
+        return await getDailyKpis(startDate, endDate);
       }),
 
     // Get email engagement metrics
