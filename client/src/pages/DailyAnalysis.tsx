@@ -4,6 +4,7 @@ import { DATE_RANGES, type DateRange } from "@shared/constants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
+import { DashboardHeader } from "@/components/DashboardHeader";
 
 export default function DailyAnalysis() {
   const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.LAST_30_DAYS);
@@ -157,21 +158,13 @@ export default function DailyAnalysis() {
   });
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="container max-w-full">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h1 className="text-4xl font-bold text-foreground mb-2">
-                Detailed Daily Analysis
-              </h1>
-              <p className="text-muted-foreground">
-                Spreadsheet view with daily metrics breakdown
-              </p>
-            </div>
-            <DateRangeFilter value={dateRange} onChange={setDateRange} />
-          </div>
+    <div className="min-h-screen bg-background">
+      <DashboardHeader />
+      
+      <div className="container max-w-full py-6">
+        {/* Date Filter */}
+        <div className="flex justify-end mb-6">
+          <DateRangeFilter value={dateRange} onChange={setDateRange} />
         </div>
 
         {/* Spreadsheet Table */}

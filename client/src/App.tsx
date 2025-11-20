@@ -7,12 +7,14 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Overview from "./pages/Overview";
 import DailyAnalysis from "./pages/DailyAnalysis";
+import EngagementSales from "./pages/EngagementSales";
 
 function Router() {
   return (
     <Switch>      <Route path={"/"} component={Home} />
       <Route path={"/overview"} component={Overview} />
       <Route path={"/daily-analysis"} component={DailyAnalysis} />
+      <Route path={"/engagement-sales"} component={EngagementSales} />
       <Route path={"/404"} component={NotFound} />      {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>

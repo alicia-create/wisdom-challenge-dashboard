@@ -97,3 +97,5 @@
 - [ ] Add AOV (Average Order Value) KPI
 - [ ] Fix Daily Spend & Leads chart - use different colors for bars (not both black)
 - [ ] Fix date range filter - queries not updating when filter changes
+
+- [x] Implement global navigation header with tabs (Overview, Daily Analysis, Engagement & Sales)

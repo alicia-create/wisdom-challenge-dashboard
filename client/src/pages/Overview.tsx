@@ -3,15 +3,13 @@ import { trpc } from "@/lib/trpc";
 import { DATE_RANGES, type DateRange } from "@shared/constants";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Users, DollarSign, ShoppingCart, TrendingUp } from "lucide-react";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
-import { useLocation } from "wouter";
+import { DashboardHeader } from "@/components/DashboardHeader";
 
 export default function Overview() {
   const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.LAST_30_DAYS);
-  const [, setLocation] = useLocation();
 
   // Fetch overview metrics with date range
   const { data: metrics, isLoading: metricsLoading } = trpc.overview.metrics.useQuery({
@@ -49,29 +47,13 @@ export default function Overview() {
   })) || [];
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="container">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h1 className="text-4xl font-bold text-foreground mb-2">
-                31-Day Wisdom Challenge Dashboard
-              </h1>
-              <p className="text-muted-foreground">
-                Real-time analytics and performance metrics
-              </p>
-            </div>
-            <div className="flex gap-4 items-center">
-              <Button 
-                variant="outline" 
-                onClick={() => setLocation('/daily-analysis')}
-              >
-                View Daily Analysis
-              </Button>
-              <DateRangeFilter value={dateRange} onChange={setDateRange} />
-            </div>
-          </div>
+    <div className="min-h-screen bg-background">
+      <DashboardHeader />
+      
+      <div className="container py-6">
+        {/* Date Filter */}
+        <div className="flex justify-end mb-6">
+          <DateRangeFilter value={dateRange} onChange={setDateRange} />
         </div>
 
         {/* Primary KPIs - Large Cards */}
