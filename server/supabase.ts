@@ -630,3 +630,159 @@ export async function getDailyAnalysisMetrics(startDate?: string, endDate?: stri
 
   return dailyData;
 }
+
+
+// ============================================
+// VIEW 3: ENGAGEMENT & SALES QUERIES
+// ============================================
+
+export async function getEngagementMetrics(startDate?: string, endDate?: string) {
+  const { data: attendanceData, error: attendanceError } = await supabase
+    .from('daily_attendance')
+    .select('*')
+    .gte('date', startDate || '2025-01-01')
+    .lte('date', endDate || '2025-12-31')
+    .order('date', { ascending: true });
+
+  if (attendanceError) {
+    console.error('[Supabase] Error fetching attendance:', attendanceError);
+    return {
+      todayAttendance: 0,
+      totalAttendance: 0,
+      attendanceByDay: [],
+    };
+  }
+
+  // Get today's attendance
+  const today = new Date().toISOString().split('T')[0];
+  const todayData = (attendanceData || []).filter(a => a.date === today);
+  const todayAttendance = todayData.reduce((sum, a) => sum + (a.participant_count || 0), 0);
+
+  // Calculate total attendance
+  const totalAttendance = (attendanceData || []).reduce((sum, a) => sum + (a.participant_count || 0), 0);
+
+  // Group by date and platform
+  const attendanceByDay = (attendanceData || []).reduce((acc: any[], row) => {
+    const existing = acc.find(d => d.date === row.date);
+    if (existing) {
+      if (row.platform === 'youtube') {
+        existing.freeCount = row.participant_count || 0;
+      } else if (row.platform === 'zoom') {
+        existing.vipCount = row.participant_count || 0;
+      }
+    } else {
+      acc.push({
+        date: row.date,
+        freeCount: row.platform === 'youtube' ? (row.participant_count || 0) : 0,
+        vipCount: row.platform === 'zoom' ? (row.participant_count || 0) : 0,
+      });
+    }
+    return acc;
+  }, []);
+
+  return {
+    todayAttendance,
+    totalAttendance,
+    attendanceByDay,
+  };
+}
+
+export async function getHighTicketSales(startDate?: string, endDate?: string) {
+  const { data, error } = await supabase
+    .from('high_ticket_sales')
+    .select('*')
+    .gte('purchase_date', startDate || '2025-01-01')
+    .lte('purchase_date', endDate || '2025-12-31')
+    .order('purchase_date', { ascending: false });
+
+  if (error) {
+    console.error('[Supabase] Error fetching high ticket sales:', error);
+    return {
+      todayHtSales: 0,
+      totalHtSales: 0,
+      totalHtRevenue: 0,
+      htSalesList: [],
+    };
+  }
+
+  // Get today's HT sales
+  const today = new Date().toISOString().split('T')[0];
+  const todayData = (data || []).filter(s => s.purchase_date.startsWith(today));
+  const todayHtSales = todayData.length;
+
+  // Calculate totals
+  const totalHtSales = (data || []).length;
+  const totalHtRevenue = (data || []).reduce((sum, s) => sum + parseFloat(s.price || 0), 0);
+
+  return {
+    todayHtSales,
+    totalHtSales,
+    totalHtRevenue,
+    htSalesList: data || [],
+  };
+}
+
+export async function getFullFunnelMetrics(startDate?: string, endDate?: string) {
+  // Get VIP revenue from Order table
+  let ordersQuery = supabase
+    .from('Order')
+    .select('order_total');
+  
+  if (startDate) {
+    ordersQuery = ordersQuery.gte('created_at', startDate);
+  }
+  if (endDate) {
+    const endDateTime = new Date(endDate);
+    endDateTime.setDate(endDateTime.getDate() + 1);
+    ordersQuery = ordersQuery.lt('created_at', endDateTime.toISOString().split('T')[0]);
+  }
+  
+  const { data: orders, error: ordersError } = await ordersQuery;
+
+  if (ordersError) {
+    console.error('[Supabase] Error fetching orders for full funnel:', ordersError);
+  }
+
+  const vipRevenue = (orders || []).reduce((sum, o) => sum + parseFloat(o.order_total || 0), 0);
+
+  // Get HT revenue
+  const { totalHtRevenue, totalHtSales } = await getHighTicketSales(startDate, endDate);
+
+  // Get total ad spend
+  let adQuery = supabase
+    .from('ad_performance')
+    .select('spend')
+    .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`);
+  
+  if (startDate) {
+    adQuery = adQuery.gte('date', startDate);
+  }
+  if (endDate) {
+    adQuery = adQuery.lte('date', endDate);
+  }
+  
+  const { data: adData, error: adError } = await adQuery;
+
+  if (adError) {
+    console.error('[Supabase] Error fetching ad spend for full funnel:', adError);
+  }
+
+  const totalSpend = (adData || []).reduce((sum, a) => sum + parseFloat(a.spend || 0), 0);
+
+  // Calculate full funnel ROAS
+  const totalRevenue = vipRevenue + totalHtRevenue;
+  const fullFunnelRoas = totalSpend > 0 ? totalRevenue / totalSpend : 0;
+
+  // Calculate HT CPA
+  const htCpa = totalHtSales > 0 ? totalSpend / totalHtSales : 0;
+
+  return {
+    vipRevenue,
+    htRevenue: totalHtRevenue,
+    totalRevenue,
+    totalSpend,
+    fullFunnelRoas,
+    htCpa,
+    htSalesCount: totalHtSales,
+  };
+}

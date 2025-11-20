@@ -16,6 +16,9 @@ import {
   getDailyAttendance,
   getEmailEngagement,
   getDailyAnalysisMetrics,
+  getEngagementMetrics,
+  getHighTicketSales,
+  getFullFunnelMetrics,
 } from "./supabase";
 
 export const appRouter = router({
@@ -155,6 +158,48 @@ export const appRouter = router({
       }).optional())
       .query(async ({ input }) => {
         return await getDailyAttendance(input?.startDate, input?.endDate);
+      }),
+  }),
+
+  // Engagement & Sales queries (View 3)
+  engagement: router({
+    // Get engagement metrics (attendance)
+    metrics: publicProcedure
+      .input(z.object({
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        const { startDate, endDate } = input?.dateRange 
+          ? getDateRangeValues(input.dateRange)
+          : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
+        
+        return await getEngagementMetrics(startDate, endDate);
+      }),
+
+    // Get high-ticket sales
+    highTicketSales: publicProcedure
+      .input(z.object({
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        const { startDate, endDate } = input?.dateRange 
+          ? getDateRangeValues(input.dateRange)
+          : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
+        
+        return await getHighTicketSales(startDate, endDate);
+      }),
+
+    // Get full funnel metrics (VIP + HT revenue, ROAS, CPA)
+    fullFunnel: publicProcedure
+      .input(z.object({
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        const { startDate, endDate } = input?.dateRange 
+          ? getDateRangeValues(input.dateRange)
+          : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
+        
+        return await getFullFunnelMetrics(startDate, endDate);
       }),
   }),
 });
