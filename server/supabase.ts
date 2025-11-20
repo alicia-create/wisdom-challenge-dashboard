@@ -878,3 +878,136 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
     },
   };
 }
+
+/**
+ * Get paginated leads with search and filters
+ */
+export async function getLeadsPaginated(params: {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  startDate?: string;
+  endDate?: string;
+}) {
+  const page = params.page || 1;
+  const pageSize = params.pageSize || 50;
+  const offset = (page - 1) * pageSize;
+
+  // Build query
+  let query = supabase
+    .from('Lead')
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false });
+
+  // Apply filters
+  if (params.search) {
+    query = query.or(`email.ilike.%${params.search}%,first_name.ilike.%${params.search}%,last_name.ilike.%${params.search}%`);
+  }
+
+  if (params.utmSource) {
+    query = query.eq('utm_source', params.utmSource);
+  }
+
+  if (params.utmMedium) {
+    query = query.eq('utm_medium', params.utmMedium);
+  }
+
+  if (params.utmCampaign) {
+    query = query.ilike('utm_campaign', `%${params.utmCampaign}%`);
+  }
+
+  if (params.startDate) {
+    query = query.gte('created_at', params.startDate);
+  }
+
+  if (params.endDate) {
+    const endDateTime = new Date(params.endDate);
+    endDateTime.setDate(endDateTime.getDate() + 1);
+    query = query.lt('created_at', endDateTime.toISOString().split('T')[0]);
+  }
+
+  // Apply pagination
+  query = query.range(offset, offset + pageSize - 1);
+
+  const { data, error, count } = await query;
+
+  if (error) {
+    console.error('[Supabase] Error fetching leads:', error);
+    throw new Error(`Failed to fetch leads: ${error.message}`);
+  }
+
+  return {
+    data: data || [],
+    total: count || 0,
+    page,
+    pageSize,
+    totalPages: Math.ceil((count || 0) / pageSize),
+  };
+}
+
+/**
+ * Get paginated purchases/orders with search and filters
+ */
+export async function getPurchasesPaginated(params: {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+  minAmount?: number;
+  maxAmount?: number;
+}) {
+  const page = params.page || 1;
+  const pageSize = params.pageSize || 50;
+  const offset = (page - 1) * pageSize;
+
+  // Build query
+  let query = supabase
+    .from('Order')
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false });
+
+  // Apply filters
+  if (params.search) {
+    query = query.or(`contact_email.ilike.%${params.search}%,contact_name.ilike.%${params.search}%,order_id.ilike.%${params.search}%`);
+  }
+
+  if (params.startDate) {
+    query = query.gte('created_at', params.startDate);
+  }
+
+  if (params.endDate) {
+    const endDateTime = new Date(params.endDate);
+    endDateTime.setDate(endDateTime.getDate() + 1);
+    query = query.lt('created_at', endDateTime.toISOString().split('T')[0]);
+  }
+
+  if (params.minAmount !== undefined) {
+    query = query.gte('order_total', params.minAmount);
+  }
+
+  if (params.maxAmount !== undefined) {
+    query = query.lte('order_total', params.maxAmount);
+  }
+
+  // Apply pagination
+  query = query.range(offset, offset + pageSize - 1);
+
+  const { data, error, count } = await query;
+
+  if (error) {
+    console.error('[Supabase] Error fetching purchases:', error);
+    throw new Error(`Failed to fetch purchases: ${error.message}`);
+  }
+
+  return {
+    data: data || [],
+    total: count || 0,
+    page,
+    pageSize,
+    totalPages: Math.ceil((count || 0) / pageSize),
+  };
+}

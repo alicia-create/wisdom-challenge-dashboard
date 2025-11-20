@@ -1,6 +1,14 @@
 import { useLocation } from "wouter";
 import { APP_TITLE } from "@/const";
 import { cn } from "@/lib/utils";
+import { Bug } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 interface Tab {
   label: string;
@@ -31,7 +39,8 @@ export function DashboardHeader() {
           </div>
 
           {/* Navigation Tabs */}
-          <nav className="flex gap-1 bg-muted p-1 rounded-lg">
+          <div className="flex items-center gap-4">
+            <nav className="flex gap-1 bg-muted p-1 rounded-lg">
             {tabs.map((tab) => {
               const isActive = location === tab.path;
               return (
@@ -49,7 +58,26 @@ export function DashboardHeader() {
                 </button>
               );
             })}
-          </nav>
+            </nav>
+            
+            {/* Debug Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Bug className="h-4 w-4 mr-2" />
+                  Debug
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setLocation("/debug/leads")}>
+                  View Leads
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLocation("/debug/purchases")}>
+                  View Purchases
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </div>

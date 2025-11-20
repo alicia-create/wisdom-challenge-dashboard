@@ -110,3 +110,9 @@
 - [x] Add informative tooltips to KPI cards explaining metric calculations
 
 - [x] Implement Performance by Channel Table in Overview page (Meta vs Google comparison)
+
+- [x] Configure YouTube Analytics workflow in n8n (documentation created)
+- [x] Configure Zoom API workflow in n8n (documentation created)
+
+- [x] Create Leads debug page with pagination and filters
+- [x] Create Purchases debug page with pagination and filters

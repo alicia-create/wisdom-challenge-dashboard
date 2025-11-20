@@ -20,6 +20,8 @@ import {
   getHighTicketSales,
   getFullFunnelMetrics,
   getChannelPerformance,
+  getLeadsPaginated,
+  getPurchasesPaginated,
 } from "./supabase";
 
 export const appRouter = router({
@@ -214,6 +216,40 @@ export const appRouter = router({
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
         
         return await getFullFunnelMetrics(startDate, endDate);
+      }),
+  }),
+
+  // Debug pages for viewing raw data
+  debug: router({
+    // Get paginated leads with filters
+    leads: publicProcedure
+      .input(z.object({
+        page: z.number().optional(),
+        pageSize: z.number().optional(),
+        search: z.string().optional(),
+        utmSource: z.string().optional(),
+        utmMedium: z.string().optional(),
+        utmCampaign: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        return await getLeadsPaginated(input || {});
+      }),
+
+    // Get paginated purchases with filters
+    purchases: publicProcedure
+      .input(z.object({
+        page: z.number().optional(),
+        pageSize: z.number().optional(),
+        search: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+        minAmount: z.number().optional(),
+        maxAmount: z.number().optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        return await getPurchasesPaginated(input || {});
       }),
   }),
 });
