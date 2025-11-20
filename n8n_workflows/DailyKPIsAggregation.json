@@ -1,0 +1,252 @@
+{
+  "name": "Daily KPIs Aggregation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "name": "Schedule Every 30 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        -64
+      ],
+      "id": "6e86a265-f1dc-4f95-9262-a12c4d38c4ab"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "ad_performance",
+        "limit": 10000,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "date",
+              "condition": "gte",
+              "keyValue": "={{ $now.minus({days: 3}).toFormat('yyyy-MM-dd') }}"
+            }
+          ]
+        }
+      },
+      "name": "Get Ad Performance (Last 3 Days)",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        432,
+        -64
+      ],
+      "id": "96ca942c-1887-4537-bfa0-bc2e9850a41b",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "dTtopZWHdbiBdgll",
+          "name": "828 Supabase"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Processa e calcula os KPIs APENAS dos últimos 3 dias\nconst leads = $('Get Leads').all();\nconst orders = $('Get Orders').all();\nconst adPerf = $('Get Ad Performance (Last 3 Days)').all();\n\n// Agrupa por data\nconst dailyData = {};\n\n// Processa leads\nfor (const lead of leads) {\n  const rawDate = lead.json.created_at;\n  if (!rawDate) continue;\n\n  const date = rawDate.split('T')[0];\n  if (!date) continue;\n\n  if (!dailyData[date]) {\n    dailyData[date] = { total_leads: 0, total_vip_sales: 0, total_spend_meta: 0, total_spend_google: 0 };\n  }\n  dailyData[date].total_leads++;\n}\n\n// Processa orders\nfor (const order of orders) {\n  const rawDate = order.json.created_at;\n  if (!rawDate) continue;\n\n  const date = rawDate.split('T')[0];\n  if (!date) continue;\n\n  if (!dailyData[date]) {\n    dailyData[date] = { total_leads: 0, total_vip_sales: 0, total_spend_meta: 0, total_spend_google: 0 };\n  }\n  dailyData[date].total_vip_sales++;\n}\n\n// Processa ad performance\nfor (const ad of adPerf) {\n  const date = ad.json.date;\n  if (!date) continue;\n\n  if (!dailyData[date]) {\n    dailyData[date] = { total_leads: 0, total_vip_sales: 0, total_spend_meta: 0, total_spend_google: 0 };\n  }\n\n  const spend = parseFloat(ad.json.spend) || 0;\n\n  if (ad.json.platform === 'Meta') {\n    dailyData[date].total_spend_meta += spend;\n  } else if (ad.json.platform === 'Google') {\n    dailyData[date].total_spend_google += spend;\n  }\n}\n\n// Calcula KPIs e formata para output\nconst items = [];\nfor (const [date, data] of Object.entries(dailyData)) {\n  const total_spend = data.total_spend_meta + data.total_spend_google;\n  const cpl = data.total_leads > 0 ? total_spend / data.total_leads : 0;\n  const cpp = data.total_vip_sales > 0 ? total_spend / data.total_vip_sales : 0;\n  const roas = total_spend > 0 ? (data.total_vip_sales * 31) / total_spend : 0;\n  const vip_take_rate = data.total_leads > 0 ? (data.total_vip_sales / data.total_leads) * 100 : 0;\n\n  items.push({\n    json: {\n      date,\n      total_leads: data.total_leads,\n      total_vip_sales: data.total_vip_sales,\n      total_spend_meta: parseFloat(data.total_spend_meta.toFixed(2)),\n      total_spend_google: parseFloat(data.total_spend_google.toFixed(2)),\n      cpl: parseFloat(cpl.toFixed(2)),\n      cpp: parseFloat(cpp.toFixed(2)),\n      roas: parseFloat(roas.toFixed(2)),\n      vip_take_rate: parseFloat(vip_take_rate.toFixed(2)),\n    }\n  });\n}\n\nreturn items;\n"
+      },
+      "name": "Calculate KPIs (Last 3 Days Only)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        -64
+      ],
+      "id": "57293dfe-56f5-4ed8-aa5c-cd840f97bcc7"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "Order",
+        "limit": 100000,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "created_at",
+              "condition": "gte",
+              "keyValue": "={{ $now.minus({days: 1}).toFormat('yyyy-MM-dd') }}"
+            }
+          ]
+        }
+      },
+      "name": "Get Orders",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        -64
+      ],
+      "id": "054a384b-a2ef-4469-9d00-88389fe1025d",
+      "retryOnFail": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "dTtopZWHdbiBdgll",
+          "name": "828 Supabase"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "Lead",
+        "limit": 100000,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "created_at",
+              "condition": "gte",
+              "keyValue": "={{ $now.minus({days: 1}).toFormat('yyyy-MM-dd') }}"
+            }
+          ]
+        }
+      },
+      "name": "Get Leads",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        208,
+        -64
+      ],
+      "id": "38e87464-2939-41fb-8f0b-1cbb1cfe12f8",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "dTtopZWHdbiBdgll",
+          "name": "828 Supabase"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://sumibccxhppkpejrurjt.supabase.co/rest/v1/daily_kpis?on_conflict=date",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "name": "Upsert to daily_kpis1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        -64
+      ],
+      "id": "4e8076f4-326d-48a7-9933-8f12d6cd1386",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "sZhjf66QRj66RKDD",
+          "name": "Bearer Auth account"
+        },
+        "httpCustomAuth": {
+          "id": "LFjxKWycSP3988Mk",
+          "name": "Supabase Custom Auth"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Every 30 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Get Orders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Ad Performance (Last 3 Days)": {
+      "main": [
+        [
+          {
+            "node": "Calculate KPIs (Last 3 Days Only)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate KPIs (Last 3 Days Only)": {
+      "main": [
+        [
+          {
+            "node": "Upsert to daily_kpis1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Orders": {
+      "main": [
+        [
+          {
+            "node": "Get Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Leads": {
+      "main": [
+        [
+          {
+            "node": "Get Ad Performance (Last 3 Days)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "SJwA2g8hKEeyV1yh"
+  },
+  "versionId": "1e7cf582-5f8a-44ac-842d-7e727cd5adfc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "64e9fb192e3e9c1d35ec6673ccd48d000b90e236b154a4f905e07938fabb9ff1"
+  },
+  "id": "otIZOl8DqsWsszhW",
+  "tags": []
+}

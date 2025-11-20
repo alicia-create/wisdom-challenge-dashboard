@@ -1,0 +1,235 @@
+{
+  "name": "Keap Tag Changes → Supabase",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "keap-tag-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook - Keap Tag Changes",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -656,
+        112
+      ],
+      "webhookId": "keap-tag-webhook",
+      "id": "fb13749a-1f65-4e0f-b129-14691d870121"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract tag change data from Keap webhook\nconst items = $input.all();\nconst transformed = [];\n\nfor (const item of items) {\n  try {\n    const body = item.json.body || item.json;\n    \n    // Keap webhook structure varies, adjust based on actual payload\n    const contactEmail = body.email || body.contact?.email || body.contact_email;\n    const tagName = body.tag_name || body.tag?.name || body.name;\n    const action = body.action || body.event_type; // 'tag.applied' or 'tag.removed'\n    const timestamp = body.timestamp || new Date().toISOString();\n    \n    if (!contactEmail || !tagName) {\n      console.log('Missing email or tag name, skipping:', body);\n      continue;\n    }\n    \n    // Determine if tag was added or removed\n    const isAdded = action?.toLowerCase().includes('applied') || action?.toLowerCase().includes('added');\n    const isRemoved = action?.toLowerCase().includes('removed') || action?.toLowerCase().includes('deleted');\n    \n    transformed.push({\n      json: {\n        lead_email: contactEmail.toLowerCase().trim(),\n        tag_name: tagName,\n        source: 'keap',\n        action: isAdded ? 'add' : (isRemoved ? 'remove' : 'unknown'),\n        timestamp: timestamp,\n        raw_payload: JSON.stringify(body)\n      }\n    });\n  } catch (error) {\n    console.error('Error parsing Keap webhook:', error);\n    continue;\n  }\n}\n\nreturn transformed;"
+      },
+      "name": "Parse Keap Webhook",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        112
+      ],
+      "id": "3dface59-b5ff-4087-8184-ae68007ed6b5",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "is-add",
+              "leftValue": "={{ $json.action }}",
+              "rightValue": "add",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        112
+      ],
+      "id": "214eaa12-d859-4755-8ecf-9cdc7dffa26c",
+      "name": "If Tag Added"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://sumibccxhppkpejrurjt.supabase.co/rest/v1/lead_tags",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\n  \"lead_email\": $json.lead_email,\n  \"tag_name\": $json.tag_name,\n  \"source\": $json.source,\n  \"added_at\": $json.timestamp,\n  \"is_active\": true,\n  \"removed_at\": null\n} }}",
+        "options": {}
+      },
+      "name": "Add Tag to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "eeab1268-c07f-45be-8eb7-0eb4f4685b3f",
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "LFjxKWycSP3988Mk",
+          "name": "Supabase Custom Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://sumibccxhppkpejrurjt.supabase.co/rest/v1/lead_tags?lead_email=eq.{{ $json.lead_email }}&tag_name=eq.{{ $json.tag_name }}&source=eq.{{ $json.source }}&is_active=eq.true",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\n  \"is_active\": false,\n  \"removed_at\": $json.timestamp\n} }}",
+        "options": {}
+      },
+      "name": "Remove Tag from Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        208
+      ],
+      "id": "981b1923-2c76-48d8-a3af-e314fc1162ec",
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "LFjxKWycSP3988Mk",
+          "name": "Supabase Custom Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        112
+      ],
+      "id": "72ba77a3-4849-4fff-b3a7-4f56a6ccc5fd"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook - Keap Tag Changes": {
+      "main": [
+        [
+          {
+            "node": "Parse Keap Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Keap Webhook": {
+      "main": [
+        [
+          {
+            "node": "If Tag Added",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Tag Added": {
+      "main": [
+        [
+          {
+            "node": "Add Tag to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Remove Tag from Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Tag to Supabase": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Tag from Supabase": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "SJwA2g8hKEeyV1yh"
+  },
+  "versionId": "b9ebd5bb-0af5-4c71-8233-4d06b5438efd",
+  "meta": {
+    "instanceId": "64e9fb192e3e9c1d35ec6673ccd48d000b90e236b154a4f905e07938fabb9ff1"
+  },
+  "id": "Wzg1nctuQi88q5a2",
+  "tags": []
+}

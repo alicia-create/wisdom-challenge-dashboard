@@ -1,0 +1,138 @@
+{
+  "name": "ManyChat Tags → Supabase",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "manychat-tag-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook - ManyChat Tags",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "manychat-tag-webhook",
+      "id": "42cbdcef-adcd-4fab-87f1-2eb2a4167ddb"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract tag data from ManyChat webhook\nconst items = $input.all();\nconst transformed = [];\n\nfor (const item of items) {\n  try {\n    const body = item.json.body || item.json;\n    \n    // ManyChat webhook structure\n    const subscriberId = body.subscriber_id || body.id;\n    const email = body.email || body.subscriber?.email || body.custom_fields?.email;\n    const tags = body.tags || [];\n    const action = body.event || body.type; // 'subscribed', 'tag_added', etc.\n    const timestamp = body.timestamp || new Date().toISOString();\n    \n    if (!email) {\n      console.log('Missing email, skipping:', body);\n      continue;\n    }\n    \n    // If tags array is provided, process each tag\n    if (Array.isArray(tags) && tags.length > 0) {\n      for (const tag of tags) {\n        const tagName = typeof tag === 'string' ? tag : tag.name;\n        transformed.push({\n          json: {\n            lead_email: email.toLowerCase().trim(),\n            tag_name: tagName,\n            source: 'manychat',\n            action: 'add',\n            timestamp: timestamp,\n            subscriber_id: subscriberId,\n            raw_payload: JSON.stringify(body)\n          }\n        });\n      }\n    } else {\n      // Default tag for messenger subscription\n      transformed.push({\n        json: {\n          lead_email: email.toLowerCase().trim(),\n          tag_name: 'messenger_subscribed',\n          source: 'manychat',\n          action: 'add',\n          timestamp: timestamp,\n          subscriber_id: subscriberId,\n          raw_payload: JSON.stringify(body)\n        }\n      });\n    }\n  } catch (error) {\n    console.error('Error parsing ManyChat webhook:', error);\n    continue;\n  }\n}\n\nreturn transformed;"
+      },
+      "name": "Parse ManyChat Webhook",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "ab9a7537-8d6d-43aa-8c15-c33ad71b91b8",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://sumibccxhppkpejrurjt.supabase.co/rest/v1/lead_tags",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\n  \"lead_email\": $json.lead_email,\n  \"tag_name\": $json.tag_name,\n  \"source\": $json.source,\n  \"added_at\": $json.timestamp,\n  \"is_active\": true,\n  \"removed_at\": null\n} }}",
+        "options": {}
+      },
+      "name": "Add Tag to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "f9ca1de3-4c10-4120-94d9-5faab957bc6e",
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "LFjxKWycSP3988Mk",
+          "name": "Supabase Custom Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        0
+      ],
+      "id": "4f291afb-e7c7-4c0b-a865-5a1769e98fd8"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook - ManyChat Tags": {
+      "main": [
+        [
+          {
+            "node": "Parse ManyChat Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse ManyChat Webhook": {
+      "main": [
+        [
+          {
+            "node": "Add Tag to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Tag to Supabase": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "SJwA2g8hKEeyV1yh"
+  },
+  "versionId": "ad92474d-49bb-4d7e-8a63-e376858c8f77",
+  "meta": {
+    "instanceId": "64e9fb192e3e9c1d35ec6673ccd48d000b90e236b154a4f905e07938fabb9ff1"
+  },
+  "id": "qwFdmIKPLQCQEfuD",
+  "tags": []
+}

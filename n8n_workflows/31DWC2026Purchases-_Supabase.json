@@ -1,0 +1,1486 @@
+{
+  "name": "31DWC2026 Purchases -> Supabase",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "31dwc2026-onetimepurchase",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7583cc6a-c055-4451-8aa1-c8f3f801fde1",
+      "name": "CF Purchases",
+      "webhookId": "6866d600-9255-470f-a35f-214aba53d672"
+    },
+    {
+      "parameters": {
+        "tableId": "Order",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "email",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.contact.email_address }}"
+            },
+            {
+              "fieldId": "phone",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.contact.phone_number }}"
+            },
+            {
+              "fieldId": "first_name",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.contact.first_name }}"
+            },
+            {
+              "fieldId": "last_name",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.contact.last_name }}"
+            },
+            {
+              "fieldId": "purchase_date",
+              "fieldValue": "={{ new Date().toISOString().split('T')[0] }}"
+            },
+            {
+              "fieldId": "order_id",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.id }}"
+            },
+            {
+              "fieldId": "order_total",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.total_amount }}"
+            },
+            {
+              "fieldId": "billing_status",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.billing_status }}"
+            },
+            {
+              "fieldId": "funnel_name",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.funnel_name }}"
+            },
+            {
+              "fieldId": "order_number",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.order_number }}"
+            },
+            {
+              "fieldId": "billing_address_street_one",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.billing_address_street_one }}"
+            },
+            {
+              "fieldId": "billing_address_city",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.billing_address_city }}"
+            },
+            {
+              "fieldId": "billing_address_postal_code",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.billing_address_postal_code }}"
+            },
+            {
+              "fieldId": "billing_address_country",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.billing_address_country }}"
+            },
+            {
+              "fieldId": "shipping_address_street_one",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.shipping_address_street_one }}"
+            },
+            {
+              "fieldId": "shipping_address_city",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.shipping_address_city }}"
+            },
+            {
+              "fieldId": "shipping_address_region",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.shipping_address_region }}"
+            },
+            {
+              "fieldId": "shipping_address_postal_code",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.shipping_address_postal_code }}"
+            },
+            {
+              "fieldId": "shipping_address_country",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.shipping_address_country }}"
+            },
+            {
+              "fieldId": "shipping_address_phone_number",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.shipping_address_phone_number }}"
+            },
+            {
+              "fieldId": "contact_id",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.contact_id }}"
+            },
+            {
+              "fieldId": "order_source",
+              "fieldValue": "ClickFunnels"
+            },
+            {
+              "fieldId": "billing_address_street_two",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.billing_address_street_two }}"
+            },
+            {
+              "fieldId": "shipping_address_street_two",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.shipping_address_street_two }}"
+            },
+            {
+              "fieldId": "page",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.order_page.name }}"
+            },
+            {
+              "fieldId": "page_public_id",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.order_page.public_id }}"
+            },
+            {
+              "fieldId": "page_id",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.order_page.id }}"
+            },
+            {
+              "fieldId": "funnel_id",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.funnel.id }}"
+            },
+            {
+              "fieldId": "funnel_public_id",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.funnel.public_id }}"
+            },
+            {
+              "fieldId": "billing_address_region",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.billing_address_region }}"
+            },
+            {
+              "fieldId": "ip_address",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.contact.custom_attributes.ip_address }}"
+            },
+            {
+              "fieldId": "utm_campaign",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.contact.custom_attributes.utm_campaign }}"
+            },
+            {
+              "fieldId": "utm_source",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.contact.custom_attributes.utm_source }}"
+            },
+            {
+              "fieldId": "utm_medium",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.contact.custom_attributes.utm_medium }}"
+            },
+            {
+              "fieldId": "utm_content",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.contact.custom_attributes.utm_content }}"
+            },
+            {
+              "fieldId": "utm_term",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.contact.custom_attributes.utm_term }}"
+            },
+            {
+              "fieldId": "ad_id",
+              "fieldValue": "={{ $('CF Purchases').item.json.body.data.contact.custom_attributes.ad_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        432,
+        0
+      ],
+      "id": "fe1c94e4-6073-4844-84b6-43f0405d2697",
+      "name": "CF Purchase -> Supabase",
+      "credentials": {
+        "supabaseApi": {
+          "id": "dTtopZWHdbiBdgll",
+          "name": "828 Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "Order",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "email",
+              "fieldValue": "={{ $json.body.customer.email }}"
+            },
+            {
+              "fieldId": "phone",
+              "fieldValue": "={{ $json.body.phone_number }}"
+            },
+            {
+              "fieldId": "first_name",
+              "fieldValue": "={{ $json.body.customer.name_first }}"
+            },
+            {
+              "fieldId": "last_name",
+              "fieldValue": "={{ $json.body.customer.name_last }}"
+            },
+            {
+              "fieldId": "purchase_date",
+              "fieldValue": "={{ new Date().toISOString().split('T')[0] }}"
+            },
+            {
+              "fieldId": "order_id",
+              "fieldValue": "={{ $json.body.order_id }}"
+            },
+            {
+              "fieldId": "order_total",
+              "fieldValue": "={{ ($json.body.order_total / 100) }}"
+            },
+            {
+              "fieldId": "billing_status",
+              "fieldValue": "={{ $json.body.payments[0].payment_status }}"
+            },
+            {
+              "fieldId": "funnel_name",
+              "fieldValue": "={{ $json.body.checkout.offer_name }}"
+            },
+            {
+              "fieldId": "billing_address_street_one",
+              "fieldValue": "={{ $json.body.billing_street1 }}"
+            },
+            {
+              "fieldId": "billing_address_city",
+              "fieldValue": "={{ $json.body.billing_city }}"
+            },
+            {
+              "fieldId": "billing_address_postal_code",
+              "fieldValue": "={{ $json.body.billing_zip }}"
+            },
+            {
+              "fieldId": "billing_address_country",
+              "fieldValue": "={{ $json.body.billing_country }}"
+            },
+            {
+              "fieldId": "shipping_address_street_one",
+              "fieldValue": "={{ $json.body.shipping_street1 }}"
+            },
+            {
+              "fieldId": "shipping_address_city",
+              "fieldValue": "={{ $json.body.shipping_city }}"
+            },
+            {
+              "fieldId": "shipping_address_region",
+              "fieldValue": "={{ $json.body.shipping_state }}"
+            },
+            {
+              "fieldId": "shipping_address_postal_code",
+              "fieldValue": "={{ $json.body.shipping_zip }}"
+            },
+            {
+              "fieldId": "shipping_address_country",
+              "fieldValue": "={{ $json.body.shipping_country }}"
+            },
+            {
+              "fieldId": "contact_id",
+              "fieldValue": "={{ $json.body.customer_id }}"
+            },
+            {
+              "fieldId": "order_source",
+              "fieldValue": "Spiffy"
+            },
+            {
+              "fieldId": "billing_address_street_two",
+              "fieldValue": "={{ $json.body.billing_street2 }}"
+            },
+            {
+              "fieldId": "shipping_address_street_two",
+              "fieldValue": "={{ $json.body.shipping_street2 }}"
+            },
+            {
+              "fieldId": "funnel_id",
+              "fieldValue": "={{ $json.body.checkout.checkout_id }}"
+            },
+            {
+              "fieldId": "billing_address_region",
+              "fieldValue": "={{ $json.body.billing_state }}"
+            },
+            {
+              "fieldId": "ip_address",
+              "fieldValue": "={{ $json.body.checkoutview.pageviewcheckout.pageview.ip }}"
+            },
+            {
+              "fieldId": "utm_campaign",
+              "fieldValue": "={{ $json.body.checkoutview.utm_campaign }}"
+            },
+            {
+              "fieldId": "utm_source",
+              "fieldValue": "={{ $json.body.checkoutview.utm_source }}"
+            },
+            {
+              "fieldId": "utm_medium",
+              "fieldValue": "={{ $json.body.checkoutview.utm_medium }}"
+            },
+            {
+              "fieldId": "utm_content",
+              "fieldValue": "={{ $json.body.checkoutview.utm_content }}"
+            },
+            {
+              "fieldId": "utm_term",
+              "fieldValue": "={{ $json.body.checkoutview.utm_term }}"
+            },
+            {
+              "fieldId": "redirect_to",
+              "fieldValue": "={{ $json.body.order_confirmation_url }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        208,
+        496
+      ],
+      "id": "c3d5fe61-6f6c-4fee-ac88-7a5a67d644f9",
+      "name": "Spiffy Purchase -> Supabase",
+      "credentials": {
+        "supabaseApi": {
+          "id": "dTtopZWHdbiBdgll",
+          "name": "828 Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a73e38bf-0234-4fd4-9da5-5ede24b3cc4f",
+              "name": "line_items",
+              "value": "={{ $('CF Purchases').item.json.body.data.line_items }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        656,
+        0
+      ],
+      "id": "896b958e-7055-4580-9cd5-fba8d60fe508",
+      "name": "Get CF Order Items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a73e38bf-0234-4fd4-9da5-5ede24b3cc4f",
+              "name": "line_items",
+              "value": "={{ $('Spiffy Purchases').item.json.body.items }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        432,
+        496
+      ],
+      "id": "977d35ba-657b-4e8a-ba9f-c3eb1d3bcc6e",
+      "name": "Get Spiffy Order Items"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "31dwc2026-spiffy-to-n8n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        496
+      ],
+      "id": "bc9261f2-5b80-4a76-90ed-6e8bd2d129bb",
+      "name": "Spiffy Purchases",
+      "webhookId": "dab459cd-3fa7-4041-babb-46b37d8d8736"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.line_items;\n\nreturn raw.map(item => ({\n  json: {\n    order_id: item.order_id,\n    product_id: item.order_item_id,\n    quantity: item.quantity || 1,\n    amount: parseFloat(item.amount) / 100,\n    currency: 'USD',\n    product_name: item.name\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        496
+      ],
+      "id": "9114f8de-9371-44c6-97d6-1eb07deac9a1",
+      "name": "Format Spiffy Order Items"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.line_items;\nreturn raw.map(item => ({\n  json: {\n    order_id: item.order_id,\n    quantity: item.quantity,\n    amount: parseFloat(item.products_price.amount),\n    currency: item.products_price.currency,\n    product_id: item.original_product.id,\n    product_name: item.original_product.name,\n    variant_id: item.products_variant.id,\n    variant_name: item.products_variant.name\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        0
+      ],
+      "id": "f52b25f3-1ab0-4760-8ae2-aaaae6c1884a",
+      "name": "Format CF Order Items"
+    },
+    {
+      "parameters": {
+        "tableId": "Order_Itens",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "order_id",
+              "fieldValue": "={{ $json.order_id }}"
+            },
+            {
+              "fieldId": "quantity",
+              "fieldValue": "={{ $json.quantity }}"
+            },
+            {
+              "fieldId": "amount",
+              "fieldValue": "={{ $json.amount }}"
+            },
+            {
+              "fieldId": "currency",
+              "fieldValue": "={{ $json.currency }}"
+            },
+            {
+              "fieldId": "product_id",
+              "fieldValue": "={{ $json.product_id }}"
+            },
+            {
+              "fieldId": "product_name",
+              "fieldValue": "={{ $json.product_name }}"
+            }
+          ]
+        }
+      },
+      "name": "Spiffy Order Items -> Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        880,
+        496
+      ],
+      "id": "0677506f-7a3c-4e02-97fd-abafd7809a0a",
+      "credentials": {
+        "supabaseApi": {
+          "id": "dTtopZWHdbiBdgll",
+          "name": "828 Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "Order_Itens",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "order_id",
+              "fieldValue": "={{ $json.order_id }}"
+            },
+            {
+              "fieldId": "quantity",
+              "fieldValue": "={{ $json.quantity }}"
+            },
+            {
+              "fieldId": "amount",
+              "fieldValue": "={{ $json.amount }}"
+            },
+            {
+              "fieldId": "currency",
+              "fieldValue": "={{ $json.currency }}"
+            },
+            {
+              "fieldId": "product_id",
+              "fieldValue": "={{ $json.product_id }}"
+            },
+            {
+              "fieldId": "product_name",
+              "fieldValue": "={{ $json.product_name }}"
+            },
+            {
+              "fieldId": "variant_id",
+              "fieldValue": "={{ $json.variant_id }}"
+            },
+            {
+              "fieldId": "variant_name",
+              "fieldValue": "={{ $json.variant_name }}"
+            }
+          ]
+        }
+      },
+      "name": "CF Order Items -> Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        0
+      ],
+      "id": "14982eb2-bdbc-4f01-aab1-4f71e6859ca8",
+      "credentials": {
+        "supabaseApi": {
+          "id": "dTtopZWHdbiBdgll",
+          "name": "828 Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Spiffy\n**USE IF NEEDED**"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -304,
+        432
+      ],
+      "typeVersion": 1,
+      "id": "45bac976-ab56-4f9e-a336-fce565cbab65",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1aIT8e0dgxmXQjzLfkRJBwwLYom5cnHQi2thhi51f9Jc",
+          "mode": "list",
+          "cachedResultName": "31DWC2026 - VIP",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIT8e0dgxmXQjzLfkRJBwwLYom5cnHQi2thhi51f9Jc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIT8e0dgxmXQjzLfkRJBwwLYom5cnHQi2thhi51f9Jc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "CHECKOUT": "={{ $json.body.page.name }}",
+            "Email": "={{ $json.body.data.contact.email_address }}",
+            "Phone": "={{ $json.body.data.contact.phone_number }}",
+            "First Name": "={{ $json.body.data.contact.first_name }}",
+            "Last Name": "={{ $json.body.data.contact.last_name }}",
+            "Medium": "={{ $json.body.data.contact.custom_attributes.utm_medium }}",
+            "Source": "={{ $json.body.data.contact.custom_attributes.utm_source }}",
+            "Term": "={{ $json.body.data.contact.custom_attributes.utm_term }}",
+            "Content": "={{ $json.body.data.contact.custom_attributes.utm_content }}",
+            "Campaign": "={{ $json.body.data.contact.custom_attributes.utm_campaign }}",
+            "Total": "={{ $json.body.data.total_amount }}",
+            "Data": "{{ new Date().toISOString().split('T')[0] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Data",
+              "displayName": "Data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CHECKOUT",
+              "displayName": "CHECKOUT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total",
+              "displayName": "Total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Campaign",
+              "displayName": "Campaign",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Medium",
+              "displayName": "Medium",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Content",
+              "displayName": "Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Term",
+              "displayName": "Term",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "f4dbfb2e-f92b-4eea-91f3-48cd68a258b2",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Kyi2seIjNB71gVyC",
+          "name": "Google Sheets alicia@pedroadao.com"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Spiffy Purchases": [
+      {
+        "json": {
+          "headers": {
+            "host": "evolucionario-ads.app.n8n.cloud",
+            "user-agent": "axios/0.19.2",
+            "content-length": "7563",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, br",
+            "authorization": "Bearer hook_xxxxxxxxxxxxxxxxxxxxxxx",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "2605:4c40:100:2625:0:4429:d905:1",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "US",
+            "cf-ray": "99637cc694774705-SJC",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "2605:4c40:100:2625:0:4429:d905:1, 172.69.134.212",
+            "x-forwarded-host": "evolucionario-ads.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-61-6d55649f6f-lbwpz",
+            "x-is-trusted": "yes",
+            "x-real-ip": "2605:4c40:100:2625:0:4429:d905:1"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "order_id": 1,
+            "checkout_id": 1,
+            "card_id": 111,
+            "customer_id": 1,
+            "coupon_id": 1,
+            "coupon_code": "TEST1234",
+            "gateway_id": 1,
+            "subscription_id": 1,
+            "payment_plan_id": 1,
+            "affiliate_id": 1,
+            "offer_name": "My Checkout Offer Name",
+            "subscription_option_name": "Subscription Option Name",
+            "payment_gateway": "stripe",
+            "shipping_street1": "1111 Spiffy Dr.",
+            "shipping_street2": "",
+            "shipping_city": "Phoenix",
+            "shipping_state": "AZ",
+            "shipping_zip": "11111",
+            "shipping_country": "US",
+            "billing_street1": "1111 Spiffy Dr.",
+            "billing_street2": "",
+            "billing_city": "Phoenix",
+            "billing_state": "AZ",
+            "billing_zip": "11111",
+            "billing_country": "US",
+            "phone_number": "3334445555",
+            "currency": "usd",
+            "has_order_bump": false,
+            "offer_bump_name": "Offer Bump Name",
+            "has_upsell": false,
+            "upsell_name": "Upsell Name",
+            "order_total": 6000,
+            "tax_total": 0,
+            "payment_plan_amount": 0,
+            "payment_plan_frequency": "month",
+            "payment_plan_num_payments": 0,
+            "subscription_amount": 6000,
+            "subscription_frequency": "month",
+            "subscription_trial_days": 0,
+            "are_terms_signed": true,
+            "terms_signed_at": "2025-10-28T12:01:18.913Z",
+            "is_privacy_policy_signed": true,
+            "privacy_policy_signed_at": "2025-10-28T12:01:18.913Z",
+            "is_marketing_opted_in": true,
+            "marketing_opted_in_at": "2025-10-28T12:01:18.913Z",
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/",
+            "utm_source": "google",
+            "utm_campaign": "campaign",
+            "utm_term": "term",
+            "utm_content": "content",
+            "utm_medium": "medium",
+            "ref_utm_source": "ref_google",
+            "ref_utm_campaign": "ref_campaign",
+            "ref_utm_term": "ref_term",
+            "ref_utm_content": "ref_content",
+            "ref_utm_medium": "ref_medium",
+            "order_confirmation_url": "https://yourcompany.spiffy.co/manage/confirmation/orders/xxxxxxxxxxxxxxx",
+            "created_at": "2025-10-28T12:01:18.913Z",
+            "updated_at": "2025-10-28T12:01:18.913Z",
+            "adjustments": [],
+            "affiliate_orders": [],
+            "paymentplans": [],
+            "items": [
+              {
+                "id": 1,
+                "order_id": 1,
+                "name": "Subscription",
+                "tax_type": "tax",
+                "tax_rate": "0.00000000000",
+                "is_commissionable": false,
+                "is_refunded_by_spiffy": false,
+                "created_at": "2025-10-28T12:01:18.913Z",
+                "updated_at": "2025-10-28T12:01:18.913Z",
+                "published_checkout_item_id": 1,
+                "discounts": [],
+                "order_item_id": 1,
+                "amount": 0
+              }
+            ],
+            "payments": [
+              {
+                "payment_id": 1,
+                "is_manual_payment": false,
+                "payment_status": "succeeded",
+                "payment_amount": 6000,
+                "payment_amount_paid": 6000,
+                "payment_amount_refunded": 0,
+                "payment_failure_reason": null,
+                "payment_receipt_url": "https://yourcompany.spiffy.co/manage/confirmation/orders/xxxxxxxxxxxxxxx/payments/1",
+                "created_at": "2025-10-28T12:01:18.913Z",
+                "updated_at": "2025-10-28T12:01:18.913Z"
+              }
+            ],
+            "checkoutview": {
+              "id": 1,
+              "pageview_checkout_id": 1,
+              "referrer": "",
+              "utm_source": "google",
+              "utm_campaign": "campaign",
+              "utm_term": "term",
+              "utm_content": "content",
+              "utm_medium": "medium",
+              "created_at": "2025-10-28T12:01:18.913Z",
+              "updated_at": "2025-10-28T12:01:18.913Z",
+              "pageviewcheckout": {
+                "id": 1,
+                "pageview_id": 1,
+                "checkout_id": 1,
+                "modality": "link",
+                "link_text": "Buy Now",
+                "created_at": "2025-10-28T12:01:18.913Z",
+                "updated_at": "2025-10-28T12:01:18.913Z",
+                "pageview": {
+                  "id": 1,
+                  "account_id": 1,
+                  "is_elements": false,
+                  "session_id": "8085644d-xxxx-xxxx-xxxx-42a6ccd11e0a",
+                  "url": "https://yourcompany.spiffy.co/checkout/xxxxxxxxxxxxxxx",
+                  "referrer": "https://google.com",
+                  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+                  "ip": "xxx.xxx.xxx.xxx",
+                  "utm_source": "google",
+                  "utm_campaign": "campaign",
+                  "utm_term": "term",
+                  "utm_content": "content",
+                  "utm_medium": "medium",
+                  "created_at": "2025-10-28T12:01:18.913Z",
+                  "updated_at": "2025-10-28T12:01:18.913Z"
+                }
+              }
+            },
+            "url_slug": "my-checkout",
+            "internal_name": "My Checkout",
+            "offer_description": "My Checkout Description",
+            "checkout": {
+              "checkout_id": 1,
+              "url_slug": "my-checkout",
+              "internal_name": "My Checkout",
+              "offer_name": "My Checkout Offer Name",
+              "offer_description": "My Checkout Description",
+              "created_at": "2025-10-28T12:01:18.913Z",
+              "updated_at": "2025-10-28T12:01:18.913Z"
+            },
+            "checkout_publish": {
+              "id": 1,
+              "checkout_id": 1,
+              "published_id": "64ee2b98b65f691c897e8568",
+              "created_at": "2025-10-28T12:01:18.913Z",
+              "updated_at": "2025-10-28T12:01:18.913Z",
+              "checkout": {
+                "id": 1,
+                "account_id": 1,
+                "status": "active",
+                "default_gateway": "stripe",
+                "url_slug": "my-checkout",
+                "internal_name": "My Checkout",
+                "offer_name": "My Checkout Offer Name",
+                "offer_description": "My Checkout Description",
+                "offer_image_url": "0bcdb501d68f33be2e90db675d9098debd2d1982.png",
+                "header_text": "Header",
+                "header_logo_url": "https://google.com",
+                "header_content": "Header Content",
+                "sidebar_content": [],
+                "footer_content": "Footer Content",
+                "expired_forwarding_url": "https://google.com",
+                "meta_title": "Meta Title",
+                "meta_description": "Meta Description",
+                "meta_favicon": "https://google.com",
+                "meta_og_image": "https://google.com",
+                "is_ty_params_active": true,
+                "is_ty_contact_params_active": true,
+                "has_used_flows": true,
+                "has_draft_updates": false,
+                "created_at": "2025-10-28T12:01:18.913Z",
+                "updated_at": "2025-10-28T12:01:18.913Z",
+                "expire_at": "2025-10-28T12:01:18.913Z",
+                "order_limit": 0,
+                "order_limit_start_at": "2025-10-28T12:01:18.913Z"
+              }
+            },
+            "account_id": 1,
+            "email": "customer@spiffy.co",
+            "paypal_email": "affiliate@spiffy.co",
+            "affiliate_slug": "my-affiliate",
+            "name_first": "John",
+            "name_last": "Doe",
+            "company_name": "Company LLC",
+            "tax_id": "123456789",
+            "gravatar": "https://gravatar.com/avatar/XXXXXXXXXXXXXXXXXXXXXX?s=200&r=pg&d=retro",
+            "customer": {
+              "id": 1,
+              "account_id": 1,
+              "email": "customer@spiffy.co",
+              "name_first": "John",
+              "name_last": "Doe",
+              "company_name": "Company LLC",
+              "tax_id": "123456789",
+              "created_at": "2025-10-28T12:01:18.913Z",
+              "updated_at": "2025-10-28T12:01:18.913Z",
+              "gravatar": "https://gravatar.com/avatar/XXXXXXXXXXXXXXXXXXXXXX?s=200&r=pg&d=retro",
+              "customer_id": 1,
+              "affiliate_id": 1,
+              "affiliate_slug": "my-affiliate",
+              "paypal_email": "affiliate@spiffy.co"
+            },
+            "type": "Visa",
+            "last_four": "1111",
+            "exp_month": "1",
+            "exp_year": "1111",
+            "is_three_d_secure_supported": false,
+            "country": "US",
+            "is_card_active": 1,
+            "stripe_customer_id": "cus_XXXXXXXXXXX",
+            "paypal_payer_id": "xxxxxxxxxxxxx",
+            "paypal_customer_id": "xxxxxxxxxxxxx",
+            "hotswap_url": "https://yourcompany.spiffy.co/manage/card/xxxxxxxxxxxxxxx",
+            "card": {
+              "card_id": 111,
+              "type": "Visa",
+              "last_four": "1111",
+              "exp_month": "1",
+              "exp_year": "1111",
+              "is_three_d_secure_supported": false,
+              "country": "US",
+              "is_card_active": 1,
+              "stripe_customer_id": "cus_XXXXXXXXXXX",
+              "paypal_payer_id": "xxxxxxxxxxxxx",
+              "paypal_customer_id": "xxxxxxxxxxxxx",
+              "hotswap_url": "https://yourcompany.spiffy.co/manage/card/xxxxxxxxxxxxxxx",
+              "created_at": "2025-10-28T12:01:18.913Z",
+              "updated_at": "2025-10-28T12:01:18.913Z"
+            },
+            "_of_kids_for_nextgen": 10,
+            "allergies": null,
+            "charger__hat_bundle": 10,
+            "guest_email_address": "test@example.com",
+            "guest_name": null,
+            "have_you_received_inner_healing_ministry_before": null,
+            "ih_24_hours_cancellation": null,
+            "ih_anything_else": null,
+            "ih_disclaimer_agreement": null,
+            "ih_i_understand_first_session": null,
+            "ih_if_you_answered_yes_please_let_us_know_approximately_when_how_many_times_and_what_modality_you_experienced_if_known": null,
+            "ih_session_focus": null,
+            "ih_todays_date": null,
+            "ih_type_name_as_esignature": null,
+            "ih_which_100x_program": null,
+            "infusionsoft.contact.desired outcome": null,
+            "infusionsoft.contact.inner healing session purchased": null,
+            "infusionsoft.contact.kingdom options trader - switch": null,
+            "infusionsoft.contact.rsvp": null,
+            "infusionsoft.order.collection notes": null,
+            "kingdom_seekers": null,
+            "memstat": null,
+            "nextgen_yes": null,
+            "number_of_guests_rsvp": 10,
+            "pm_name": null,
+            "pm_preference": null,
+            "quantity": 10,
+            "refundable_deposit": 10,
+            "retired_and_free_book": 10,
+            "separate_registration_and_payment_required": null,
+            "sku": null,
+            "spouse_email_address": "test@example.com",
+            "spouse_name": null,
+            "thanksroger_12-months": null,
+            "thanksroger_6-months": null,
+            "thanksroger_terms": null,
+            "webhook_secret": "hook_xxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          "webhookUrl": "https://evolucionario-ads.app.n8n.cloud/webhook/spiffy-to-n8n",
+          "executionMode": "production"
+        }
+      }
+    ],
+    "CF Purchases": [
+      {
+        "json": {
+          "headers": {
+            "host": "pedroadao.app.n8n.cloud",
+            "user-agent": "Ruby",
+            "content-length": "6055",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "3.211.252.105",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "US",
+            "cf-ray": "9a0fdf50067f5886-IAD",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "3.211.252.105, 104.23.211.32",
+            "x-forwarded-host": "pedroadao.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-85-bb845fb9-jxls5",
+            "x-is-trusted": "yes",
+            "x-real-ip": "3.211.252.105",
+            "x-webhook-clickfunnels-id": "a33c7348-909f-4871-a6ba-0fa2ee538c2d",
+            "x-webhook-clickfunnels-signature": "3853372318f1da2fc2ca6d1c9b7763e08c4753361bc99c4687eb4a289d536001",
+            "x-webhook-clickfunnels-timestamp": "1763557035"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "data": {
+              "id": 4081345,
+              "notes": null,
+              "contact": {
+                "id": 174489116,
+                "tags": [
+                  {
+                    "id": 130230,
+                    "name": "2024wisdomchallenge",
+                    "color": "#EEEEEE",
+                    "public_id": "eLEKAK",
+                    "applied_at": "2023-12-13T15:23:32.584Z"
+                  },
+                  {
+                    "id": 304370,
+                    "name": "2025 4:14 Challenge",
+                    "color": "#EEEEEE",
+                    "public_id": "jMBZVA",
+                    "applied_at": "2025-04-02T18:28:20.647Z"
+                  },
+                  {
+                    "id": 304371,
+                    "name": "2025 4:14 Challenge - Optin",
+                    "color": "#EEEEEE",
+                    "public_id": "ekPobA",
+                    "applied_at": "2025-04-02T18:28:20.718Z"
+                  }
+                ],
+                "uuid": "a9f1eb0e67ceb6283d907cf0540084c0",
+                "fb_url": null,
+                "anonymous": 0,
+                "last_name": "Felix",
+                "public_id": "EqrxoNr",
+                "time_zone": "Brasilia",
+                "created_at": "2023-12-13T15:13:32.913Z",
+                "first_name": "Alicia",
+                "updated_at": "2025-11-19T12:56:50.487Z",
+                "twitter_url": null,
+                "website_url": null,
+                "linkedin_url": null,
+                "phone_number": "+5511994882237",
+                "workspace_id": 672,
+                "email_address": "info@aliciafelix.com",
+                "instagram_url": null,
+                "unsubscribed_at": null,
+                "custom_attributes": {
+                  "ad_id": "123456",
+                  "eftid": "",
+                  "product": "t",
+                  "utm_term": "term-leadtest",
+                  "ip_address": "2804:7f0:9542:bf07:549d:c729:ad75:65e0",
+                  "utm_medium": "medium-leadtest",
+                  "utm_source": "source-leadtest",
+                  "comet_ad_id": "724301154916",
+                  "utm_content": "content-leadtest",
+                  "comet_source": "google",
+                  "utm_campaign": "campaign-leadtest",
+                  "comet_keyword": "",
+                  "comet_network": "",
+                  "notifications": "true",
+                  "comet_ad_group": "168947720622",
+                  "comet_campaign": "21944979305"
+                },
+                "last_notification_email_sent_at": null
+              },
+              "page_id": 21217720,
+              "tag_ids": [],
+              "currency": "USD",
+              "in_trial": false,
+              "segments": [
+                {
+                  "id": 566,
+                  "name": "Wisdom Challenge",
+                  "public_id": "BvABAN"
+                },
+                {
+                  "id": 2611,
+                  "name": "Challenge Secrets Intensive Buyer",
+                  "public_id": "jzWOwJ"
+                },
+                {
+                  "id": 10512,
+                  "name": "100X Kingdom Success",
+                  "public_id": "JRbdBJ"
+                },
+                {
+                  "id": 11512,
+                  "name": "2025 31DWC - Free Optin",
+                  "public_id": "JRbXaJ"
+                },
+                {
+                  "id": 11513,
+                  "name": "2025 31DWC - Wisdom+",
+                  "public_id": "NonKwv"
+                },
+                {
+                  "id": 11514,
+                  "name": "Engaged Users",
+                  "public_id": "jgLErJ"
+                },
+                {
+                  "id": 11515,
+                  "name": "Recent Activity Users",
+                  "public_id": "jnnpRj"
+                },
+                {
+                  "id": 11516,
+                  "name": "Disengaged Users",
+                  "public_id": "jEngWJ"
+                },
+                {
+                  "id": 11517,
+                  "name": "Inactive Users",
+                  "public_id": "NOPlZj"
+                },
+                {
+                  "id": 11518,
+                  "name": "2025 31DWC ENGAGED - Free Optin",
+                  "public_id": "jGLEwJ"
+                },
+                {
+                  "id": 11519,
+                  "name": "2025 31DWC NOT ENGAGED - Free Optin",
+                  "public_id": "JwyYEN"
+                },
+                {
+                  "id": 11520,
+                  "name": "2025 31DWC ENGAGED - Wisdom+",
+                  "public_id": "JVoZbv"
+                },
+                {
+                  "id": 11521,
+                  "name": "2025 31DWC NOT ENGAGED - Wisdom+",
+                  "public_id": "vbDzEj"
+                }
+              ],
+              "affiliate": null,
+              "live_mode": false,
+              "page_name": "VIP Upgrade (A)",
+              "public_id": "zZmYPP",
+              "workspace": {
+                "id": 672,
+                "name": "828 Media LLC",
+                "team_id": 656,
+                "public_id": "WjrOKv",
+                "subdomain": "828media",
+                "created_at": "2021-09-23T20:40:00.193Z",
+                "updated_at": "2025-11-19T11:41:05.481Z"
+              },
+              "churned_at": null,
+              "contact_id": 174489116,
+              "created_at": "2025-11-19T12:56:50.791Z",
+              "line_items": [
+                {
+                  "id": 5267182,
+                  "order_id": 4081345,
+                  "prorated": null,
+                  "quantity": 1,
+                  "public_id": "gXEgZw",
+                  "created_at": "2025-11-19T12:56:50.861Z",
+                  "updated_at": "2025-11-19T12:56:50.861Z",
+                  "products_price": {
+                    "id": 4488150,
+                    "key": null,
+                    "amount": "1.00",
+                    "currency": "usd",
+                    "duration": null,
+                    "interval": null,
+                    "public_id": "EqKGoB",
+                    "interval_count": null
+                  },
+                  "original_product": {
+                    "id": 885288,
+                    "name": "31DWC - 2601 - Backstage Pass",
+                    "public_id": "YVBXxR"
+                  },
+                  "products_variant": {
+                    "id": 4941934,
+                    "sku": null,
+                    "name": "31DWC - 2601 - Backstage Pass",
+                    "public_id": "eqkDWV",
+                    "description": ""
+                  }
+                },
+                {
+                  "id": 5267183,
+                  "order_id": 4081345,
+                  "prorated": null,
+                  "quantity": 1,
+                  "public_id": "nWpVZB",
+                  "created_at": "2025-11-19T12:56:50.863Z",
+                  "updated_at": "2025-11-19T12:56:50.863Z",
+                  "products_price": {
+                    "id": 4653749,
+                    "key": null,
+                    "amount": "1.00",
+                    "currency": "usd",
+                    "duration": null,
+                    "interval": null,
+                    "public_id": "nWaZKy",
+                    "interval_count": null
+                  },
+                  "original_product": {
+                    "id": 923146,
+                    "name": "31DWC - 2601 - Wisdom Journal",
+                    "public_id": "JRDxVp"
+                  },
+                  "products_variant": {
+                    "id": 5125288,
+                    "sku": null,
+                    "name": "31DWC - 2601 - Wisdom Journal",
+                    "public_id": "VvbGnm",
+                    "description": ""
+                  }
+                }
+              ],
+              "order_page": {
+                "id": 21217720,
+                "name": "VIP Upgrade (A)",
+                "public_id": "VKrbLa"
+              },
+              "order_type": "one-time-order",
+              "paid_until": null,
+              "tax_amount": "0.00",
+              "updated_at": "2025-11-19T12:57:04.939Z",
+              "canceled_at": null,
+              "canceled_by": null,
+              "external_id": "in_1SVAwKBdWBuWheC4ncauTbQi",
+              "funnel_name": "https://www.31daywisdomchallenge.com",
+              "activated_at": null,
+              "discount_ids": [],
+              "order_number": "#6598",
+              "phone_number": "+5511994882237",
+              "total_amount": "2.00",
+              "trial_end_at": null,
+              "workspace_id": 672,
+              "cancel_reason": null,
+              "referral_code": null,
+              "billing_status": "paid",
+              "contact_groups": [
+                {
+                  "id": 3145,
+                  "name": "Default Group",
+                  "public_id": "NzWxRj"
+                },
+                {
+                  "id": 3145,
+                  "name": "Default Group",
+                  "public_id": "NzWxRj"
+                },
+                {
+                  "id": 3145,
+                  "name": "Default Group",
+                  "public_id": "NzWxRj"
+                },
+                {
+                  "id": 3145,
+                  "name": "Default Group",
+                  "public_id": "NzWxRj"
+                },
+                {
+                  "id": 3145,
+                  "name": "Default Group",
+                  "public_id": "NzWxRj"
+                },
+                {
+                  "id": 3145,
+                  "name": "Default Group",
+                  "public_id": "NzWxRj"
+                },
+                {
+                  "id": 3145,
+                  "name": "Default Group",
+                  "public_id": "NzWxRj"
+                },
+                {
+                  "id": 3145,
+                  "name": "Default Group",
+                  "public_id": "NzWxRj"
+                }
+              ],
+              "next_charge_at": null,
+              "service_status": "completed",
+              "payment_processor": "stripe",
+              "cancel_description": null,
+              "previous_line_item": null,
+              "billing_address_city": "Cotia",
+              "workspace_sharing_id": null,
+              "shipping_address_city": "Cotia",
+              "billing_address_region": "SP",
+              "origination_channel_id": 830918,
+              "billing_address_country": "BR",
+              "shipping_address_region": "SP",
+              "origination_channel_name": "https://www.31daywisdomchallenge.com",
+              "origination_channel_type": "Funnel",
+              "shipping_address_country": "BR",
+              "billing_payment_method_id": null,
+              "billing_address_street_one": "Rua Renoir, 206",
+              "billing_address_street_two": "Algarve",
+              "shipping_address_last_name": "Felix",
+              "billing_address_postal_code": "06715-050",
+              "shipping_address_first_name": "Alicia",
+              "shipping_address_street_one": "Rua Renoir, 206",
+              "shipping_address_street_two": "Algarve",
+              "shipping_address_postal_code": "06715-050",
+              "shipping_address_phone_number": "+5511994882237",
+              "shipping_address_organization_name": null
+            },
+            "page": {
+              "id": 21217720,
+              "name": "VIP Upgrade (A)",
+              "public_id": "VKrbLa"
+            },
+            "funnel": {
+              "id": 830918,
+              "name": "https://www.31daywisdomchallenge.com",
+              "public_id": "jGekww"
+            },
+            "event_id": "a33c7348-909f-4871-a6ba-0fa2ee538c2d",
+            "created_at": "2025-11-19T12:57:05.186Z",
+            "event_type": "one-time-order.completed",
+            "subject_id": 4081345,
+            "api_version": 2,
+            "subject_type": "Order",
+            "workspace_id": 672
+          },
+          "webhookUrl": "https://pedroadao.app.n8n.cloud/webhook/31dwc2026-onetimepurchase",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "CF Purchases": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CF Purchase -> Supabase": {
+      "main": [
+        [
+          {
+            "node": "Get CF Order Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spiffy Purchase -> Supabase": {
+      "main": [
+        [
+          {
+            "node": "Get Spiffy Order Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get CF Order Items": {
+      "main": [
+        [
+          {
+            "node": "Format CF Order Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Spiffy Order Items": {
+      "main": [
+        [
+          {
+            "node": "Format Spiffy Order Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spiffy Purchases": {
+      "main": [
+        [
+          {
+            "node": "Spiffy Purchase -> Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Spiffy Order Items": {
+      "main": [
+        [
+          {
+            "node": "Spiffy Order Items -> Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format CF Order Items": {
+      "main": [
+        [
+          {
+            "node": "CF Order Items -> Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "CF Purchase -> Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "126a8b7e-50ba-4912-a2fa-9e94c04db207",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "64e9fb192e3e9c1d35ec6673ccd48d000b90e236b154a4f905e07938fabb9ff1"
+  },
+  "id": "6rVRO7fCs1KVb29u",
+  "tags": []
+}

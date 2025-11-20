@@ -1,0 +1,292 @@
+{
+  "name": "Google Ads → Supabase (Campaign Level)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 3
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f370fdcb-b177-4462-827f-b098dffaee20",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e160071f-e3fe-4085-8f7b-948c60b98a3b",
+              "name": "Manager_Id",
+              "value": "4845003047",
+              "type": "string"
+            },
+            {
+              "id": "852754ad-92ec-4363-bb3d-b634e9079e86",
+              "name": "Client_Id",
+              "value": "3752241374",
+              "type": "string"
+            },
+            {
+              "id": "174f5253-5998-42a1-8c68-ae5f3020d4be",
+              "name": "developer_token",
+              "value": "Lc2ZhEirkbbaXS86NplxyA",
+              "type": "string"
+            },
+            {
+              "id": "7bad6c2b-5e5b-43e9-ad7b-68893a25e19b",
+              "name": "campaign_name_filter",
+              "value": "31DWC2026",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "c862786c-5963-426f-aa18-17a188b5d72a",
+      "name": "Data"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://sumibccxhppkpejrurjt.supabase.co/rest/v1/ad_performance?on_conflict=date,platform,ad_id",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "name": "Upsert to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1264,
+        -16
+      ],
+      "id": "3ad99b3b-e5ac-4e72-b024-6c86ffe18e27",
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "LFjxKWycSP3988Mk",
+          "name": "Supabase Custom Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4d4f8168-ed30-4e15-b84b-de984fa8bd28",
+              "leftValue": "={{ $json.isNotEmpty() }}",
+              "rightValue": "No campaigns found",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1008,
+        0
+      ],
+      "id": "4a2bea43-9978-4038-b29e-99b4aa45e4fe",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "managerCustomerId": "={{ $json.Manager_Id }}",
+        "clientCustomerId": "={{ $json.Client_Id }}",
+        "additionalOptions": {
+          "dateRange": "LAST_7_DAYS",
+          "campaignStatus": "ENABLED"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.googleAds",
+      "typeVersion": 1,
+      "position": [
+        496,
+        -112
+      ],
+      "id": "a22ede15-639d-4819-87f0-a5d66d1bee37",
+      "name": "Get Enabled Campaigns (Last 7 Days)",
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "fqkamtBwHl5VBuAJ",
+          "name": "Google Ads technology@pedroadao"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "managerCustomerId": "={{ $json.Manager_Id }}",
+        "clientCustomerId": "={{ $json.Client_Id }}",
+        "additionalOptions": {
+          "dateRange": "TODAY",
+          "campaignStatus": "ENABLED"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.googleAds",
+      "typeVersion": 1,
+      "position": [
+        496,
+        96
+      ],
+      "id": "d572119b-8f18-4585-9bf0-a1e7674bea79",
+      "name": "Get Enabled Campaigns (Today)",
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "fqkamtBwHl5VBuAJ",
+          "name": "Google Ads technology@pedroadao"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform Google Ads campaign data to Supabase format\nconst items = $input.all();\nconst campaignFilter = $('Data').first().json.campaign_name_filter;\nconst transformed = [];\n\nfor (const item of items) {\n  try {\n    const campaign = item.json;\n    \n    // Filter by campaign name\n    if (!campaign.name || !campaign.name.includes(campaignFilter)) {\n      continue;\n    }\n    \n    // Extract date from period (format: DAILY)\n    // If period is DAILY, use today's date\n    const date = new Date().toISOString().split('T')[0];\n    \n    // Convert costMicros to spend\n    const costMicros = Number(campaign.costMicros || 0);\n    const spend = costMicros / 1000000;\n    \n    transformed.push({\n      json: {\n        platform: 'google',\n        date: date,\n        campaign_id: campaign.id,\n        campaign_name: campaign.name,\n        adset_id: null,\n        adset_name: null,\n        ad_id: null,\n        ad_name: null,\n        spend: spend,\n        clicks: Number(campaign.interactions || 0),\n        impressions: Number(campaign.impressions || 0),\n        link_clicks: Number(campaign.interactions || 0),\n        inline_link_clicks: Number(campaign.interactions || 0),\n        landing_page_view_per_link_click: null,\n        reported_leads: Number(campaign.conversions || 0),\n        reported_purchases: 0\n      }\n    });\n  } catch (error) {\n    console.error('Error transforming campaign:', error);\n    continue;\n  }\n}\n\nreturn transformed;"
+      },
+      "name": "Transform to Supabase Format",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        0
+      ],
+      "id": "526ece99-bb4f-4f68-a6bc-1d5a23a5f0e5",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Upsert to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data": {
+      "main": [
+        [
+          {
+            "node": "Get Enabled Campaigns (Last 7 Days)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Enabled Campaigns (Today)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform to Supabase Format": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Enabled Campaigns (Last 7 Days)": {
+      "main": [
+        [
+          {
+            "node": "Transform to Supabase Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Enabled Campaigns (Today)": {
+      "main": [
+        [
+          {
+            "node": "Transform to Supabase Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "SJwA2g8hKEeyV1yh"
+  },
+  "versionId": "d123c2e2-fc97-43d5-bf6d-3e12750a8a89",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "64e9fb192e3e9c1d35ec6673ccd48d000b90e236b154a4f905e07938fabb9ff1"
+  },
+  "id": "qsHLzi9C84cewGGd",
+  "tags": []
+}

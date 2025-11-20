@@ -1,0 +1,265 @@
+{
+  "name": "Meta Ads → Supabase (Campaign + Ad Set + Ad Level)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "name": "Schedule Every 30 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        208
+      ],
+      "id": "c9595b9e-ec0a-4284-b165-2e54920bc34a"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "adAccountId",
+              "value": "act_2697452086917",
+              "type": "string"
+            },
+            {
+              "id": "30058c12-382d-448a-b735-6ee0162b0f72",
+              "name": "campaign_name_fiilter",
+              "value": "31DWC2026",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "44b6f1a3-09a3-4969-8179-76cae1d3ce05",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/v18.0/{{ $json.adAccountId }}/insights",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "campaign_id,campaign_name,adset_id,adset_name,ad_id,ad_name,spend,clicks,impressions,inline_link_clicks,landing_page_view_per_link_click,actions,date_start"
+            },
+            {
+              "name": "time_range",
+              "value": "={\"since\":\"{{ $now.minus({days: 3}).toFormat('yyyy-MM-dd') }}\",\"until\":\"{{ $now.toFormat('yyyy-MM-dd') }}\"}"
+            },
+            {
+              "name": "level",
+              "value": "ad"
+            },
+            {
+              "name": "limit",
+              "value": "5000"
+            },
+            {
+              "name": "filtering",
+              "value": "=[{\"field\":\"campaign.name\",\"operator\":\"CONTAIN\",\"value\":\"{{ $json.campaign_name_fiilter }}\"}]\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Get Meta Ads Insights",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        928,
+        208
+      ],
+      "id": "87a06c45-a3d3-44ba-83d0-5cfb8ac5c864",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "xDS4C3YnS81VOWTR",
+          "name": "828 Ads Mngmt"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform Meta Ads API response to Supabase format\nconst items = $input.all();\nconst transformed = [];\n\nfor (const item of items) {\n  try {\n    const dataArray = item.json.data || [];\n    \n    for (const row of dataArray) {\n      // Extract actions\n      const actions = row.actions || [];\n      \n      // Find lead conversions\n      const leadAction = actions.find(a => a.action_type === 'lead');\n      const reported_leads = leadAction ? parseInt(leadAction.value) : 0;\n      \n      // Find purchase conversions\n      const purchaseAction = actions.find(a => a.action_type === 'purchase');\n      const reported_purchases = purchaseAction ? parseInt(purchaseAction.value) : 0;\n      \n      // Find inline_link_clicks from actions\n      const linkClickAction = actions.find(a => a.action_type === 'link_click');\n      const inline_link_clicks = linkClickAction ? parseInt(linkClickAction.value) : (row.inline_link_clicks ? parseInt(row.inline_link_clicks) : 0);\n      \n      transformed.push({\n        json: {\n          platform: 'meta',\n          date: row.date_start,\n          campaign_id: row.campaign_id,\n          campaign_name: row.campaign_name,\n          adset_id: row.adset_id,\n          adset_name: row.adset_name,\n          ad_id: row.ad_id,\n          ad_name: row.ad_name,\n          spend: parseFloat(row.spend || 0),\n          clicks: parseInt(row.clicks || 0),\n          impressions: parseInt(row.impressions || 0),\n          link_clicks: inline_link_clicks,\n          inline_link_clicks: inline_link_clicks,\n          landing_page_view_per_link_click: row.landing_page_view_per_link_click ? parseFloat(row.landing_page_view_per_link_click) / 100 : null,\n          reported_leads: reported_leads,\n          reported_purchases: reported_purchases\n        }\n      });\n    }\n  } catch (error) {\n    console.error('Error transforming row:', error);\n    continue;\n  }\n}\n\nreturn transformed;\n"
+      },
+      "name": "Transform to Supabase Format",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        208
+      ],
+      "id": "98f93bcc-379b-4402-a3fa-7220dcc4f850",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://sumibccxhppkpejrurjt.supabase.co/rest/v1/ad_performance?on_conflict=date,platform,ad_id",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "name": "Upsert to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1584,
+        192
+      ],
+      "id": "a0c8b242-c5c6-43c4-819d-3ae3bd18a468",
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "LFjxKWycSP3988Mk",
+          "name": "Supabase Custom Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4d4f8168-ed30-4e15-b84b-de984fa8bd28",
+              "leftValue": "={{ $json.isNotEmpty() }}",
+              "rightValue": "No campaigns found",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1328,
+        208
+      ],
+      "id": "097587b0-f696-422d-83ab-87d6a0c941df",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Every 30 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Get Meta Ads Insights",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Meta Ads Insights": {
+      "main": [
+        [
+          {
+            "node": "Transform to Supabase Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform to Supabase Format": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Upsert to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "SJwA2g8hKEeyV1yh"
+  },
+  "versionId": "f3404d46-51c0-44a0-a905-4e8ce144d7a7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "64e9fb192e3e9c1d35ec6673ccd48d000b90e236b154a4f905e07938fabb9ff1"
+  },
+  "id": "r5ZCTrsSQHxUlEzB",
+  "tags": []
+}

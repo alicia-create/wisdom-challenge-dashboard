@@ -1,0 +1,158 @@
+{
+  "name": "Error Log",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "18e6a4c5-ecaf-4f3d-a32c-f14236c77b97",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "workflow_name",
+              "value": "={{ $workflow.name }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "error_node",
+              "value": "={{ $json.execution }}",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "error_message",
+              "value": "={{ $json.execution.error.message }}",
+              "type": "string"
+            },
+            {
+              "id": "id-4",
+              "name": "error_timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "id-5",
+              "name": "execution_id",
+              "value": "={{ $execution.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8b3d4b7c-905e-421a-91ad-0d934e33eece",
+      "name": "Format Error Details",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "Workflow_Error",
+        "dataToSend": "autoMapInputData"
+      },
+      "id": "29d3197a-4d4d-4a15-8638-88fd55565952",
+      "name": "Insert Error Log",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "dTtopZWHdbiBdgll",
+          "name": "828 Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09P3R12NE7",
+          "mode": "list",
+          "cachedResultName": "automation-errors"
+        },
+        "text": "=ERROR {{ $('Error Trigger').item.json.workflow.name }} `{{ $('Error Trigger').item.json.execution.error.message }}`",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        656,
+        0
+      ],
+      "id": "26ae77de-3567-4c60-9180-d7197d475387",
+      "name": "Send a message",
+      "webhookId": "f52430d0-3eee-4914-88b8-897f8e08d63a",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "l48tr836CN8DrWn9",
+          "name": "Slack technology@pedroadao"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Format Error Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Error Details": {
+      "main": [
+        [
+          {
+            "node": "Insert Error Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Error Log": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dc823bc2-8210-4b99-826f-55e95eeb5b85",
+  "meta": {
+    "instanceId": "64e9fb192e3e9c1d35ec6673ccd48d000b90e236b154a4f905e07938fabb9ff1"
+  },
+  "id": "SJwA2g8hKEeyV1yh",
+  "tags": []
+}

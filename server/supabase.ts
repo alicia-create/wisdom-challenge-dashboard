@@ -1,11 +1,21 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase connection details
-const SUPABASE_URL = 'https://sumibccxhppkpejrurjt.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1bWliY2N4aHBwa3Blam5ydWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIwNDI5NjgsImV4cCI6MjA0NzYxODk2OH0.KxJQhkxIYVQzNBKQOy5cDKvqBBdTGYZPKCBKVSZqQFg';
+// Using the new publishable/secret key format (2025+)
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://sumibccxhppkpejrurjt.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_KEY || '';
 
-// Create Supabase client
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+if (!SUPABASE_KEY) {
+  console.warn('[Supabase] Missing SUPABASE_KEY environment variable');
+}
+
+// Create Supabase client with new key format
+export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: {
+    persistSession: false, // Server-side doesn't need session persistence
+    autoRefreshToken: false,
+  },
+});
 
 /**
  * Helper to fetch daily KPIs with date range filter

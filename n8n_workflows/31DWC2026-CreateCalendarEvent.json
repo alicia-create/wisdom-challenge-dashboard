@@ -1,0 +1,560 @@
+{
+  "name": "31DWC2026 - Create Calendar Event",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        352,
+        320
+      ],
+      "id": "1cccf0c7-72c7-4e3d-b6be-d150ca16254f",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "Lead",
+        "limit": 75,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "calendar_status",
+              "condition": "eq",
+              "keyValue": "pending"
+            },
+            {
+              "keyName": "email",
+              "condition": "neq",
+              "keyValue": "null"
+            },
+            {
+              "keyName": "calendar_status",
+              "condition": "like",
+              "keyValue": "={{ $json.funnel }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        800,
+        320
+      ],
+      "id": "bce7814c-0f17-4298-b232-fb192d38537a",
+      "name": "Get Leads on Pipeline",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "supabaseApi": {
+          "id": "dTtopZWHdbiBdgll",
+          "name": "828 Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4fb869e3-4ca2-402a-8a60-79d8e5532ab0",
+              "name": "email",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1248,
+        320
+      ],
+      "id": "d7fdfd88-3f26-446d-9bf5-4714fd5af760",
+      "name": "Map Results"
+    },
+    {
+      "parameters": {
+        "content": "## Create Calendar event from the Pipeline \nInviting 75 emails at once",
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        240
+      ],
+      "typeVersion": 1,
+      "id": "d1f141a0-0a58-4cf7-8217-f22dd827edc6",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c76959e8-cb54-4c17-8acc-14d80a020b4b",
+              "name": "summary",
+              "value": "31-Day Wisdom Challenge",
+              "type": "string"
+            },
+            {
+              "id": "b91cca6a-dae2-4cd6-bc10-2a6780719d9d",
+              "name": "description",
+              "value": "Watch Live: https://www.youtube.com/@Pedromadao/live",
+              "type": "string"
+            },
+            {
+              "id": "4c99bf76-1f39-43b6-9163-f85a2b149100",
+              "name": "funnel",
+              "value": "*31day*",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        576,
+        320
+      ],
+      "id": "da9bb60f-bc84-4287-ad93-c61060c34edc",
+      "name": "Data"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Este nó pega o retorno do evento e cria uma lista de updates para o Supabase\n\nconst eventId = $json.id; // o ID retornado do Google Calendar\nconst attendees = $json.attendees; // array de e-mails do evento\n\nreturn attendees.map(a => ({\n  json: {\n    email: a.email,\n    event_id: eventId\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        224
+      ],
+      "id": "af59bb6f-abaa-41d5-8498-6e0227719d58",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "Lead_Calendar",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email",
+              "condition": "eq",
+              "keyValue": "={{ $json.email }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "sent"
+            },
+            {
+              "fieldId": "eventSentAt",
+              "fieldValue": "={{ new Date().toISOString().split('T')[0] }}"
+            },
+            {
+              "fieldId": "event_id",
+              "fieldValue": "={{ $json.event_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2144,
+        224
+      ],
+      "id": "d8720929-207b-43e5-ba20-ffc78db0823c",
+      "name": "Update with eventId and Sent status",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "supabaseApi": {
+          "id": "dTtopZWHdbiBdgll",
+          "name": "828 Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7bb0e070-c5a4-4552-b22e-2ce7569acd63",
+              "leftValue": "={{ $json.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1024,
+        320
+      ],
+      "id": "4e2e5682-e1f2-461d-a0b0-45cd6f3c428a",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "content": "## ATTENTION\n**Change the Schedule Trigger to 5min when the campaign starts** ",
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        432
+      ],
+      "typeVersion": 1,
+      "id": "59c93bf2-a76d-4173-a6d6-945802362fa0",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://www.googleapis.com/calendar/v3/calendars/primary/events",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "sendUpdates",
+              "value": "all"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({\n  summary: $('Data').item.json.summary,\n  description: $('Data').item.json.description,\n  start: {\n    dateTime: \"2026-01-01T08:00:00-08:00\",\n    timeZone: \"America/Los_Angeles\"\n  },\n  end: {\n    dateTime: \"2026-01-01T09:00:00-08:00\",\n    timeZone: \"America/Los_Angeles\"\n  },\n  recurrence: [\"RRULE:FREQ=DAILY;UNTIL=20260131T235959Z\"],\n  attendees: $items().map(i => i.json),\n  guestsCanSeeOtherGuests: false,\n  sendUpdates: \"all\",\n  reminders: {\n    useDefault: false,\n    overrides: [\n      { method: \"email\", minutes: 30 },\n      { method: \"popup\", minutes: 10 }\n    ]\n  }\n}) }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1472,
+        320
+      ],
+      "id": "94876979-1253-417a-b24b-1735ec9cee70",
+      "name": "Create Event",
+      "notesInFlow": false,
+      "retryOnFail": true,
+      "alwaysOutputData": false,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleOAuth2Api": {
+          "id": "rRdna8p4TAojeKR4",
+          "name": "Add To Calendar Google Cloud APP"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $('Create Event').item.json.id }}",
+              "operator": {
+                "type": "string",
+                "operation": "exists"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c5710421-9088-447d-a748-1ff2728d69a3",
+      "name": "Check Event Creation Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1696,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "error_message",
+              "value": "={{ $json.error?.message || 'Event creation failed' }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "failed_at",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "emails",
+              "value": "={{ JSON.stringify($('Map Results').all().map(item => item.json.email)) }}",
+              "type": "array"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "2ec4a92f-0873-4852-bd48-cfc4756b1b55",
+      "name": "Prepare Error Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1920,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "Lead",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email",
+              "condition": "eq",
+              "keyValue": "={{ $json.email }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "calendar_status",
+              "fieldValue": "failed"
+            },
+            {
+              "fieldId": "failed_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            },
+            {
+              "fieldId": "error_message",
+              "fieldValue": "={{ $json.error_message }}"
+            }
+          ]
+        }
+      },
+      "id": "faf23cad-8dc7-4b47-b93d-494b4e1f1580",
+      "name": "Mark Leads as Failed",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2144,
+        416
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "dTtopZWHdbiBdgll",
+          "name": "828 Supabase"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Leads on Pipeline": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map Results": {
+      "main": [
+        [
+          {
+            "node": "Create Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data": {
+      "main": [
+        [
+          {
+            "node": "Get Leads on Pipeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Update with eventId and Sent status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Map Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Event": {
+      "main": [
+        [
+          {
+            "node": "Check Event Creation Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Event Creation Success": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Error Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Error Data": {
+      "main": [
+        [
+          {
+            "node": "Mark Leads as Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Los_Angeles",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "SJwA2g8hKEeyV1yh"
+  },
+  "versionId": "6b2da0b6-7ba7-4fe4-8092-a58497d0cbf4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "64e9fb192e3e9c1d35ec6673ccd48d000b90e236b154a4f905e07938fabb9ff1"
+  },
+  "id": "GF9pDq8VXxa5Cot5",
+  "tags": [
+    {
+      "updatedAt": "2025-11-14T13:14:37.982Z",
+      "createdAt": "2025-11-14T13:14:37.982Z",
+      "id": "8l7z9WHp4fqWD1Yn",
+      "name": "Schedule Trigger"
+    },
+    {
+      "updatedAt": "2025-11-14T13:14:20.188Z",
+      "createdAt": "2025-11-14T13:14:20.188Z",
+      "id": "EXJROg1Hopsps6SJ",
+      "name": "Supabase"
+    },
+    {
+      "updatedAt": "2025-11-14T13:14:49.956Z",
+      "createdAt": "2025-11-14T13:14:49.956Z",
+      "id": "P0cXZozO1ofxBEoa",
+      "name": "Lead"
+    },
+    {
+      "updatedAt": "2025-11-14T13:14:29.826Z",
+      "createdAt": "2025-11-14T13:14:29.826Z",
+      "id": "iD10rAPTCo3VnU9O",
+      "name": "Google Calendar API"
+    }
+  ]
+}

@@ -1,0 +1,306 @@
+{
+  "name": "Google Ads -> Supabase Full (with GAQL)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 3
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f370fdcb-b177-4462-827f-b098dffaee20",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e160071f-e3fe-4085-8f7b-948c60b98a3b",
+              "name": "Manager_Id",
+              "value": "4845003047",
+              "type": "string"
+            },
+            {
+              "id": "852754ad-92ec-4363-bb3d-b634e9079e86",
+              "name": "Client_Id",
+              "value": "3752241374",
+              "type": "string"
+            },
+            {
+              "id": "174f5253-5998-42a1-8c68-ae5f3020d4be",
+              "name": "developer_token",
+              "value": "Lc2ZhEirkbbaXS86NplxyA",
+              "type": "string"
+            },
+            {
+              "id": "7bad6c2b-5e5b-43e9-ad7b-68893a25e19b",
+              "name": "campaign_name_filter",
+              "value": "31DWC2026",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "c862786c-5963-426f-aa18-17a188b5d72a",
+      "name": "Data"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://googleads.googleapis.com/v11/customers/' + $json[\"Client_Id\"] + '/googleAds:search' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json[\"developer_token\"] }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json[\"Manager_Id\"] }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"query\": \"SELECT segments.date, campaign.id, campaign.name, ad_group.id, ad_group.name, ad_group_ad.ad.id, ad_group_ad.ad.name, metrics.cost_micros, metrics.clicks, metrics.impressions FROM ad_group_ad WHERE segments.date DURING LAST_90_DAYS AND campaign.name LIKE '%\" + $json[\\\"campaign_name_filter\\\"] + \"%'\" } }}",
+        "options": {
+          "splitIntoItems": true,
+          "propertyName": "results"
+        }
+      },
+      "name": "Get Ad Performance (Last 90 Days)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        -160
+      ],
+      "id": "get-perf-node",
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "",
+          "name": "Google Ads technology@pedroadao"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://googleads.googleapis.com/v11/customers/' + $json[\"Client_Id\"] + '/googleAds:search' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json[\"developer_token\"] }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json[\"Manager_Id\"] }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"query\": \"SELECT segments.date, ad_group_ad.ad.id, segments.conversion_action_category, metrics.conversions FROM ad_group_ad WHERE segments.date DURING LAST_90_DAYS AND campaign.name LIKE '%\" + $json[\\\"campaign_name_filter\\\"] + \"%' AND segments.conversion_action_category IN ('LEAD','PURCHASE')\" } }}",
+        "options": {
+          "splitIntoItems": true,
+          "propertyName": "results"
+        }
+      },
+      "name": "Get Conversions (Lead & Purchase)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        200
+      ],
+      "id": "get-conv-node",
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "",
+          "name": "Google Ads technology@pedroadao"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const grouped = {};\nfor (const item of items) {\n  const r = item.json;\n  const adId = r.adGroupAd.ad.id;\n  const date = r.segments.date;\n  const category = r.segments.conversionActionCategory;\n  const conversions = Number(r.metrics.conversions || 0);\n  const key = `${adId}-${date}`;\n  if (!grouped[key]) {\n    grouped[key] = {\n      ad_id: adId,\n      date,\n      reported_leads: 0,\n      reported_purchases: 0\n    };\n  }\n  if (category === 'LEAD') grouped[key].reported_leads += conversions;\n  if (category === 'PURCHASE') grouped[key].reported_purchases += conversions;\n}\nreturn Object.values(grouped).map(r => ({ json: r }));"
+      },
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        700,
+        200
+      ],
+      "id": "aggregate-node",
+      "name": "Aggregate Conversions"
+    },
+    {
+      "parameters": {
+        "functionCode": "const perfItems = $items(0);\nconst convItems = $items(1);\n\nconst convIndex = {};\nfor (const item of convItems) {\n  const r = item.json;\n  const key = `${r.ad_id}-${r.date}`;\n  convIndex[key] = r;\n}\n\nconst out = [];\nfor (const item of perfItems) {\n  const r = item.json;\n  const adId = r.adGroupAd.ad.id;\n  const date = r.segments.date;\n  const key = `${adId}-${date}`;\n  const conv = convIndex[key] || { reported_leads: 0, reported_purchases: 0 };\n\n  const costMicros = Number(r.metrics.costMicros || 0);\n  const spend = costMicros / 1000000;\n\n  out.push({\n    date,\n    platform: 'google',\n    spend,\n    clicks: Number(r.metrics.clicks || 0),\n    impressions: Number(r.metrics.impressions || 0),\n    link_clicks: Number(r.metrics.clicks || 0),\n    reported_leads: conv.reported_leads,\n    reported_purchases: conv.reported_purchases,\n    adset_id: r.adGroup.id,\n    adset_name: r.adGroup.name,\n    ad_id: adId,\n    ad_name: r.adGroupAd.ad.name,\n    inline_link_clicks: Number(r.metrics.clicks || 0),\n    landing_page_view_rate: null,\n    campaign_name: r.campaign.name,\n    campaign_id: r.campaign.id\n  });\n}\n\nreturn [{ json: out }];"
+      },
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ],
+      "id": "merge-node",
+      "name": "Merge Performance + Conversions"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://sumibccxhppkpejrurjt.supabase.co/rest/v1/ad_performance?on_conflict=date,platform,ad_id",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($items('Merge Performance + Conversions')[0].json) }}",
+        "options": {}
+      },
+      "name": "Upsert to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        992,
+        -16
+      ],
+      "id": "3ad99b3b-e5ac-4e72-b024-6c86ffe18e27",
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "LFjxKWycSP3988Mk",
+          "name": "Supabase Custom Auth"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data": {
+      "main": [
+        [
+          {
+            "node": "Get Ad Performance (Last 90 Days)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Conversions (Lead & Purchase)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Conversions (Lead & Purchase)": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Conversions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Ad Performance (Last 90 Days)": {
+      "main": [
+        [
+          {
+            "node": "Merge Performance + Conversions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Conversions": {
+      "main": [
+        [
+          {
+            "node": "Merge Performance + Conversions",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Performance + Conversions": {
+      "main": [
+        [
+          {
+            "node": "Upsert to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f23881cd-f023-43f9-8b45-0812fad00006",
+  "meta": {
+    "instanceId": "64e9fb192e3e9c1d35ec6673ccd48d000b90e236b154a4f905e07938fabb9ff1"
+  },
+  "id": "qsHLzi9C84cewGGd",
+  "tags": []
+}
