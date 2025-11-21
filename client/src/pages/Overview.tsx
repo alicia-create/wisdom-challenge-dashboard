@@ -55,7 +55,7 @@ export default function Overview() {
     spend: parseFloat(kpi.total_spend_meta || '0') + parseFloat(kpi.total_spend_google || '0'),
     leads: kpi.total_leads || 0,
     roas: parseFloat(kpi.roas || '0'),
-  })).reverse() || [];
+  })) || [];
 
   return (
     <div className="min-h-screen bg-background">

@@ -128,3 +128,5 @@
 - [x] Add CSV export to Purchases page
 - [x] Add CSV export to Google Campaigns page
 - [x] Add CSV export to Meta Campaigns page
+
+- [x] Fix chart date ordering to be ascending (oldest to newest)
