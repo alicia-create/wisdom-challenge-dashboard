@@ -75,6 +75,12 @@ export function DashboardHeader() {
                 <DropdownMenuItem onClick={() => setLocation("/debug/purchases")}>
                   View Purchases
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLocation("/debug/google-campaigns")}>
+                  View Google Campaigns
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLocation("/debug/meta-campaigns")}>
+                  View Meta Campaigns
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

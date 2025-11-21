@@ -121,3 +121,10 @@
 - [x] Fix Purchases page columns (name, email, order_items)
 - [x] Add UTM search to Leads page
 - [x] Rename Debug menu to "Raw Data"
+
+- [x] Create Google Campaigns page with pagination and filters
+- [x] Create Meta Campaigns page with pagination and filters
+- [x] Add CSV export to Leads page
+- [x] Add CSV export to Purchases page
+- [x] Add CSV export to Google Campaigns page
+- [x] Add CSV export to Meta Campaigns page

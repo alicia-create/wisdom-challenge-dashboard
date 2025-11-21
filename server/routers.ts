@@ -22,6 +22,8 @@ import {
   getChannelPerformance,
   getLeadsPaginated,
   getPurchasesPaginated,
+  getGoogleCampaignsPaginated,
+  getMetaCampaignsPaginated,
 } from "./supabase";
 
 export const appRouter = router({
@@ -250,6 +252,32 @@ export const appRouter = router({
       }).optional())
       .query(async ({ input }) => {
         return await getPurchasesPaginated(input || {});
+      }),
+
+    // Get paginated Google campaigns with filters
+    googleCampaigns: publicProcedure
+      .input(z.object({
+        page: z.number().optional(),
+        pageSize: z.number().optional(),
+        search: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        return await getGoogleCampaignsPaginated(input || {});
+      }),
+
+    // Get paginated Meta campaigns with filters
+    metaCampaigns: publicProcedure
+      .input(z.object({
+        page: z.number().optional(),
+        pageSize: z.number().optional(),
+        search: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        return await getMetaCampaignsPaginated(input || {});
       }),
   }),
 });

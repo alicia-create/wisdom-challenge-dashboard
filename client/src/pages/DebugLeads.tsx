@@ -11,7 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, X, Search } from "lucide-react";
+import { toast } from "sonner";
 import { DashboardHeader } from "@/components/DashboardHeader";
 
 export default function DebugLeads() {
@@ -133,10 +134,54 @@ export default function DebugLeads() {
               </div>
             </div>
 
-            {/* Results Summary */}
+            {/* Results Summary and Export */}
             {data && (
-              <div className="text-sm text-muted-foreground mb-4">
-                Showing {((data.page - 1) * data.pageSize) + 1} - {Math.min(data.page * data.pageSize, data.total)} of {data.total} leads
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-sm text-muted-foreground">
+                  Showing {((data.page - 1) * data.pageSize) + 1} - {Math.min(data.page * data.pageSize, data.total)} of {data.total} leads
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (!data?.data || data.data.length === 0) {
+                      toast.error("No data to export");
+                      return;
+                    }
+                    
+                    // Generate CSV
+                    const headers = ['ID', 'Email', 'Name', 'UTM Source', 'UTM Medium', 'UTM Campaign', 'Email Clicked', 'Created At'];
+                    const rows = data.data.map((lead: any) => [
+                      lead.id,
+                      lead.email || '',
+                      lead.name || '',
+                      lead.utm_source || '',
+                      lead.utm_medium || '',
+                      lead.utm_campaign || '',
+                      lead.welcome_email_clicked ? 'Yes' : 'No',
+                      new Date(lead.created_at).toLocaleString(),
+                    ]);
+                    
+                    const csvContent = [
+                      headers.join(','),
+                      ...rows.map(row => row.map(cell => `\"${cell}\"`).join(','))
+                    ].join('\\n');
+                    
+                    // Download
+                    const blob = new Blob([csvContent], { type: 'text/csv' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `leads-${new Date().toISOString().split('T')[0]}.csv`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    
+                    toast.success("CSV exported successfully");
+                  }}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Export to CSV
+                </Button>
               </div>
             )}
 

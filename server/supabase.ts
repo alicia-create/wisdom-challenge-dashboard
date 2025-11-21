@@ -1011,3 +1011,111 @@ export async function getPurchasesPaginated(params: {
     totalPages: Math.ceil((count || 0) / pageSize),
   };
 }
+
+/**
+ * Get paginated Google Ads campaigns with search and filters
+ */
+export async function getGoogleCampaignsPaginated(params: {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+}) {
+  const page = params.page || 1;
+  const pageSize = params.pageSize || 50;
+  const offset = (page - 1) * pageSize;
+
+  // Build query
+  let query = supabase
+    .from('ad_performance')
+    .select('*', { count: 'exact' })
+    .eq('platform', 'google')
+    .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`)
+    .order('date', { ascending: false });
+
+  // Apply filters
+  if (params.search) {
+    query = query.or(`campaign_name.ilike.%${params.search}%,adset_name.ilike.%${params.search}%,ad_name.ilike.%${params.search}%`);
+  }
+
+  if (params.startDate) {
+    query = query.gte('date', params.startDate);
+  }
+
+  if (params.endDate) {
+    query = query.lte('date', params.endDate);
+  }
+
+  // Apply pagination
+  query = query.range(offset, offset + pageSize - 1);
+
+  const { data, error, count } = await query;
+
+  if (error) {
+    console.error('[Supabase] Error fetching Google campaigns:', error);
+    throw new Error(`Failed to fetch Google campaigns: ${error.message}`);
+  }
+
+  return {
+    data: data || [],
+    total: count || 0,
+    page,
+    pageSize,
+    totalPages: Math.ceil((count || 0) / pageSize),
+  };
+}
+
+/**
+ * Get paginated Meta Ads campaigns with search and filters
+ */
+export async function getMetaCampaignsPaginated(params: {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+}) {
+  const page = params.page || 1;
+  const pageSize = params.pageSize || 50;
+  const offset = (page - 1) * pageSize;
+
+  // Build query
+  let query = supabase
+    .from('ad_performance')
+    .select('*', { count: 'exact' })
+    .eq('platform', 'meta')
+    .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`)
+    .order('date', { ascending: false });
+
+  // Apply filters
+  if (params.search) {
+    query = query.or(`campaign_name.ilike.%${params.search}%,adset_name.ilike.%${params.search}%,ad_name.ilike.%${params.search}%`);
+  }
+
+  if (params.startDate) {
+    query = query.gte('date', params.startDate);
+  }
+
+  if (params.endDate) {
+    query = query.lte('date', params.endDate);
+  }
+
+  // Apply pagination
+  query = query.range(offset, offset + pageSize - 1);
+
+  const { data, error, count } = await query;
+
+  if (error) {
+    console.error('[Supabase] Error fetching Meta campaigns:', error);
+    throw new Error(`Failed to fetch Meta campaigns: ${error.message}`);
+  }
+
+  return {
+    data: data || [],
+    total: count || 0,
+    page,
+    pageSize,
+    totalPages: Math.ceil((count || 0) / pageSize),
+  };
+}
