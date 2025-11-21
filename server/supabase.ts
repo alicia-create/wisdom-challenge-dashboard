@@ -25,7 +25,7 @@ export async function getDailyKpis(startDate?: string, endDate?: string) {
   let query = supabase
     .from('daily_kpis')
     .select('*')
-    .order('date', { ascending: false });
+    .order('date', { ascending: true });
 
   if (startDate) {
     query = query.gte('date', startDate);
@@ -197,7 +197,7 @@ export async function getAdPerformanceByCampaign(startDate?: string, endDate?: s
     .from('ad_performance')
     .select('*')
     .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`)
-    .order('date', { ascending: false });
+    .order('date', { ascending: true });
 
   if (startDate) {
     query = query.gte('date', startDate);
@@ -231,7 +231,7 @@ export async function getAdPerformanceDetailed(filters?: {
     .from('ad_performance')
     .select('*')
     .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`)
-    .order('date', { ascending: false });
+    .order('date', { ascending: true });
 
   if (filters?.startDate) {
     query = query.gte('date', filters.startDate);
@@ -334,7 +334,7 @@ export async function getLandingPageMetrics(startDate?: string, endDate?: string
     .select('campaign_name, adset_name, ad_name, inline_link_clicks, landing_page_view_per_link_click, date')
     .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`)
     .not('landing_page_view_per_link_click', 'is', null)
-    .order('date', { ascending: false });
+    .order('date', { ascending: true });
 
   if (startDate) {
     query = query.gte('date', startDate);
@@ -360,7 +360,7 @@ export async function getDailyAttendance(startDate?: string, endDate?: string) {
   let query = supabase
     .from('daily_attendance')
     .select('*')
-    .order('date', { ascending: false });
+    .order('date', { ascending: true });
 
   if (startDate) {
     query = query.gte('date', startDate);
@@ -1032,7 +1032,7 @@ export async function getGoogleCampaignsPaginated(params: {
     .select('*', { count: 'exact' })
     .eq('platform', 'google')
     .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`)
-    .order('date', { ascending: false });
+    .order('date', { ascending: true });
 
   // Apply filters
   if (params.search) {
@@ -1086,7 +1086,7 @@ export async function getMetaCampaignsPaginated(params: {
     .select('*', { count: 'exact' })
     .eq('platform', 'meta')
     .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`)
-    .order('date', { ascending: false });
+    .order('date', { ascending: true });
 
   // Apply filters
   if (params.search) {
