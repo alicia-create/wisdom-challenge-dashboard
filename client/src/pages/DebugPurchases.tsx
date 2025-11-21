@@ -159,10 +159,10 @@ export default function DebugPurchases() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Order ID</TableHead>
-                      <TableHead>Contact</TableHead>
+                      <TableHead>Name</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Amount</TableHead>
-                      <TableHead>Product</TableHead>
+                      <TableHead>Order Number</TableHead>
                       <TableHead>Created At</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -183,15 +183,20 @@ export default function DebugPurchases() {
                       data?.data.map((purchase: any) => (
                         <TableRow key={purchase.id}>
                           <TableCell className="font-mono text-xs">
-                            {purchase.order_id || purchase.id}
+                            {purchase.id}
                           </TableCell>
-                          <TableCell>{purchase.contact_name || '-'}</TableCell>
-                          <TableCell>{purchase.contact_email || '-'}</TableCell>
+                          <TableCell>
+                            {purchase.full_name || 
+                             (purchase.first_name || purchase.last_name 
+                               ? `${purchase.first_name || ''} ${purchase.last_name || ''}`.trim()
+                               : '-')}
+                          </TableCell>
+                          <TableCell>{purchase.email || '-'}</TableCell>
                           <TableCell className="font-semibold">
                             {formatCurrency(purchase.order_total || 0)}
                           </TableCell>
-                          <TableCell className="max-w-[200px] truncate" title={purchase.product_name}>
-                            {purchase.product_name || '-'}
+                          <TableCell className="max-w-[200px] truncate" title={purchase.order_number}>
+                            {purchase.order_number || '-'}
                           </TableCell>
                           <TableCell className="text-sm">
                             {new Date(purchase.created_at).toLocaleString('en-US', {

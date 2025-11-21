@@ -174,11 +174,7 @@ export default function DebugLeads() {
                         <TableRow key={lead.id}>
                           <TableCell className="font-mono text-xs">{lead.id}</TableCell>
                           <TableCell>{lead.email || '-'}</TableCell>
-                          <TableCell>
-                            {lead.first_name || lead.last_name 
-                              ? `${lead.first_name || ''} ${lead.last_name || ''}`.trim()
-                              : '-'}
-                          </TableCell>
+                          <TableCell>{lead.name || '-'}</TableCell>
                           <TableCell>{lead.utm_source || '-'}</TableCell>
                           <TableCell>{lead.utm_medium || '-'}</TableCell>
                           <TableCell className="max-w-[200px] truncate" title={lead.utm_campaign}>

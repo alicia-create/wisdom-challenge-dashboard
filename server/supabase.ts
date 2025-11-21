@@ -904,7 +904,7 @@ export async function getLeadsPaginated(params: {
 
   // Apply filters
   if (params.search) {
-    query = query.or(`email.ilike.%${params.search}%,first_name.ilike.%${params.search}%,last_name.ilike.%${params.search}%`);
+    query = query.or(`email.ilike.%${params.search}%,name.ilike.%${params.search}%,utm_source.ilike.%${params.search}%,utm_campaign.ilike.%${params.search}%,utm_medium.ilike.%${params.search}%`);
   }
 
   if (params.utmSource) {
@@ -972,7 +972,7 @@ export async function getPurchasesPaginated(params: {
 
   // Apply filters
   if (params.search) {
-    query = query.or(`contact_email.ilike.%${params.search}%,contact_name.ilike.%${params.search}%,order_id.ilike.%${params.search}%`);
+    query = query.or(`email.ilike.%${params.search}%,full_name.ilike.%${params.search}%,first_name.ilike.%${params.search}%,last_name.ilike.%${params.search}%,order_number.ilike.%${params.search}%`);
   }
 
   if (params.startDate) {

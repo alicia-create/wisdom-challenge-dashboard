@@ -116,3 +116,8 @@
 
 - [x] Create Leads debug page with pagination and filters
 - [x] Create Purchases debug page with pagination and filters
+
+- [x] Fix Leads page to show full_name as fallback
+- [x] Fix Purchases page columns (name, email, order_items)
+- [x] Add UTM search to Leads page
+- [x] Rename Debug menu to "Raw Data"
