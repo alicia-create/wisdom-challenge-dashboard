@@ -272,3 +272,15 @@
 - [x] Add Tag Distribution charts (Wisdom Challenge tags)
 - [x] Add key email metrics to Overview page
 - [x] Test all UI components display correctly
+
+## List Defender & Click Rate Fixes (2025-12-07)
+- [x] Research Keap API email tracking capabilities (completed - no open/click endpoints)
+- [x] Implement tag-based click rate calculation for Wisdom subset
+- [x] Create function to get contacts with multiple tags (union, not intersection)
+- [x] Update getEmailEngagementMetrics to filter by Wisdom tags
+- [x] Update getLeadQualityMetrics to return both total and Wisdom subset
+- [x] Update EmailLeadQuality page UI to show both metrics
+- [x] Fix contact structure (API returns {contact: {id}, date_applied})
+- [x] Remove Trigger tag from Wisdom filter (only Historical + Status)
+- [x] Add sample disclaimer to UI (1000 contacts limit)
+- [x] Test all changes work correctly

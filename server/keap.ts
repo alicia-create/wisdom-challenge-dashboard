@@ -270,6 +270,17 @@ export async function getAllTags(): Promise<KeapTag[]> {
 /**
  * Get contacts with a specific tag
  */
+// API returns contact wrapped in an object with date_applied
+export interface KeapTaggedContact {
+  contact: {
+    id: number;
+    email?: string;
+    first_name?: string;
+    last_name?: string;
+  };
+  date_applied: string;
+}
+
 export interface KeapContact {
   id: number;
   given_name?: string;
@@ -282,7 +293,7 @@ export interface KeapContact {
 }
 
 export interface KeapContactsResponse {
-  contacts: KeapContact[];
+  contacts: KeapTaggedContact[]; // When fetching by tag, contacts are wrapped
   count: number;
   next?: string;
   previous?: string;
@@ -303,6 +314,89 @@ export async function getContactsByTag(
 export async function getTagContactCount(tagId: number): Promise<number> {
   const response = await getContactsByTag(tagId, 1, 0);
   return response.count;
+}
+
+/**
+ * Fetch ALL contacts for a tag with pagination
+ */
+async function getAllContactsForTag(tagId: number): Promise<Set<number>> {
+  const allContacts = new Set<number>();
+  let offset = 0;
+  const limit = 1000;
+  let hasMore = true;
+
+  console.log(`[Keap] Fetching all contacts for tag ${tagId}...`);
+
+  while (hasMore) {
+    try {
+      const response = await getContactsByTag(tagId, limit, offset);
+      console.log(`[Keap] Tag ${tagId} - offset ${offset}: got ${response.contacts.length} contacts`);
+      
+      // Debug: log first contact structure
+      if (response.contacts.length > 0 && offset === 0) {
+        console.log(`[Keap] First contact structure:`, JSON.stringify(response.contacts[0], null, 2));
+      }
+      
+      // Add contacts to set
+      // API returns: { contact: { id, email, ... }, date_applied }
+      for (const item of response.contacts) {
+        if (item && item.contact && item.contact.id) {
+          allContacts.add(item.contact.id);
+        } else {
+          console.warn(`[Keap] Tag ${tagId} - invalid contact:`, item);
+        }
+      }
+
+      // Check if there are more contacts
+      hasMore = response.contacts.length === limit;
+      offset += limit;
+
+      // Safety limit: don't fetch more than 10k contacts per tag
+      if (offset >= 10000) {
+        console.warn(`[Keap] Reached safety limit for tag ${tagId}, stopping at ${offset} contacts`);
+        break;
+      }
+    } catch (error) {
+      console.error(`[Keap] Failed to fetch contacts for tag ${tagId} at offset ${offset}:`, error);
+      break;
+    }
+  }
+
+  console.log(`[Keap] Tag ${tagId} - total unique contacts: ${allContacts.size}`);
+  return allContacts;
+}
+
+/**
+ * Get contacts that have ANY of the specified tags (union)
+ * This is used to filter by Wisdom tags
+ * Uses pagination to fetch ALL contacts, not just first 1000
+ */
+export async function getContactsWithAnyTags(tagIds: number[]): Promise<Set<number>> {
+  if (tagIds.length === 0) return new Set();
+
+  // Fetch ALL contacts for each tag with pagination
+  const contactSets = await Promise.all(
+    tagIds.map(tagId => getAllContactsForTag(tagId))
+  );
+
+  // Find union of all sets
+  const union = new Set<number>();
+  for (const set of contactSets) {
+    for (const id of Array.from(set)) {
+      union.add(id);
+    }
+  }
+
+  console.log(`[Keap] Wisdom contacts total: ${union.size}`);
+  return union;
+}
+
+/**
+ * Get count of contacts that have ANY of the specified tags
+ */
+export async function getCountWithAnyTags(tagIds: number[]): Promise<number> {
+  const contacts = await getContactsWithAnyTags(tagIds);
+  return contacts.size;
 }
 
 /**
@@ -331,7 +425,19 @@ export async function getTagCounts(tagIds: number[]): Promise<Map<number, number
 // ============================================================================
 
 /**
+ * Wisdom Challenge tag IDs for filtering
+ * Anyone with ANY of these tags is considered part of the Wisdom Challenge
+ * Note: Trigger tags are excluded as they only activate automations
+ */
+const WISDOM_TAGS = [
+  14705, // Historical - 31DWC - 2601 - Optin
+  14739, // Status - 31DWC - 2601 - NTN General Opt In
+  14741, // Status - 31DWC - 2601 - NTN VIP Opt In
+];
+
+/**
  * Calculate email engagement metrics based on tags
+ * Returns both total and Wisdom-filtered metrics
  */
 export async function getEmailEngagementMetrics() {
   // Tag IDs from keap-tags-mapping.md
@@ -367,7 +473,31 @@ export async function getEmailEngagementMetrics() {
   // (Note: this is an approximation - actual count would require checking contacts with ANY of these tags)
   const broadcastSubscribers = Math.max(reminderOptins, replayOptins, promoOptins);
 
+  // Get Wisdom-filtered metrics
+  // Fetch contacts with Wisdom tags (anyone with ANY Wisdom tag)
+  const wisdomContacts = await getContactsWithAnyTags(WISDOM_TAGS);
+  
+  // Get contacts for each email tag
+  const [reminderOptinContacts, replayOptinContacts, promoOptinContacts, clickedContacts] = await Promise.all([
+    getContactsByTag(REMINDER_OPTIN, 1000, 0),
+    getContactsByTag(REPLAY_OPTIN, 1000, 0),
+    getContactsByTag(PROMO_OPTIN, 1000, 0),
+    getContactsByTag(CLICKED_NTN, 1000, 0),
+  ]);
+
+  // Filter by Wisdom contacts
+  const wisdomReminderOptins = reminderOptinContacts.contacts.filter(c => wisdomContacts.has(c.contact.id)).length;
+  const wisdomReplayOptins = replayOptinContacts.contacts.filter(c => wisdomContacts.has(c.contact.id)).length;
+  const wisdomPromoOptins = promoOptinContacts.contacts.filter(c => wisdomContacts.has(c.contact.id)).length;
+  const wisdomEmailClickers = clickedContacts.contacts.filter(c => wisdomContacts.has(c.contact.id)).length;
+  
+  const wisdomBroadcastSubscribers = Math.max(wisdomReminderOptins, wisdomReplayOptins, wisdomPromoOptins);
+  const wisdomClickRate = wisdomBroadcastSubscribers > 0 
+    ? (wisdomEmailClickers / wisdomBroadcastSubscribers) * 100 
+    : 0;
+
   return {
+    // Total metrics (all contacts)
     broadcastSubscribers,
     reminderOptins,
     replayOptins,
@@ -376,8 +506,14 @@ export async function getEmailEngagementMetrics() {
     replayOptouts,
     promoOptouts,
     emailClickers,
-    // Click rate would need total emails sent (not available from tags alone)
-    // clickRate: (emailClickers / totalSent) * 100
+    
+    // Wisdom-filtered metrics
+    wisdomBroadcastSubscribers,
+    wisdomReminderOptins,
+    wisdomReplayOptins,
+    wisdomPromoOptins,
+    wisdomEmailClickers,
+    wisdomClickRate,
   };
 }
 
@@ -387,6 +523,7 @@ export async function getEmailEngagementMetrics() {
 
 /**
  * Get lead quality distribution from List Defender tags
+ * Returns both total and Wisdom-filtered metrics
  */
 export async function getLeadQualityMetrics() {
   // Traffic Light Status
@@ -431,7 +568,31 @@ export async function getLeadQualityMetrics() {
     (counts.get(INVALID_MX) || 0) +
     (counts.get(NOT_FOUND) || 0);
 
+  // Get Wisdom-filtered metrics
+  const wisdomContacts = await getContactsWithAnyTags(WISDOM_TAGS);
+  
+  // Fetch contacts for each List Defender tag
+  const [greenContacts, yellowContacts, redContacts, highEngContacts, lowEngContacts, neverEngContacts, slippingContacts, neverSentContacts, disposableContacts, suspiciousContacts] = await Promise.all([
+    getContactsByTag(GREEN, 1000, 0),
+    getContactsByTag(YELLOW, 1000, 0),
+    getContactsByTag(RED, 1000, 0),
+    getContactsByTag(HIGH_ENGAGEMENT, 1000, 0),
+    getContactsByTag(LOW_ENGAGEMENT, 1000, 0),
+    getContactsByTag(NEVER_ENGAGED, 1000, 0),
+    getContactsByTag(SLIPPING, 1000, 0),
+    getContactsByTag(NEVER_SENT, 1000, 0),
+    getContactsByTag(DISPOSABLE, 1000, 0),
+    getContactsByTag(SUSPICIOUS, 1000, 0),
+  ]);
+
+  // Filter by Wisdom contacts
+  const wisdomGreen = greenContacts.contacts.filter(c => wisdomContacts.has(c.contact.id)).length;
+  const wisdomYellow = yellowContacts.contacts.filter(c => wisdomContacts.has(c.contact.id)).length;
+  const wisdomRed = redContacts.contacts.filter(c => wisdomContacts.has(c.contact.id)).length;
+  const wisdomTotal = wisdomGreen + wisdomYellow + wisdomRed;
+
   return {
+    // Total metrics (all contacts)
     trafficLight: {
       green,
       yellow,
@@ -452,6 +613,28 @@ export async function getLeadQualityMetrics() {
       disposable: counts.get(DISPOSABLE) || 0,
       suspicious: counts.get(SUSPICIOUS) || 0,
       invalidEmails,
+    },
+    
+    // Wisdom-filtered metrics
+    wisdomTrafficLight: {
+      green: wisdomGreen,
+      yellow: wisdomYellow,
+      red: wisdomRed,
+      total: wisdomTotal,
+      greenPercent: wisdomTotal > 0 ? (wisdomGreen / wisdomTotal) * 100 : 0,
+      yellowPercent: wisdomTotal > 0 ? (wisdomYellow / wisdomTotal) * 100 : 0,
+      redPercent: wisdomTotal > 0 ? (wisdomRed / wisdomTotal) * 100 : 0,
+    },
+    wisdomEngagement: {
+      high: highEngContacts.contacts.filter(c => wisdomContacts.has(c.contact.id)).length,
+      low: lowEngContacts.contacts.filter(c => wisdomContacts.has(c.contact.id)).length,
+      neverEngaged: neverEngContacts.contacts.filter(c => wisdomContacts.has(c.contact.id)).length,
+      slipping: slippingContacts.contacts.filter(c => wisdomContacts.has(c.contact.id)).length,
+      neverSent: neverSentContacts.contacts.filter(c => wisdomContacts.has(c.contact.id)).length,
+    },
+    wisdomRiskFlags: {
+      disposable: disposableContacts.contacts.filter(c => wisdomContacts.has(c.contact.id)).length,
+      suspicious: suspiciousContacts.contacts.filter(c => wisdomContacts.has(c.contact.id)).length,
     },
   };
 }

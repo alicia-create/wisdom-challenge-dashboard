@@ -24,18 +24,19 @@ export default function EmailLeadQuality() {
     );
   }
 
-  const totalBroadcastSubscribers = emailMetrics
-    ? emailMetrics.reminderOptins + emailMetrics.replayOptins + emailMetrics.promoOptins
-    : 0;
+  const totalBroadcastSubscribers = emailMetrics?.broadcastSubscribers || 0;
+  const wisdomBroadcastSubscribers = emailMetrics?.wisdomBroadcastSubscribers || 0;
 
   const totalOptouts = emailMetrics
     ? emailMetrics.reminderOptouts + emailMetrics.replayOptouts + emailMetrics.promoOptouts
     : 0;
 
-  // Calculate click rate (clickers / total subscribers)
-  const clickRate = totalBroadcastSubscribers > 0
+  // Click rates (now from backend)
+  const totalClickRate = totalBroadcastSubscribers > 0
     ? ((emailMetrics?.emailClickers || 0) / totalBroadcastSubscribers * 100).toFixed(2)
     : "0.00";
+  
+  const wisdomClickRate = emailMetrics?.wisdomClickRate?.toFixed(2) || "0.00";
 
   // Lead quality totals
   const totalLeads = leadQuality?.trafficLight.total || 0;
@@ -55,8 +56,64 @@ export default function EmailLeadQuality() {
 
       {/* Email Engagement Section */}
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Email Engagement</h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+          <Mail className="h-6 w-6" />
+          Email Engagement
+        </h2>
+        
+        {/* Wisdom Subset Metrics */}
+        <div className="mb-6">
+          <h3 className="text-lg font-medium mb-2 text-purple-600">Wisdom Challenge Subset</h3>
+          <p className="text-sm text-amber-600 mb-3 flex items-center gap-1">
+            <AlertCircle className="h-4 w-4" />
+            Baseado em amostra dos primeiros 1.000 contatos de cada categoria
+          </p>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card className="border-purple-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Broadcast Subscribers</CardTitle>
+                <Users className="h-4 w-4 text-purple-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-purple-600">{wisdomBroadcastSubscribers}</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Wisdom contacts subscribed
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-purple-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Email Clickers</CardTitle>
+                <MousePointerClick className="h-4 w-4 text-purple-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-purple-600">{emailMetrics?.wisdomEmailClickers || 0}</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Wisdom contacts who clicked
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-purple-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Click Rate</CardTitle>
+                <TrendingUp className="h-4 w-4 text-purple-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-purple-600">{wisdomClickRate}%</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Clickers / Subscribers
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Total Metrics */}
+        <div>
+          <h3 className="text-lg font-medium mb-3 text-muted-foreground">All Contacts (Total)</h3>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Broadcast Subscribers</CardTitle>
@@ -89,25 +146,13 @@ export default function EmailLeadQuality() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{clickRate}%</div>
+              <div className="text-2xl font-bold">{totalClickRate}%</div>
               <p className="text-xs text-muted-foreground mt-1">
-                Taxa de cliques
+                Taxa de cliques (total)
               </p>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Opt-outs</CardTitle>
-              <Mail className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{totalOptouts}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Cancelaram inscrição
-              </p>
-            </CardContent>
-          </Card>
+          </div>
         </div>
 
         {/* Email Preferences Breakdown */}
@@ -160,8 +205,64 @@ export default function EmailLeadQuality() {
 
       {/* Lead Quality Section */}
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Lead Quality (List Defender)</h2>
-        <div className="grid gap-4 md:grid-cols-3">
+        <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+          <Users className="h-6 w-6" />
+          Lead Quality (List Defender)
+        </h2>
+        
+        {/* Wisdom Subset Metrics */}
+        <div className="mb-6">
+          <h3 className="text-lg font-medium mb-2 text-purple-600">Wisdom Challenge Subset</h3>
+          <p className="text-sm text-amber-600 mb-3 flex items-center gap-1">
+            <AlertCircle className="h-4 w-4" />
+            Baseado em amostra dos primeiros 1.000 contatos de cada categoria
+          </p>
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card className="border-l-4 border-l-green-500 border-purple-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Green (Safe)</CardTitle>
+                <CheckCircle className="h-4 w-4 text-green-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-purple-600">{leadQuality?.wisdomTrafficLight.green.toLocaleString() || 0}</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {leadQuality?.wisdomTrafficLight.greenPercent.toFixed(1) || 0}% do total Wisdom
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-l-4 border-l-yellow-500 border-purple-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Yellow (Re-engage)</CardTitle>
+                <AlertCircle className="h-4 w-4 text-yellow-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-purple-600">{leadQuality?.wisdomTrafficLight.yellow.toLocaleString() || 0}</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {leadQuality?.wisdomTrafficLight.yellowPercent.toFixed(1) || 0}% do total Wisdom
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-l-4 border-l-red-500 border-purple-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Red (Do Not Send)</CardTitle>
+                <XCircle className="h-4 w-4 text-red-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-purple-600">{leadQuality?.wisdomTrafficLight.red.toLocaleString() || 0}</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {leadQuality?.wisdomTrafficLight.redPercent.toFixed(1) || 0}% do total Wisdom
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Total Metrics */}
+        <div>
+          <h3 className="text-lg font-medium mb-3 text-muted-foreground">All Contacts (Total)</h3>
+          <div className="grid gap-4 md:grid-cols-3">
           <Card className="border-l-4 border-l-green-500">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Green (Safe)</CardTitle>
@@ -200,6 +301,7 @@ export default function EmailLeadQuality() {
               </p>
             </CardContent>
           </Card>
+          </div>
         </div>
 
         {/* Engagement Levels */}
