@@ -244,17 +244,17 @@ export default function Overview() {
             </CardContent>
           </Card>
 
-          {/* ROAS */}
+          {/* ManyChat Bot Users */}
           <Card className="border-l-2 border-l-[#3A0CA3]">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-1">
-                <CardTitle className="text-xs font-medium text-muted-foreground">ROAS</CardTitle>
+                <CardTitle className="text-xs font-medium text-muted-foreground">ManyChat Bot Users</CardTitle>
                 <Tooltip>
                   <TooltipTrigger>
                     <Info className="h-3 w-3 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Return on Ad Spend: Total Revenue ÷ Total Spend</p>
+                    <p>Contacts who have interacted with the ManyChat bot</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -263,7 +263,7 @@ export default function Overview() {
               {metricsLoading ? (
                 <Skeleton className="h-6 w-16" />
               ) : (
-                <div className="text-xl font-bold">{(metrics?.roas || 0).toFixed(2)}x</div>
+                <div className="text-xl font-bold">{metrics?.manychatBotUsers || 0}</div>
               )}
             </CardContent>
           </Card>
@@ -292,17 +292,17 @@ export default function Overview() {
             </CardContent>
           </Card>
 
-          {/* Welcome Email Click Rate */}
+          {/* Broadcast Subscribers */}
           <Card className="border-l-2 border-l-[#4895EF]">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-1">
-                <CardTitle className="text-xs font-medium text-muted-foreground">Email Click Rate</CardTitle>
+                <CardTitle className="text-xs font-medium text-muted-foreground">Broadcast Subscribers</CardTitle>
                 <Tooltip>
                   <TooltipTrigger>
                     <Info className="h-3 w-3 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>% of leads who clicked the welcome email link</p>
+                    <p>Contacts actively engaged with ManyChat broadcasts</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -312,23 +312,20 @@ export default function Overview() {
                 <Skeleton className="h-6 w-16" />
               ) : (
                 <div className="text-xl font-bold">
-                  {formatPercent(emailEngagement?.clickRate || 0)}
+                  {metrics?.broadcastSubscribers || 0}
                 </div>
               )}
-              <p className="text-xs text-muted-foreground mt-1">
-                {emailEngagement?.clicked || 0} / {emailEngagement?.totalLeads || 0} clicked
-              </p>
             </CardContent>
           </Card>
         </div>
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Daily Spend & Leads */}
+          {/* Daily Ad Spend */}
           <Card>
             <CardHeader>
-              <CardTitle>Daily Spend & Leads</CardTitle>
-              <CardDescription>Ad spend and lead generation over time</CardDescription>
+              <CardTitle>Daily Ad Spend</CardTitle>
+              <CardDescription>Ad spend over time</CardDescription>
             </CardHeader>
             <CardContent>
               {kpisLoading ? (
@@ -338,37 +335,35 @@ export default function Overview() {
                   <BarChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" />
-                    <YAxis yAxisId="left" />
-                    <YAxis yAxisId="right" orientation="right" />
+                    <YAxis />
                     <RechartsTooltip />
                     <Legend />
-                    <Bar yAxisId="left" dataKey="spend" fill="#560BAD" name="Spend ($)" />
-                    <Bar yAxisId="right" dataKey="leads" fill="#4895EF" name="Leads" />
+                    <Bar dataKey="spend" fill="#560BAD" name="Spend ($)" />
                   </BarChart>
                 </ResponsiveContainer>
               )}
             </CardContent>
           </Card>
 
-          {/* ROAS Trend */}
+          {/* Daily Leads */}
           <Card>
             <CardHeader>
-              <CardTitle>ROAS Trend</CardTitle>
-              <CardDescription>Return on ad spend over time</CardDescription>
+              <CardTitle>Daily Leads</CardTitle>
+              <CardDescription>Lead generation over time</CardDescription>
             </CardHeader>
             <CardContent>
               {kpisLoading ? (
                 <Skeleton className="h-[300px] w-full" />
               ) : (
                 <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={chartData}>
+                  <BarChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" />
                     <YAxis />
                     <RechartsTooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="roas" stroke="#B5179E" strokeWidth={2} name="ROAS" />
-                  </LineChart>
+                    <Bar dataKey="leads" fill="#4895EF" name="Leads" />
+                  </BarChart>
                 </ResponsiveContainer>
               )}
             </CardContent>

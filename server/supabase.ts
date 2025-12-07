@@ -64,6 +64,8 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
       costPerPurchase: 0,
       aov: 0,
       roas: 0,
+      manychatBotUsers: 0,
+      broadcastSubscribers: 0,
     };
   }
 
@@ -154,6 +156,33 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
 
   const vipRevenue = ordersData?.reduce((sum: number, row: any) => sum + parseFloat(row.order_total || '0'), 0) || 0;
 
+  // Get ManyChat bot users (contacts with manychat_id)
+  let manychatQuery = supabase
+    .from('contacts')
+    .select('*', { count: 'exact', head: true })
+    .in('id', wisdomContactIds)
+    .not('manychat_id', 'is', null);
+  
+  if (startDate) {
+    manychatQuery = manychatQuery.gte('created_at', startDate);
+  }
+  if (endDate) {
+    const endDateTime = new Date(endDate);
+    endDateTime.setDate(endDateTime.getDate() + 1);
+    manychatQuery = manychatQuery.lt('created_at', endDateTime.toISOString().split('T')[0]);
+  }
+  
+  const { count: manychatBotUsers } = await manychatQuery;
+
+  // Get broadcast subscribers (contacts with ManyChat events indicating active engagement)
+  const { data: manychatEvents } = await supabase
+    .from('analytics_events')
+    .select('contact_id')
+    .in('contact_id', wisdomContactIds)
+    .in('name', ['manychat', 'Manychat', 'livechat_url']);
+  
+  const broadcastSubscribers = new Set(manychatEvents?.map(e => e.contact_id)).size;
+
   // Calculate metrics
   const cpl = totalLeads && totalLeads > 0 ? totalSpend / totalLeads : 0;
   const cpp = vipSales && vipSales > 0 ? totalSpend / vipSales : 0;
@@ -172,6 +201,8 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
     roas,
     vipTakeRate,
     vipRevenue,
+    manychatBotUsers: manychatBotUsers || 0,
+    broadcastSubscribers,
   };
 }
 

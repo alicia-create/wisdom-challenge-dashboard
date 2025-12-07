@@ -171,3 +171,34 @@
 - [x] Create shared wisdom-filter.ts helper for consistent filtering
 - [x] Update all tests to pass with wisdom-only data
 - [x] Remove outdated tests with old table names
+
+## Ad Performance Integration (2025-12-06)
+- [ ] Explore ad_performance table structure and sample data
+- [ ] Verify CAMPAIGN_NAME_FILTER matches actual campaign names in database
+- [ ] Update getOverviewMetrics to fetch real ad spend data
+- [ ] Update getDailyAnalysisMetrics to include ad performance by date
+- [ ] Calculate ROAS correctly (revenue / spend)
+- [ ] Test with real ad performance data
+- [ ] Verify metrics display correctly in dashboard
+
+## Error Logs Page (2025-12-06)
+- [x] Check if error_logs table exists in Supabase (found: workflow_errors)
+- [x] Explore workflow_errors table structure (id, created_at, workflow_name, error_node, error_message, error_timestamp, execution_id)
+- [x] Create backend procedure to fetch paginated workflow_errors
+- [x] Create ErrorLogs page component with table view
+- [x] Add filtering by workflow_name, error_node, date range
+- [x] Add search functionality for error messages
+- [x] Add route to App.tsx and navigation link
+- [ ] Test error logs page functionality
+
+## Overview Page Improvements (2025-12-06)
+- [x] Fix Total Revenue to show sum of order_total from orders table
+- [x] Add "ManyChat Bot Users" metric (count contacts with manychat_id)
+- [x] Add "Broadcast Subscribers" metric (count from analytics_events ManyChat engagement)
+- [x] Explore analytics_events for ManyChat broadcast subscription events
+- [x] Update getOverviewMetrics backend to include new metrics
+- [x] Separate "Daily Spend & Leads" into two separate charts
+- [x] Remove "ROAS Trend" chart from Overview page
+- [x] Replace ROAS card with ManyChat Bot Users
+- [x] Replace Email Click Rate card with Broadcast Subscribers
+- [x] Test all metrics display correctly

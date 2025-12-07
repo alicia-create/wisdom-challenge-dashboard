@@ -30,9 +30,30 @@ import {
   getContactActivitySummary,
   getContactTimeline,
 } from "./supabase-activities";
+import { getWorkflowErrors, getWorkflowErrorStats } from "./workflow-errors";
 
 export const appRouter = router({
   system: systemRouter,
+  
+  // Workflow error logs from n8n
+  logs: router({
+    list: publicProcedure
+      .input(z.object({
+        page: z.number().min(1).default(1),
+        pageSize: z.number().min(1).max(100).default(50),
+        search: z.string().optional(),
+        workflowName: z.string().optional(),
+        errorNode: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        return await getWorkflowErrors(input || {});
+      }),
+    stats: publicProcedure.query(async () => {
+      return await getWorkflowErrorStats();
+    }),
+  }),
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

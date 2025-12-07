@@ -81,6 +81,9 @@ export function DashboardHeader() {
                 <DropdownMenuItem onClick={() => setLocation("/debug/meta-campaigns")}>
                   View Meta Campaigns
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLocation("/debug/error-logs")}>
+                  View Error Logs
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

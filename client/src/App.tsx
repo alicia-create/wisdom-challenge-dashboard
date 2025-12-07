@@ -12,6 +12,7 @@ import DebugLeads from "./pages/DebugLeads";
 import DebugPurchases from "./pages/DebugPurchases";
 import DebugGoogleCampaigns from "./pages/DebugGoogleCampaigns";
 import DebugMetaCampaigns from "./pages/DebugMetaCampaigns";
+import ErrorLogs from "./pages/ErrorLogs";
 
 function Router() {
   return (
@@ -22,6 +23,7 @@ function Router() {
       <Route path={"/debug/purchases"} component={DebugPurchases} />
       <Route path={"/debug/google-campaigns"} component={DebugGoogleCampaigns} />
       <Route path={"/debug/meta-campaigns"} component={DebugMetaCampaigns} />
+      <Route path={"/debug/error-logs"} component={ErrorLogs} />
       <Route path={"/404"} component={NotFound} />      {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>
