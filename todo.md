@@ -140,3 +140,34 @@
 - [x] Write and pass 10 vitest tests validating schema migration
 - [ ] Integrate analytics_events table for engagement tracking (YouTube/Zoom attendance)
 - [ ] Update frontend to handle new data structure (if needed)
+
+## Contacts Page Updates (2025-12-06)
+- [x] Explore analytics_events table structure in Supabase
+- [x] Create backend query to filter contacts by "wisdom" funnel using analytics_events
+- [x] Create backend query to fetch all activities for a specific contact from analytics_events
+- [x] Update Leads page to show only wisdom funnel contacts
+- [x] Add click handler to contact rows
+- [x] Create activity modal/drawer to display contact's event history
+- [x] Test filtering and activity view functionality
+- [x] Filter to last 2 days for normalized data
+- [x] Enhanced search across contacts and analytics_events
+
+## Field Name Updates (2025-12-06)
+- [ ] Check all table schemas in Supabase (contacts, orders, order_items, products, analytics_events)
+- [ ] Update all queries to use correct field names (full_name not name, etc)
+- [ ] Remove UTM field references from contacts table (UTM data is in analytics_events)
+- [ ] Update search queries to use correct field names
+- [ ] Fix all failing tests due to field name mismatches
+
+## Recent Leads Filter & Enhanced Search (2025-12-06)
+- [x] Add date filter to show only leads from last 2 days (more normalized data)
+- [x] Enhance search to query analytics_events table for UTM data, funnel names, etc
+- [x] Update search to be more comprehensive across contact and event data
+
+## Daily Analysis Wisdom Filter (2025-12-06)
+- [x] Update getDailyAnalysisMetrics to filter by wisdom funnel contacts only
+- [x] Update getOverviewMetrics to filter by wisdom funnel contacts only
+- [x] Ensure all dashboard metrics reflect wisdom funnel data only
+- [x] Create shared wisdom-filter.ts helper for consistent filtering
+- [x] Update all tests to pass with wisdom-only data
+- [x] Remove outdated tests with old table names

@@ -25,6 +25,11 @@ import {
   getGoogleCampaignsPaginated,
   getMetaCampaignsPaginated,
 } from "./supabase";
+import {
+  getContactActivities,
+  getContactActivitySummary,
+  getContactTimeline,
+} from "./supabase-activities";
 
 export const appRouter = router({
   system: systemRouter,
@@ -278,6 +283,33 @@ export const appRouter = router({
       }).optional())
       .query(async ({ input }) => {
         return await getMetaCampaignsPaginated(input || {});
+      }),
+
+    // Get all activities for a contact
+    contactActivities: publicProcedure
+      .input(z.object({
+        contactId: z.number(),
+      }))
+      .query(async ({ input }) => {
+        return await getContactActivities(input.contactId);
+      }),
+
+    // Get activity summary for a contact
+    contactActivitySummary: publicProcedure
+      .input(z.object({
+        contactId: z.number(),
+      }))
+      .query(async ({ input }) => {
+        return await getContactActivitySummary(input.contactId);
+      }),
+
+    // Get timeline of key events for a contact
+    contactTimeline: publicProcedure
+      .input(z.object({
+        contactId: z.number(),
+      }))
+      .query(async ({ input }) => {
+        return await getContactTimeline(input.contactId);
       }),
   }),
 });

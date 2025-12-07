@@ -48,10 +48,30 @@ export async function getDailyKpis(startDate?: string, endDate?: string) {
  * Helper to fetch overview metrics (aggregated totals)
  */
 export async function getOverviewMetrics(startDate?: string, endDate?: string) {
-  // Get total leads
+  // Import wisdom filter
+  const { getWisdomContactIds } = await import('./wisdom-filter');
+  const wisdomContactIds = await getWisdomContactIds();
+
+  if (wisdomContactIds.length === 0) {
+    console.log('[Overview Metrics] No wisdom contacts found');
+    return {
+      totalLeads: 0,
+      totalSpend: 0,
+      vipSales: 0,
+      totalRevenue: 0,
+      vipTakeRate: 0,
+      costPerLead: 0,
+      costPerPurchase: 0,
+      aov: 0,
+      roas: 0,
+    };
+  }
+
+  // Get total leads (wisdom funnel only)
   let leadsQuery = supabase
     .from('contacts')
-    .select('*', { count: 'exact', head: true });
+    .select('*', { count: 'exact', head: true })
+    .in('id', wisdomContactIds);
   
   if (startDate) {
     leadsQuery = leadsQuery.gte('created_at', startDate);
@@ -90,10 +110,11 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
 
   const totalSpend = adData?.reduce((sum: number, row: any) => sum + parseFloat(row.spend || '0'), 0) || 0;
 
-  // Get VIP sales count
+  // Get VIP sales count (wisdom funnel contacts only)
   let ordersCountQuery = supabase
     .from('orders')
-    .select('*', { count: 'exact', head: true });
+    .select('*', { count: 'exact', head: true })
+    .in('contact_id', wisdomContactIds);
   
   if (startDate) {
     ordersCountQuery = ordersCountQuery.gte('created_at', startDate);
@@ -110,10 +131,11 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
     console.error('[Supabase] Error counting orders:', ordersCountError);
   }
 
-  // Get VIP revenue
+  // Get VIP revenue (wisdom funnel contacts only)
   let ordersQuery = supabase
     .from('orders')
-    .select('order_total');
+    .select('order_total')
+    .in('contact_id', wisdomContactIds);
   
   if (startDate) {
     ordersQuery = ordersQuery.gte('created_at', startDate);
@@ -391,26 +413,37 @@ export async function getEmailEngagement() {
  * Returns data grouped by date with separate metrics for Meta and Google
  */
 export async function getDailyAnalysisMetrics(startDate?: string, endDate?: string) {
+  // Import wisdom filter
+  const { getWisdomContactIds } = await import('./wisdom-filter');
+  const wisdomContactIds = await getWisdomContactIds();
+
+  if (wisdomContactIds.length === 0) {
+    console.log('[Daily Analysis] No wisdom contacts found');
+    return [];
+  }
+
   // Build date filter
   const dateFilter: any = {};
   if (startDate) dateFilter.gte = startDate;
   if (endDate) dateFilter.lte = endDate;
 
-  // Fetch daily leads grouped by date
+  // Fetch daily leads grouped by date (wisdom funnel only)
   const { data: dailyLeads, error: leadsError } = await supabase
     .from('contacts')
-    .select('created_at')
-    .order('created_at', { ascending: true });
+    .select('id, created_at')
+    .in('id', wisdomContactIds)
+    .order('created_at', { ascending: true});
 
   if (leadsError) {
     console.error('[Supabase] Error fetching daily leads:', leadsError);
   }
 
-  // Fetch daily orders grouped by date
+  // Fetch daily orders grouped by date (wisdom funnel contacts only)
   const { data: dailyOrders, error: ordersError } = await supabase
     .from('orders')
-    .select('created_at, order_total')
-    .order('created_at', { ascending: true });
+    .select('contact_id, created_at, order_total')
+    .in('contact_id', wisdomContactIds)
+    .order('created_at', { ascending: true});
 
   if (ordersError) {
     console.error('[Supabase] Error fetching daily orders:', ordersError);
@@ -839,7 +872,8 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
 }
 
 /**
- * Get paginated leads with search and filters
+ * Get paginated contacts with search and filters
+ * Now filters to show only contacts from "wisdom" funnel using analytics_events
  */
 export async function getLeadsPaginated(params: {
   page?: number;
@@ -855,28 +889,64 @@ export async function getLeadsPaginated(params: {
   const pageSize = params.pageSize || 50;
   const offset = (page - 1) * pageSize;
 
-  // Build query
+  // Get wisdom contact IDs using shared filter
+  const { getWisdomContactIds } = await import('./wisdom-filter');
+  const wisdomContactIds = await getWisdomContactIds();
+
+  console.log(`[Leads Paginated] Found ${wisdomContactIds.length} contacts from Wisdom funnel`);
+
+  // Build query for contacts
   let query = supabase
     .from('contacts')
     .select('*', { count: 'exact' })
     .order('created_at', { ascending: false });
 
-  // Apply filters
+  // Filter to only wisdom funnel contacts
+  if (wisdomContactIds.length > 0) {
+    query = query.in('id', wisdomContactIds);
+  } else {
+    // If no wisdom contacts found, return empty result
+    return {
+      data: [],
+      total: 0,
+      page,
+      pageSize,
+      totalPages: 0,
+    };
+  }
+
+  // Apply filters (contacts table has: email, full_name, first_name, last_name)
+  // Enhanced search: also search in analytics_events for UTM data, funnel names, etc
   if (params.search) {
-    query = query.or(`email.ilike.%${params.search}%,name.ilike.%${params.search}%,utm_source.ilike.%${params.search}%,utm_campaign.ilike.%${params.search}%,utm_medium.ilike.%${params.search}%`);
+    // First search in contacts table
+    const contactMatches = wisdomContactIds;
+    
+    // Then search in analytics_events for matching comment or value
+    const { data: searchEvents } = await supabase
+      .from('analytics_events')
+      .select('contact_id')
+      .or(`comment.ilike.%${params.search}%,value.ilike.%${params.search}%`)
+      .in('contact_id', wisdomContactIds);
+    
+    const searchContactIds = searchEvents
+      ? Array.from(new Set(searchEvents.map(e => e.contact_id)))
+      : [];
+    
+    // Combine: contacts matching in contacts table OR in analytics_events
+    if (searchContactIds.length > 0) {
+      query = query.or(
+        `email.ilike.%${params.search}%,full_name.ilike.%${params.search}%,first_name.ilike.%${params.search}%,last_name.ilike.%${params.search}%,id.in.(${searchContactIds.join(',')})`
+      );
+    } else {
+      // Only search in contacts table fields
+      query = query.or(
+        `email.ilike.%${params.search}%,full_name.ilike.%${params.search}%,first_name.ilike.%${params.search}%,last_name.ilike.%${params.search}%`
+      );
+    }
   }
 
-  if (params.utmSource) {
-    query = query.eq('utm_source', params.utmSource);
-  }
-
-  if (params.utmMedium) {
-    query = query.eq('utm_medium', params.utmMedium);
-  }
-
-  if (params.utmCampaign) {
-    query = query.ilike('utm_campaign', `%${params.utmCampaign}%`);
-  }
+  // UTM filters are ignored since contacts table doesn't have UTM fields
+  // UTM data is in analytics_events table
 
   if (params.startDate) {
     query = query.gte('created_at', params.startDate);

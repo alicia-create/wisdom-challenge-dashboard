@@ -14,6 +14,7 @@ import {
 import { ChevronLeft, ChevronRight, Download, X, Search } from "lucide-react";
 import { toast } from "sonner";
 import { DashboardHeader } from "@/components/DashboardHeader";
+import { ContactActivityModal } from "@/components/ContactActivityModal";
 
 export default function DebugLeads() {
   const [page, setPage] = useState(1);
@@ -22,6 +23,8 @@ export default function DebugLeads() {
   const [utmCampaign, setUtmCampaign] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [selectedContactId, setSelectedContactId] = useState<number | null>(null);
+  const [selectedContactEmail, setSelectedContactEmail] = useState<string>("");
 
   const { data, isLoading } = trpc.debug.leads.useQuery({
     page,
@@ -53,9 +56,9 @@ export default function DebugLeads() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Leads Debug</CardTitle>
+                <CardTitle>Wisdom Funnel Contacts</CardTitle>
                 <CardDescription>
-                  View and search all leads in the database
+                  View contacts from the Wisdom Challenge funnel. Click any row to see activity timeline.
                 </CardDescription>
               </div>
               {hasFilters && (
@@ -150,15 +153,14 @@ export default function DebugLeads() {
                     }
                     
                     // Generate CSV
-                    const headers = ['ID', 'Email', 'Name', 'UTM Source', 'UTM Medium', 'UTM Campaign', 'Email Clicked', 'Created At'];
+                    const headers = ['ID', 'Email', 'Full Name', 'First Name', 'Last Name', 'Phone', 'Created At'];
                     const rows = data.data.map((lead: any) => [
                       lead.id,
                       lead.email || '',
-                      lead.name || '',
-                      lead.utm_source || '',
-                      lead.utm_medium || '',
-                      lead.utm_campaign || '',
-                      lead.welcome_email_clicked ? 'Yes' : 'No',
+                      lead.full_name || '',
+                      lead.first_name || '',
+                      lead.last_name || '',
+                      lead.phone || '',
                       new Date(lead.created_at).toLocaleString(),
                     ]);
                     
@@ -193,45 +195,46 @@ export default function DebugLeads() {
                     <TableRow>
                       <TableHead>ID</TableHead>
                       <TableHead>Email</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>UTM Source</TableHead>
-                      <TableHead>UTM Medium</TableHead>
-                      <TableHead>UTM Campaign</TableHead>
-                      <TableHead>Email Clicked</TableHead>
+                      <TableHead>Full Name</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Calendar Status</TableHead>
                       <TableHead>Created At</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {isLoading ? (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                           Loading...
                         </TableCell>
                       </TableRow>
                     ) : data?.data.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                          No leads found
+                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                          No contacts found from Wisdom funnel
                         </TableCell>
                       </TableRow>
                     ) : (
                       data?.data.map((lead: any) => (
-                        <TableRow key={lead.id}>
+                        <TableRow 
+                          key={lead.id}
+                          className="cursor-pointer hover:bg-accent/50 transition-colors"
+                          onClick={() => {
+                            setSelectedContactId(lead.id);
+                            setSelectedContactEmail(lead.email || `Contact #${lead.id}`);
+                          }}
+                        >
                           <TableCell className="font-mono text-xs">{lead.id}</TableCell>
                           <TableCell>{lead.email || '-'}</TableCell>
-                          <TableCell>{lead.name || '-'}</TableCell>
-                          <TableCell>{lead.utm_source || '-'}</TableCell>
-                          <TableCell>{lead.utm_medium || '-'}</TableCell>
-                          <TableCell className="max-w-[200px] truncate" title={lead.utm_campaign}>
-                            {lead.utm_campaign || '-'}
-                          </TableCell>
+                          <TableCell>{lead.full_name || '-'}</TableCell>
+                          <TableCell>{lead.phone || '-'}</TableCell>
                           <TableCell>
                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                              lead.welcome_email_clicked 
+                              lead.calendar_status === 'booked'
                                 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                                 : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
                             }`}>
-                              {lead.welcome_email_clicked ? 'Yes' : 'No'}
+                              {lead.calendar_status || 'unknown'}
                             </span>
                           </TableCell>
                           <TableCell className="text-sm">
@@ -282,6 +285,16 @@ export default function DebugLeads() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Activity Modal */}
+      <ContactActivityModal
+        contactId={selectedContactId}
+        contactEmail={selectedContactEmail}
+        onClose={() => {
+          setSelectedContactId(null);
+          setSelectedContactEmail("");
+        }}
+      />
     </div>
   );
 }
