@@ -37,10 +37,37 @@ import {
   getWisdomTagDistribution,
   isKeapConfigured,
 } from "./keap";
+import {
+  syncFacebookAudiences,
+  getFacebookAudiencesFromDb,
+} from "./facebook-db";
+import { isFacebookConfigured } from "./facebook";
 
 export const appRouter = router({
   system: systemRouter,
   
+  // Facebook API integration
+  facebook: router({
+    status: publicProcedure.query(() => {
+      return { configured: isFacebookConfigured() };
+    }),
+
+    audiences: publicProcedure.query(async () => {
+      if (!isFacebookConfigured()) {
+        throw new Error('Facebook not configured');
+      }
+      return await getFacebookAudiencesFromDb();
+    }),
+
+    sync: publicProcedure.mutation(async () => {
+      if (!isFacebookConfigured()) {
+        throw new Error('Facebook not configured');
+      }
+      const count = await syncFacebookAudiences();
+      return { success: true, count };
+    }),
+  }),
+
   // Keap API integration
   keap: router({    status: publicProcedure.query(() => {
       return { configured: isKeapConfigured() };

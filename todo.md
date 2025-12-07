@@ -306,3 +306,14 @@
 - [ ] Test all pages on mobile (Overview, Daily Analysis, Engagement & Sales, Email & Lead Quality, Raw Data)
 - [x] Verify navigation is consistent across all pages
 - [ ] Test on different mobile screen sizes (320px, 375px, 414px)
+
+## Facebook Audiences & Data Source Verification (2025-12-07)
+- [ ] Check current Meta Campaigns page data source (Supabase vs API)
+- [ ] Check current Google Campaigns page data source (Supabase vs API)
+- [ ] Create facebook_audiences table in database schema (id, name, audience_id, size, created_at, updated_at)
+- [ ] Create tRPC procedure to fetch Facebook Audiences
+- [ ] Create FacebookAudiences.tsx page component
+- [ ] Add Facebook Audiences card to Raw Data landing page
+- [ ] Add route for /raw-data/facebook-audiences
+- [ ] Test Facebook Audiences page displays correctly
+- [ ] Document data sources for Meta and Google campaigns

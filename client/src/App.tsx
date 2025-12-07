@@ -15,6 +15,7 @@ import DebugPurchases from "./pages/DebugPurchases";
 import DebugGoogleCampaigns from "./pages/DebugGoogleCampaigns";
 import DebugMetaCampaigns from "./pages/DebugMetaCampaigns";
 import ErrorLogs from "./pages/ErrorLogs";
+import FacebookAudiences from "./pages/FacebookAudiences";
 
 function Router() {
   return (
@@ -24,6 +25,7 @@ function Router() {
       <Route path={"/engagement-sales"} component={EngagementSales} />
       <Route path={"/email-lead-quality"} component={EmailLeadQuality} />
       <Route path={"/raw-data"} component={RawData} />
+      <Route path={"/raw-data/facebook-audiences"} component={FacebookAudiences} />
       <Route path={"/debug/leads"} component={DebugLeads} />
       <Route path={"/debug/purchases"} component={DebugPurchases} />
       <Route path={"/debug/google-campaigns"} component={DebugGoogleCampaigns} />

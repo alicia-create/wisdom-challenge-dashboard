@@ -11,4 +11,8 @@ export const ENV = {
   keapClientId: process.env.KEAP_CLIENT_ID ?? "",
   keapClientSecret: process.env.KEAP_CLIENT_SECRET ?? "",
   keapAppId: process.env.KEAP_APP_ID ?? "",
+  // Facebook API credentials
+  facebookAppId: process.env.FACEBOOK_APP_ID ?? "",
+  facebookAppSecret: process.env.FACEBOOK_APP_SECRET ?? "",
+  facebookAccessToken: process.env.FACEBOOK_ACCESS_TOKEN ?? "",
 };

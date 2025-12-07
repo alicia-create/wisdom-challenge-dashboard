@@ -128,3 +128,23 @@ export const keapTokens = mysqlTable("keap_tokens", {
 
 export type KeapToken = typeof keapTokens.$inferSelect;
 export type InsertKeapToken = typeof keapTokens.$inferInsert;
+
+/**
+ * Facebook Audiences table - stores custom audiences, lookalike audiences, and saved audiences
+ * Synced periodically from Facebook Marketing API
+ */
+export const facebookAudiences = mysqlTable("facebook_audiences", {
+  id: int("id").autoincrement().primaryKey(),
+  audienceId: varchar("audience_id", { length: 255 }).notNull().unique(),
+  name: text("name").notNull(),
+  adAccountId: varchar("ad_account_id", { length: 255 }).notNull(),
+  sizeLowerBound: int("size_lower_bound"),
+  sizeUpperBound: int("size_upper_bound"),
+  subtype: varchar("subtype", { length: 50 }), // CUSTOM, LOOKALIKE, SAVED_AUDIENCE
+  timeCreated: datetime("time_created"),
+  timeUpdated: datetime("time_updated"),
+  syncedAt: timestamp("synced_at").defaultNow().notNull(),
+});
+
+export type FacebookAudience = typeof facebookAudiences.$inferSelect;
+export type InsertFacebookAudience = typeof facebookAudiences.$inferInsert;

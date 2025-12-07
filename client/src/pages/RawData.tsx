@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { useLocation } from "wouter";
-import { Database, ShoppingCart, TrendingUp, AlertCircle, Users } from "lucide-react";
+import { Database, ShoppingCart, TrendingUp, AlertCircle, Users, Target } from "lucide-react";
 
 export default function RawData() {
   const [, setLocation] = useLocation();
@@ -47,6 +47,14 @@ export default function RawData() {
       path: "/debug/error-logs",
       color: "text-red-600",
       bgColor: "bg-red-50 dark:bg-red-950",
+    },
+    {
+      title: "Facebook Audiences",
+      description: "Custom audiences, lookalikes, and saved audiences from Facebook",
+      icon: Target,
+      path: "/raw-data/facebook-audiences",
+      color: "text-indigo-600",
+      bgColor: "bg-indigo-50 dark:bg-indigo-950",
     },
   ];
 
