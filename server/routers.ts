@@ -91,7 +91,16 @@ export const appRouter = router({
           ? getDateRangeValues(input.dateRange)
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
         
-        return await getDailyKpis(startDate, endDate);
+        const dailyData = await getDailyAnalysisMetrics(startDate, endDate);
+        
+        // Map to expected format for charts
+        return dailyData.map(day => ({
+          date: day.date,
+          total_leads: day.totalOptins,
+          total_spend_meta: day.metaSpend,
+          total_spend_google: day.googleSpend,
+          roas: day.roas,
+        }));
       }),
 
     // Get email engagement metrics

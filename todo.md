@@ -234,3 +234,8 @@
 - [x] Verify all dashboard metrics filter by Wisdom funnel only
 - [x] Check if Total Leads count is correct (should be Wisdom leads only - showing 12)
 - [x] Test Overview page shows only Wisdom data
+
+## Fix Daily Leads Chart Dates (2025-12-07)
+- [x] Investigate why Daily Leads chart shows Nov 2024 dates when actual data is from Nov-Dec 2025
+- [x] Fix getDailyAnalysisMetrics or chart component to use correct date range (replaced getDailyKpis with getDailyAnalysisMetrics)
+- [x] Test chart displays correct dates matching Supabase data
