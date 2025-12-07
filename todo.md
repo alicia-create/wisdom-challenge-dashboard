@@ -216,3 +216,12 @@
 ## ErrorLogs Page Navigation Fix (2025-12-06)
 - [x] Add navigation header to ErrorLogs page to allow returning to other pages
 - [x] Test navigation works correctly
+
+## Navigation & UX Improvements (2025-12-06)
+- [x] Add "Back to Dashboard" button to DebugLeads page
+- [x] Add "Back to Dashboard" button to DebugPurchases page
+- [x] Create Breadcrumb component for navigation hierarchy
+- [x] Add breadcrumbs to Overview page (can expand to other pages later)
+- [x] Implement ESC keyboard shortcut to go back/close modals
+- [x] Implement / keyboard shortcut to focus search inputs
+- [x] Test all navigation and keyboard shortcuts work correctly

@@ -11,9 +11,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronLeft, ChevronRight, Search, X, Download } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, X, Download, ArrowLeft } from "lucide-react";
+import { Link } from "wouter";
 import { toast } from "sonner";
 import { DashboardHeader } from "@/components/DashboardHeader";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 export default function DebugPurchases() {
   const [page, setPage] = useState(1);
@@ -44,6 +46,9 @@ export default function DebugPurchases() {
 
   const hasFilters = search || startDate || endDate || minAmount || maxAmount;
 
+  // Keyboard shortcuts
+  useKeyboardShortcuts();
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -53,8 +58,15 @@ export default function DebugPurchases() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <DashboardHeader />
+    <>
+      <Link href="/overview">
+        <Button variant="ghost" size="sm" className="gap-2 mb-4">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Dashboard
+        </Button>
+      </Link>
+      <div className="min-h-screen bg-background">
+        <DashboardHeader />
       
       <div className="container py-8">
         <Card>
@@ -290,5 +302,6 @@ export default function DebugPurchases() {
         </Card>
       </div>
     </div>
+    </>
   );
 }

@@ -7,10 +7,15 @@ import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as
 import { Users, DollarSign, ShoppingCart, TrendingUp, Info } from "lucide-react";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { DashboardHeader } from "@/components/DashboardHeader";
+import { Breadcrumb } from "@/components/Breadcrumb";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function Overview() {
   const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.LAST_30_DAYS);
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts();
 
   // Fetch overview metrics with date range
   const { data: metrics, isLoading: metricsLoading } = trpc.overview.metrics.useQuery({
@@ -62,6 +67,7 @@ export default function Overview() {
       <DashboardHeader />
       
       <div className="container py-6">
+        <Breadcrumb items={[{ label: "Overview" }]} />
         {/* Date Filter */}
         <div className="flex justify-end mb-6">
           <DateRangeFilter value={dateRange} onChange={setDateRange} />

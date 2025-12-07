@@ -11,10 +11,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronLeft, ChevronRight, Download, X, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, X, Search, ArrowLeft } from "lucide-react";
+import { Link } from "wouter";
 import { toast } from "sonner";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { ContactActivityModal } from "@/components/ContactActivityModal";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 export default function DebugLeads() {
   const [page, setPage] = useState(1);
@@ -47,7 +49,24 @@ export default function DebugLeads() {
 
   const hasFilters = search || utmSource || utmCampaign || startDate || endDate;
 
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onEscape: () => {
+      if (selectedContactId) {
+        setSelectedContactId(null);
+        setSelectedContactEmail("");
+      }
+    },
+  });
+
   return (
+    <>
+      <Link href="/overview">
+        <Button variant="ghost" size="sm" className="gap-2 mb-4">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Dashboard
+        </Button>
+      </Link>
     <div className="min-h-screen bg-background">
       <DashboardHeader />
       
@@ -296,5 +315,6 @@ export default function DebugLeads() {
         }}
       />
     </div>
+    </>
   );
 }

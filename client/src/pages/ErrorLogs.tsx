@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { AlertCircle, Search, RefreshCw, TrendingUp, AlertTriangle, ArrowLeft } from 'lucide-react';
 import { Link } from 'wouter';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 // Removed Select import to avoid empty value issue
 
 export default function ErrorLogs() {
@@ -35,6 +36,9 @@ export default function ErrorLogs() {
     setWorkflowFilter('all');
     setPage(1);
   };
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6">
