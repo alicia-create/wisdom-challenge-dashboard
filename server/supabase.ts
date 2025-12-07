@@ -113,11 +113,12 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
 
   const totalSpend = adData?.reduce((sum: number, row: any) => sum + parseFloat(row.spend || '0'), 0) || 0;
 
-  // Get VIP sales count (wisdom funnel contacts only)
+  // Get VIP sales count (orders with total >= $31, wisdom funnel contacts only)
   let ordersCountQuery = supabase
     .from('orders')
     .select('*', { count: 'exact', head: true })
-    .in('contact_id', wisdomContactIds);
+    .in('contact_id', wisdomContactIds)
+    .gte('order_total', 31);
   
   if (startDate) {
     ordersCountQuery = ordersCountQuery.gte('created_at', startDate);
@@ -134,11 +135,12 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
     console.error('[Supabase] Error counting orders:', ordersCountError);
   }
 
-  // Get VIP revenue (wisdom funnel contacts only)
+  // Get VIP revenue (orders with total >= $31, wisdom funnel contacts only)
   let ordersQuery = supabase
     .from('orders')
     .select('order_total')
-    .in('contact_id', wisdomContactIds);
+    .in('contact_id', wisdomContactIds)
+    .gte('order_total', 31);
   
   if (startDate) {
     ordersQuery = ordersQuery.gte('created_at', startDate);
@@ -562,10 +564,13 @@ export async function getDailyAnalysisMetrics(startDate?: string, endDate?: stri
     dayData.totalOptins += 1;
   });
 
-  // Process orders by date
+  // Process orders by date (only count orders >= $31 as VIP Sales)
   dailyOrders?.forEach((order: any) => {
     const date = order.created_at?.split('T')[0];
     if (!date) return;
+    
+    const orderTotal = parseFloat(order.order_total || '0');
+    if (orderTotal < 31) return; // Only count VIP sales (>= $31)
 
     if (!dateMap.has(date)) {
       dateMap.set(date, {
@@ -591,7 +596,7 @@ export async function getDailyAnalysisMetrics(startDate?: string, endDate?: stri
 
     const dayData = dateMap.get(date);
     dayData.totalVipSales += 1;
-    dayData.totalVipRevenue += parseFloat(order.order_total || '0');
+    dayData.totalVipRevenue += orderTotal;
   });
 
   // Process ad performance by date and platform

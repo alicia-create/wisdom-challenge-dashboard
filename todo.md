@@ -239,3 +239,9 @@
 - [x] Investigate why Daily Leads chart shows Nov 2024 dates when actual data is from Nov-Dec 2025
 - [x] Fix getDailyAnalysisMetrics or chart component to use correct date range (replaced getDailyKpis with getDailyAnalysisMetrics)
 - [x] Test chart displays correct dates matching Supabase data
+
+## Update VIP Sales Logic (2025-12-07)
+- [x] Change VIP Sales calculation from product-based to order_total >= $31
+- [x] Update getOverviewMetrics to use new VIP Sales logic
+- [x] Update getDailyAnalysisMetrics to use new VIP Sales logic
+- [x] Test VIP Sales count matches orders with total >= $31
