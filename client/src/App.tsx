@@ -9,6 +9,7 @@ import Overview from "./pages/Overview";
 import DailyAnalysis from "./pages/DailyAnalysis";
 import EngagementSales from "./pages/EngagementSales";
 import EmailLeadQuality from "./pages/EmailLeadQuality";
+import RawData from "./pages/RawData";
 import DebugLeads from "./pages/DebugLeads";
 import DebugPurchases from "./pages/DebugPurchases";
 import DebugGoogleCampaigns from "./pages/DebugGoogleCampaigns";
@@ -21,7 +22,9 @@ function Router() {
       <Route path={"/overview"} component={Overview} />
       <Route path={"/daily-analysis"} component={DailyAnalysis} />
       <Route path={"/engagement-sales"} component={EngagementSales} />
-      <Route path={"/email-lead-quality"} component={EmailLeadQuality} />      <Route path={"/debug/leads"} component={DebugLeads} />
+      <Route path={"/email-lead-quality"} component={EmailLeadQuality} />
+      <Route path={"/raw-data"} component={RawData} />
+      <Route path={"/debug/leads"} component={DebugLeads} />
       <Route path={"/debug/purchases"} component={DebugPurchases} />
       <Route path={"/debug/google-campaigns"} component={DebugGoogleCampaigns} />
       <Route path={"/debug/meta-campaigns"} component={DebugMetaCampaigns} />

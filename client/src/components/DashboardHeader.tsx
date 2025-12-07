@@ -17,9 +17,10 @@ interface Tab {
 
 const tabs: Tab[] = [
   { label: "Overview", path: "/overview" },
-  { label: "Daily Analysis", path: "/daily-analysis" },
-  { label: "Engagement & Sales", path: "/engagement-sales" },
-  { label: "Email & Lead Quality", path: "/email-lead-quality" },
+  { label: "Daily", path: "/daily-analysis" },
+  { label: "Engagement", path: "/engagement-sales" },
+  { label: "Email & Leads", path: "/email-lead-quality" },
+  { label: "Raw Data", path: "/raw-data" },
 ];
 
 export function DashboardHeader() {
@@ -28,20 +29,20 @@ export function DashboardHeader() {
   return (
     <div className="border-b border-border bg-background sticky top-0 z-50">
       <div className="container">
-        <div className="flex items-center justify-between py-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 py-4">
           {/* Logo/Title */}
-          <div>
-            <h1 className="text-xl font-bold text-foreground">
+          <div className="flex-shrink-0">
+            <h1 className="text-lg md:text-xl font-bold text-foreground">
               {APP_TITLE}
             </h1>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground hidden sm:block">
               Real-time analytics and performance metrics
             </p>
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex items-center gap-4">
-            <nav className="flex gap-1 bg-muted p-1 rounded-lg">
+          <div className="flex items-center gap-2 w-full sm:w-auto sm:flex-1 sm:justify-end overflow-x-auto">
+            <nav className="flex gap-1 bg-muted p-1 rounded-lg overflow-x-auto scrollbar-hide min-w-0 flex-1 sm:flex-initial">
             {tabs.map((tab) => {
               const isActive = location === tab.path;
               return (
@@ -49,7 +50,7 @@ export function DashboardHeader() {
                   key={tab.path}
                   onClick={() => setLocation(tab.path)}
                   className={cn(
-                    "px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                    "px-3 md:px-4 py-2 rounded-md text-xs md:text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0",
                     isActive
                       ? "bg-background text-foreground shadow-sm"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
@@ -60,33 +61,6 @@ export function DashboardHeader() {
               );
             })}
             </nav>
-            
-            {/* Debug Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Bug className="h-4 w-4 mr-2" />
-                  Raw Data
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setLocation("/debug/leads")}>
-                  View Leads
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLocation("/debug/purchases")}>
-                  View Purchases
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLocation("/debug/google-campaigns")}>
-                  View Google Campaigns
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLocation("/debug/meta-campaigns")}>
-                  View Meta Campaigns
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLocation("/debug/error-logs")}>
-                  View Error Logs
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
         </div>
       </div>

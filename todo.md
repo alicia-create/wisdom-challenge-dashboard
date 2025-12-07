@@ -294,3 +294,15 @@
 - [ ] Translate DailyAnalysis page to English (if any Portuguese remains)
 - [ ] Translate EngagementSales page to English (if any Portuguese remains)
 - [ ] Translate all Raw Data pages to English (if any Portuguese remains)
+
+## Mobile & Desktop Responsive Fixes (2025-12-07)
+- [x] Fix Contact Activity Timeline modal width for mobile
+- [x] Move Raw Data dropdown into main tabs navigation
+- [x] Remove separate Raw Data dropdown button
+- [x] Create Raw Data landing page with links to sub-pages
+- [x] Shorten tab labels for mobile (Daily, Engagement, Email & Leads)
+- [x] Add DashboardHeader to Raw Data page
+- [x] Ensure horizontal scroll works smoothly on mobile
+- [ ] Test all pages on mobile (Overview, Daily Analysis, Engagement & Sales, Email & Lead Quality, Raw Data)
+- [x] Verify navigation is consistent across all pages
+- [ ] Test on different mobile screen sizes (320px, 375px, 414px)
