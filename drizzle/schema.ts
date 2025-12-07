@@ -113,3 +113,18 @@ export const dailyKpis = mysqlTable("daily_kpis", {
 });
 
 export type DailyKpi = typeof dailyKpis.$inferSelect;
+
+/**
+ * Keap OAuth Tokens table - stores access and refresh tokens for Keap API
+ * Singleton table (only one row with id=1)
+ */
+export const keapTokens = mysqlTable("keap_tokens", {
+  id: int("id").primaryKey().default(1),
+  accessToken: text("access_token").notNull(),
+  refreshToken: text("refresh_token").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type KeapToken = typeof keapTokens.$inferSelect;
+export type InsertKeapToken = typeof keapTokens.$inferInsert;

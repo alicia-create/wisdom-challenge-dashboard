@@ -19,6 +19,7 @@ const tabs: Tab[] = [
   { label: "Overview", path: "/overview" },
   { label: "Daily Analysis", path: "/daily-analysis" },
   { label: "Engagement & Sales", path: "/engagement-sales" },
+  { label: "Email & Lead Quality", path: "/email-lead-quality" },
 ];
 
 export function DashboardHeader() {

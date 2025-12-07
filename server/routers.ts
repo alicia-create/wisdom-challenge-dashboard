@@ -31,10 +31,43 @@ import {
   getContactTimeline,
 } from "./supabase-activities";
 import { getWorkflowErrors, getWorkflowErrorStats } from "./workflow-errors";
+import {
+  getEmailEngagementMetrics,
+  getLeadQualityMetrics,
+  getWisdomTagDistribution,
+  isKeapConfigured,
+} from "./keap";
 
 export const appRouter = router({
   system: systemRouter,
   
+  // Keap API integration
+  keap: router({    status: publicProcedure.query(() => {
+      return { configured: isKeapConfigured() };
+    }),
+
+    emailEngagement: publicProcedure.query(async () => {
+      if (!isKeapConfigured()) {
+        throw new Error('Keap not configured. Please authorize at /api/keap/auth');
+      }
+      return await getEmailEngagementMetrics();
+    }),
+
+    leadQuality: publicProcedure.query(async () => {
+      if (!isKeapConfigured()) {
+        throw new Error('Keap not configured. Please authorize at /api/keap/auth');
+      }
+      return await getLeadQualityMetrics();
+    }),
+
+    wisdomTags: publicProcedure.query(async () => {
+      if (!isKeapConfigured()) {
+        throw new Error('Keap not configured. Please authorize at /api/keap/auth');
+      }
+      return await getWisdomTagDistribution();
+    }),
+  }),
+
   // Workflow error logs from n8n
   logs: router({
     list: publicProcedure

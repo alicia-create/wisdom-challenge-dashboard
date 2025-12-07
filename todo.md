@@ -245,3 +245,30 @@
 - [x] Update getOverviewMetrics to use new VIP Sales logic
 - [x] Update getDailyAnalysisMetrics to use new VIP Sales logic
 - [x] Test VIP Sales count matches orders with total >= $31
+
+## Keap API Integration (2025-12-07)
+- [x] Analyze Keap tags structure (Wisdom Challenge + List Defender)
+- [x] Implement OAuth 2.0 authentication for Keap API
+- [x] Create server/keap.ts helper functions
+- [x] Create tRPC procedures for tags and email engagement
+- [x] Build Email Engagement metrics UI (open rate, click rate, broadcast subscribers)
+- [x] Build Tag Segmentation UI (Wisdom Challenge tags distribution)
+- [x] Build List Defender Quality dashboard (lead quality monitoring)
+- [x] Test Keap API integration end-to-end
+
+## Keap Token Persistence (2025-12-07)
+- [x] Create keap_tokens table in database schema
+- [x] Migrate token storage from file to database
+- [x] Update loadTokens() to read from database
+- [x] Update saveTokens() to write to database
+- [x] Test token persistence and refresh flow
+- [x] Run vitest tests to validate Keap API integration
+
+## Email & Lead Quality UI (2025-12-07)
+- [x] Create EmailLeadQuality page component
+- [x] Add "Email & Lead Quality" tab to navigation
+- [x] Implement Email Engagement section (broadcast subscribers, opt-ins/opt-outs, click rate)
+- [x] Implement Lead Quality section (List Defender: Green/Yellow/Red distribution)
+- [x] Add Tag Distribution charts (Wisdom Challenge tags)
+- [x] Add key email metrics to Overview page
+- [x] Test all UI components display correctly

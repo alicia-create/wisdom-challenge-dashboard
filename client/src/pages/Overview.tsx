@@ -323,7 +323,7 @@ export default function Overview() {
             </CardContent>
           </Card>
 
-          {/* Broadcast Subscribers */}
+          {/* Broadcast Subscribers (Keap) */}
           <Card className="border-l-2 border-l-[#4895EF]">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-1">
@@ -333,7 +333,7 @@ export default function Overview() {
                     <Info className="h-3 w-3 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Contacts actively engaged with ManyChat broadcasts</p>
+                    <p>Total email broadcast subscribers from Keap (Reminder + Replay + Promo opt-ins)</p>
                   </TooltipContent>
                 </Tooltip>
               </div>

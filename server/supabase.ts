@@ -203,14 +203,15 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
   
   const { count: manychatBotUsers } = await manychatQuery;
 
-  // Get broadcast subscribers (contacts with ManyChat events indicating active engagement)
-  const { data: manychatEvents } = await supabase
-    .from('analytics_events')
-    .select('contact_id')
-    .in('contact_id', wisdomContactIds)
-    .in('name', ['manychat', 'Manychat', 'livechat_url']);
-  
-  const broadcastSubscribers = new Set(manychatEvents?.map(e => e.contact_id)).size;
+  // Get broadcast subscribers from Keap API
+  let broadcastSubscribers = 0;
+  try {
+    const { getEmailEngagementMetrics } = await import('./keap');
+    const emailMetrics = await getEmailEngagementMetrics();
+    broadcastSubscribers = emailMetrics.reminderOptins + emailMetrics.replayOptins + emailMetrics.promoOptins;
+  } catch (error) {
+    console.error('[Overview Metrics] Failed to fetch Keap email metrics:', error);
+  }
 
   // Calculate metrics
   const cpl = totalLeads && totalLeads > 0 ? totalSpend / totalLeads : 0;
