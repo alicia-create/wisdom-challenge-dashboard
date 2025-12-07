@@ -202,3 +202,13 @@
 - [x] Replace ROAS card with ManyChat Bot Users
 - [x] Replace Email Click Rate card with Broadcast Subscribers
 - [x] Test all metrics display correctly
+
+## Dashboard Fixes (2025-12-06)
+- [x] Add "Kingdom Seeker Trials" metric (third funnel step) next to VIP Sales
+- [x] Fix Total Revenue to show ALL orders (including organic traffic, not just wisdom contacts)
+- [x] Investigate and fix Purchases page errors (working, just missing contact data due to null contact_id)
+- [x] Add custom date range picker to Overview page (beyond presets)
+- [x] Test all fixes work correctly
+
+## Future Tasks (Backlog)
+- [ ] Fix n8n automations to populate contact_id in orders table

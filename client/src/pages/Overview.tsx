@@ -68,7 +68,7 @@ export default function Overview() {
         </div>
 
         {/* Primary KPIs - Large Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-6">
           {/* Total Leads */}
           <Card className="border-l-4 border-l-[#560BAD]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -115,6 +115,31 @@ export default function Overview() {
                 <Skeleton className="h-8 w-20" />
               ) : (
                 <div className="text-3xl font-bold">{metrics?.vipSales || 0}</div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Kingdom Seeker Trials */}
+          <Card className="border-l-4 border-l-[#7209B7]">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-sm font-medium">Kingdom Seeker Trials</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Number of 60-day free trials to Kingdom Seekers (third funnel step)</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <TrendingUp className="h-5 w-5 text-[#7209B7]" />
+            </CardHeader>
+            <CardContent>
+              {metricsLoading ? (
+                <Skeleton className="h-8 w-20" />
+              ) : (
+                <div className="text-3xl font-bold">{metrics?.kingdomSeekerTrials || 0}</div>
               )}
             </CardContent>
           </Card>
