@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { trpc } from "@/lib/trpc";
 import { Mail, Users, MousePointerClick, AlertCircle, CheckCircle, XCircle, TrendingUp } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export default function EmailLeadQuality() {
   const { data: emailMetrics, isLoading: emailLoading } = trpc.keap.emailEngagement.useQuery();
@@ -46,11 +47,19 @@ export default function EmailLeadQuality() {
 
   return (
     <div className="container py-8">
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          { label: "Dashboard", href: "/" },
+          { label: "Email & Lead Quality" },
+        ]}
+      />
+      
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Email & Lead Quality</h1>
         <p className="text-muted-foreground mt-2">
-          Métricas de engajamento de email e qualidade de leads do Keap
+          Email engagement and lead quality metrics from Keap
         </p>
       </div>
 
@@ -66,7 +75,7 @@ export default function EmailLeadQuality() {
           <h3 className="text-lg font-medium mb-2 text-purple-600">Wisdom Challenge Subset</h3>
           <p className="text-sm text-amber-600 mb-3 flex items-center gap-1">
             <AlertCircle className="h-4 w-4" />
-            Baseado em amostra dos primeiros 1.000 contatos de cada categoria
+            Based on sample of first 1,000 contacts from each category
           </p>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card className="border-purple-200">
@@ -122,7 +131,7 @@ export default function EmailLeadQuality() {
             <CardContent>
               <div className="text-2xl font-bold">{totalBroadcastSubscribers.toLocaleString()}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                Total de inscritos em broadcasts
+                Total broadcast subscribers
               </p>
             </CardContent>
           </Card>
@@ -135,7 +144,7 @@ export default function EmailLeadQuality() {
             <CardContent>
               <div className="text-2xl font-bold">{emailMetrics?.emailClickers || 0}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                Clicaram em emails
+                Clicked in emails
               </p>
             </CardContent>
           </Card>
@@ -148,7 +157,7 @@ export default function EmailLeadQuality() {
             <CardContent>
               <div className="text-2xl font-bold">{totalClickRate}%</div>
               <p className="text-xs text-muted-foreground mt-1">
-                Taxa de cliques (total)
+                Click rate (total)
               </p>
             </CardContent>
           </Card>
@@ -159,7 +168,7 @@ export default function EmailLeadQuality() {
         <Card className="mt-4">
           <CardHeader>
             <CardTitle>Email Preferences Breakdown</CardTitle>
-            <CardDescription>Distribuição de opt-ins e opt-outs por tipo de email</CardDescription>
+            <CardDescription>Distribution of opt-ins and opt-outs by email type</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -215,7 +224,7 @@ export default function EmailLeadQuality() {
           <h3 className="text-lg font-medium mb-2 text-purple-600">Wisdom Challenge Subset</h3>
           <p className="text-sm text-amber-600 mb-3 flex items-center gap-1">
             <AlertCircle className="h-4 w-4" />
-            Baseado em amostra dos primeiros 1.000 contatos de cada categoria
+            Based on sample of first 1,000 contacts from each category
           </p>
           <div className="grid gap-4 md:grid-cols-3">
             <Card className="border-l-4 border-l-green-500 border-purple-200">
@@ -226,7 +235,7 @@ export default function EmailLeadQuality() {
               <CardContent>
                 <div className="text-2xl font-bold text-purple-600">{leadQuality?.wisdomTrafficLight.green.toLocaleString() || 0}</div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {leadQuality?.wisdomTrafficLight.greenPercent.toFixed(1) || 0}% do total Wisdom
+                  {leadQuality?.wisdomTrafficLight.greenPercent.toFixed(1) || 0}% of Wisdom total
                 </p>
               </CardContent>
             </Card>
@@ -239,7 +248,7 @@ export default function EmailLeadQuality() {
               <CardContent>
                 <div className="text-2xl font-bold text-purple-600">{leadQuality?.wisdomTrafficLight.yellow.toLocaleString() || 0}</div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {leadQuality?.wisdomTrafficLight.yellowPercent.toFixed(1) || 0}% do total Wisdom
+                  {leadQuality?.wisdomTrafficLight.yellowPercent.toFixed(1) || 0}% of Wisdom total
                 </p>
               </CardContent>
             </Card>
@@ -252,7 +261,7 @@ export default function EmailLeadQuality() {
               <CardContent>
                 <div className="text-2xl font-bold text-purple-600">{leadQuality?.wisdomTrafficLight.red.toLocaleString() || 0}</div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {leadQuality?.wisdomTrafficLight.redPercent.toFixed(1) || 0}% do total Wisdom
+                  {leadQuality?.wisdomTrafficLight.redPercent.toFixed(1) || 0}% of Wisdom total
                 </p>
               </CardContent>
             </Card>
@@ -271,7 +280,7 @@ export default function EmailLeadQuality() {
             <CardContent>
               <div className="text-2xl font-bold">{leadQuality?.trafficLight.green || 0}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {greenPercentage}% do total
+                {greenPercentage}% of total
               </p>
             </CardContent>
           </Card>
@@ -284,7 +293,7 @@ export default function EmailLeadQuality() {
             <CardContent>
               <div className="text-2xl font-bold">{leadQuality?.trafficLight.yellow || 0}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {yellowPercentage}% do total
+                {yellowPercentage}% of total
               </p>
             </CardContent>
           </Card>
@@ -297,7 +306,7 @@ export default function EmailLeadQuality() {
             <CardContent>
               <div className="text-2xl font-bold">{leadQuality?.trafficLight.red || 0}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {redPercentage}% do total
+                {redPercentage}% of total
               </p>
             </CardContent>
           </Card>
@@ -308,7 +317,7 @@ export default function EmailLeadQuality() {
         <Card className="mt-4">
           <CardHeader>
             <CardTitle>Engagement Levels</CardTitle>
-            <CardDescription>Distribuição de níveis de engajamento dos leads</CardDescription>
+            <CardDescription>Distribution of lead engagement levels</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -336,7 +345,7 @@ export default function EmailLeadQuality() {
         <Card className="mt-4">
           <CardHeader>
             <CardTitle>Risk Flags</CardTitle>
-            <CardDescription>Leads com problemas de qualidade identificados</CardDescription>
+            <CardDescription>Leads with identified quality issues</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">

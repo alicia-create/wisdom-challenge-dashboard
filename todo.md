@@ -284,3 +284,13 @@
 - [x] Remove Trigger tag from Wisdom filter (only Historical + Status)
 - [x] Add sample disclaimer to UI (1000 contacts limit)
 - [x] Test all changes work correctly
+
+## English Translation & Navigation (2025-12-07)
+- [x] Audit all pages for Portuguese text (EmailLeadQuality, Overview, DailyAnalysis, etc)
+- [x] Translate EmailLeadQuality page to English
+- [x] Add breadcrumb navigation to EmailLeadQuality page
+- [x] Test EmailLeadQuality page displays correctly in English
+- [ ] Translate Overview page tooltips and labels to English (if any Portuguese remains)
+- [ ] Translate DailyAnalysis page to English (if any Portuguese remains)
+- [ ] Translate EngagementSales page to English (if any Portuguese remains)
+- [ ] Translate all Raw Data pages to English (if any Portuguese remains)
