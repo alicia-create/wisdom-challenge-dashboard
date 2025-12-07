@@ -225,3 +225,12 @@
 - [x] Implement ESC keyboard shortcut to go back/close modals
 - [x] Implement / keyboard shortcut to focus search inputs
 - [x] Test all navigation and keyboard shortcuts work correctly
+
+## Bug Fix: Nested Anchor Error (2025-12-07)
+- [x] Fix nested <a> tag error in Breadcrumb component (Link wrapping <a>)
+- [x] Test Overview page to ensure error is resolved
+
+## Verify Wisdom Filter Coverage (2025-12-07)
+- [x] Verify all dashboard metrics filter by Wisdom funnel only
+- [x] Check if Total Leads count is correct (should be Wisdom leads only - showing 12)
+- [x] Test Overview page shows only Wisdom data
