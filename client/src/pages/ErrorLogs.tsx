@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, Search, RefreshCw, TrendingUp, AlertTriangle } from 'lucide-react';
+import { AlertCircle, Search, RefreshCw, TrendingUp, AlertTriangle, ArrowLeft } from 'lucide-react';
+import { Link } from 'wouter';
 // Removed Select import to avoid empty value issue
 
 export default function ErrorLogs() {
@@ -38,6 +39,14 @@ export default function ErrorLogs() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6">
       <div className="container mx-auto space-y-6">
+        {/* Navigation */}
+        <Link href="/overview">
+          <Button variant="ghost" size="sm" className="gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
+        </Link>
+
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>

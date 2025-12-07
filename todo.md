@@ -212,3 +212,7 @@
 
 ## Future Tasks (Backlog)
 - [ ] Fix n8n automations to populate contact_id in orders table
+
+## ErrorLogs Page Navigation Fix (2025-12-06)
+- [x] Add navigation header to ErrorLogs page to allow returning to other pages
+- [x] Test navigation works correctly
