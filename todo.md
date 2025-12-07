@@ -130,3 +130,13 @@
 - [x] Add CSV export to Meta Campaigns page
 
 - [x] Fix chart date ordering to be ascending (oldest to newest)
+
+## Schema Migration (2025-12-06)
+- [x] Analyze new Supabase schema (contacts, orders, analytics_events, products, order_items)
+- [x] Update backend queries for renamed tables (Lead→contacts, Order→orders)
+- [x] Remove high_ticket_sales references (now in orders with order_total >= 1000)
+- [x] Update getHighTicketSales to use orders table with JOIN to order_items and products
+- [x] Temporarily disable daily_attendance queries (return zero until analytics_events is configured)
+- [x] Write and pass 10 vitest tests validating schema migration
+- [ ] Integrate analytics_events table for engagement tracking (YouTube/Zoom attendance)
+- [ ] Update frontend to handle new data structure (if needed)

@@ -50,7 +50,7 @@ export async function getDailyKpis(startDate?: string, endDate?: string) {
 export async function getOverviewMetrics(startDate?: string, endDate?: string) {
   // Get total leads
   let leadsQuery = supabase
-    .from('Lead')
+    .from('contacts')
     .select('*', { count: 'exact', head: true });
   
   if (startDate) {
@@ -92,7 +92,7 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
 
   // Get VIP sales count
   let ordersCountQuery = supabase
-    .from('Order')
+    .from('orders')
     .select('*', { count: 'exact', head: true });
   
   if (startDate) {
@@ -112,7 +112,7 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
 
   // Get VIP revenue
   let ordersQuery = supabase
-    .from('Order')
+    .from('orders')
     .select('order_total');
   
   if (startDate) {
@@ -158,7 +158,7 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
  */
 export async function getLeadsWithAttribution(limit = 100) {
   const { data, error } = await supabase
-    .from('Lead')
+    .from('contacts')
     .select('*')
     .order('created_at', { ascending: false })
     .limit(limit);
@@ -176,7 +176,7 @@ export async function getLeadsWithAttribution(limit = 100) {
  */
 export async function getOrdersWithAttribution(limit = 100) {
   const { data, error } = await supabase
-    .from('Order')
+    .from('orders')
     .select('*')
     .order('created_at', { ascending: false })
     .limit(limit);
@@ -356,27 +356,11 @@ export async function getLandingPageMetrics(startDate?: string, endDate?: string
 /**
  * Helper to fetch daily attendance
  */
+// TODO: Update to use analytics_events table when ready
 export async function getDailyAttendance(startDate?: string, endDate?: string) {
-  let query = supabase
-    .from('daily_attendance')
-    .select('*')
-    .order('date', { ascending: true });
-
-  if (startDate) {
-    query = query.gte('date', startDate);
-  }
-  if (endDate) {
-    query = query.lte('date', endDate);
-  }
-
-  const { data, error } = await query;
-
-  if (error) {
-    console.error('[Supabase] Error fetching attendance:', error);
-    throw new Error(`Failed to fetch attendance: ${error.message}`);
-  }
-
-  return data || [];
+  // Temporarily return empty array until analytics_events is configured
+  console.log('[Supabase] getDailyAttendance: daily_attendance table removed, returning empty array');
+  return [];
 }
 
 /**
@@ -384,11 +368,11 @@ export async function getDailyAttendance(startDate?: string, endDate?: string) {
  */
 export async function getEmailEngagement() {
   const { count: totalLeads } = await supabase
-    .from('Lead')
+    .from('contacts')
     .select('*', { count: 'exact', head: true });
 
   const { count: clickedCount } = await supabase
-    .from('Lead')
+    .from('contacts')
     .select('*', { count: 'exact', head: true })
     .eq('welcome_email_clicked', true);
 
@@ -414,7 +398,7 @@ export async function getDailyAnalysisMetrics(startDate?: string, endDate?: stri
 
   // Fetch daily leads grouped by date
   const { data: dailyLeads, error: leadsError } = await supabase
-    .from('Lead')
+    .from('contacts')
     .select('created_at')
     .order('created_at', { ascending: true });
 
@@ -424,7 +408,7 @@ export async function getDailyAnalysisMetrics(startDate?: string, endDate?: stri
 
   // Fetch daily orders grouped by date
   const { data: dailyOrders, error: ordersError } = await supabase
-    .from('Order')
+    .from('orders')
     .select('created_at, order_total')
     .order('created_at', { ascending: true });
 
@@ -637,62 +621,37 @@ export async function getDailyAnalysisMetrics(startDate?: string, endDate?: stri
 // ============================================
 
 export async function getEngagementMetrics(startDate?: string, endDate?: string) {
-  const { data: attendanceData, error: attendanceError } = await supabase
-    .from('daily_attendance')
-    .select('*')
-    .gte('date', startDate || '2025-01-01')
-    .lte('date', endDate || '2025-12-31')
-    .order('date', { ascending: true });
-
-  if (attendanceError) {
-    console.error('[Supabase] Error fetching attendance:', attendanceError);
-    return {
-      todayAttendance: 0,
-      totalAttendance: 0,
-      attendanceByDay: [],
-    };
-  }
-
-  // Get today's attendance
-  const today = new Date().toISOString().split('T')[0];
-  const todayData = (attendanceData || []).filter(a => a.date === today);
-  const todayAttendance = todayData.reduce((sum, a) => sum + (a.participant_count || 0), 0);
-
-  // Calculate total attendance
-  const totalAttendance = (attendanceData || []).reduce((sum, a) => sum + (a.participant_count || 0), 0);
-
-  // Group by date and platform
-  const attendanceByDay = (attendanceData || []).reduce((acc: any[], row) => {
-    const existing = acc.find(d => d.date === row.date);
-    if (existing) {
-      if (row.platform === 'youtube') {
-        existing.freeCount = row.participant_count || 0;
-      } else if (row.platform === 'zoom') {
-        existing.vipCount = row.participant_count || 0;
-      }
-    } else {
-      acc.push({
-        date: row.date,
-        freeCount: row.platform === 'youtube' ? (row.participant_count || 0) : 0,
-        vipCount: row.platform === 'zoom' ? (row.participant_count || 0) : 0,
-      });
-    }
-    return acc;
-  }, []);
-
+  // TODO: Update to use analytics_events table when ready
+  console.log('[Supabase] getEngagementMetrics: daily_attendance table removed, returning zero attendance');
+  
   return {
-    todayAttendance,
-    totalAttendance,
-    attendanceByDay,
+    todayAttendance: 0,
+    totalAttendance: 0,
+    attendanceByDay: [],
   };
 }
 
 export async function getHighTicketSales(startDate?: string, endDate?: string) {
+  // High-ticket sales are now in orders table with order_items > $1000
   const { data, error } = await supabase
-    .from('high_ticket_sales')
-    .select('*')
+    .from('orders')
+    .select(`
+      *,
+      order_items!inner (
+        amount,
+        quantity,
+        products (
+          product_name
+        )
+      ),
+      contacts (
+        email,
+        full_name
+      )
+    `)
     .gte('purchase_date', startDate || '2025-01-01')
     .lte('purchase_date', endDate || '2025-12-31')
+    .gte('order_total', 1000)
     .order('purchase_date', { ascending: false });
 
   if (error) {
@@ -707,12 +666,12 @@ export async function getHighTicketSales(startDate?: string, endDate?: string) {
 
   // Get today's HT sales
   const today = new Date().toISOString().split('T')[0];
-  const todayData = (data || []).filter(s => s.purchase_date.startsWith(today));
+  const todayData = (data || []).filter(s => s.purchase_date?.startsWith(today));
   const todayHtSales = todayData.length;
 
   // Calculate totals
   const totalHtSales = (data || []).length;
-  const totalHtRevenue = (data || []).reduce((sum, s) => sum + parseFloat(s.price || 0), 0);
+  const totalHtRevenue = (data || []).reduce((sum, s) => sum + parseFloat(s.order_total || 0), 0);
 
   return {
     todayHtSales,
@@ -725,7 +684,7 @@ export async function getHighTicketSales(startDate?: string, endDate?: string) {
 export async function getFullFunnelMetrics(startDate?: string, endDate?: string) {
   // Get VIP revenue from Order table
   let ordersQuery = supabase
-    .from('Order')
+    .from('orders')
     .select('order_total');
   
   if (startDate) {
@@ -819,14 +778,14 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
 
   // Get Meta leads to calculate revenue
   const { data: metaLeadsData } = await supabase
-    .from('Lead')
+    .from('contacts')
     .select('id')
     .eq('utm_source', 'meta');
   
   const metaLeadIds = metaLeadsData?.map(l => l.id) || [];
   
   const { data: metaOrders } = await supabase
-    .from('Order')
+    .from('orders')
     .select('order_total')
     .in('lead_id', metaLeadIds);
   
@@ -834,14 +793,14 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
 
   // Get Google leads to calculate revenue
   const { data: googleLeadsData } = await supabase
-    .from('Lead')
+    .from('contacts')
     .select('id')
     .eq('utm_source', 'google');
   
   const googleLeadIds = googleLeadsData?.map(l => l.id) || [];
   
   const { data: googleOrders } = await supabase
-    .from('Order')
+    .from('orders')
     .select('order_total')
     .in('lead_id', googleLeadIds);
   
@@ -898,7 +857,7 @@ export async function getLeadsPaginated(params: {
 
   // Build query
   let query = supabase
-    .from('Lead')
+    .from('contacts')
     .select('*', { count: 'exact' })
     .order('created_at', { ascending: false });
 
@@ -966,7 +925,7 @@ export async function getPurchasesPaginated(params: {
 
   // Build query
   let query = supabase
-    .from('Order')
+    .from('orders')
     .select('*', { count: 'exact' })
     .order('created_at', { ascending: false });
 
