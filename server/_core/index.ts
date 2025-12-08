@@ -9,6 +9,7 @@ import { createContext } from "./context";
 import keapRoutes from "../keap-routes";
 import testEnvRoutes from "../test-env-endpoint";
 import { serveStatic, setupVite } from "./vite";
+import { checkAllAlerts } from "../alert-service";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -65,6 +66,17 @@ async function startServer() {
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
+    
+    // Start alert checking service (runs every 30 minutes)
+    console.log("[Alert Service] Starting scheduled alert checks (every 30 minutes)");
+    
+    // Run immediately on startup
+    checkAllAlerts().catch(console.error);
+    
+    // Then run every 30 minutes
+    setInterval(() => {
+      checkAllAlerts().catch(console.error);
+    }, 30 * 60 * 1000);
   });
 }
 

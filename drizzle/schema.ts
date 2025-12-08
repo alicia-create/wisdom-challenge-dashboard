@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, datetime, decimal } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, datetime, decimal, boolean } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -148,3 +148,21 @@ export const facebookAudiences = mysqlTable("facebook_audiences", {
 
 export type FacebookAudience = typeof facebookAudiences.$inferSelect;
 export type InsertFacebookAudience = typeof facebookAudiences.$inferInsert;
+
+/**
+ * Alerts table - tracks automated alert history for critical metrics
+ * Stores when alerts were triggered and sent to avoid duplicate notifications
+ */
+export const alerts = mysqlTable("alerts", {
+  id: int("id").autoincrement().primaryKey(),
+  alertType: mysqlEnum("alert_type", ["high_cpp", "low_click_to_purchase", "high_frequency"]).notNull(),
+  metricValue: decimal("metric_value", { precision: 10, scale: 2 }).notNull(),
+  threshold: decimal("threshold", { precision: 10, scale: 2 }).notNull(),
+  message: text("message").notNull(),
+  notificationSent: boolean("notification_sent").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  resolvedAt: timestamp("resolved_at"),
+});
+
+export type Alert = typeof alerts.$inferSelect;
+export type InsertAlert = typeof alerts.$inferInsert;

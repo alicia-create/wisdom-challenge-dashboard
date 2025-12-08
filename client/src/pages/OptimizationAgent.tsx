@@ -38,9 +38,9 @@ export default function OptimizationAgent() {
   };
 
   // Separate recommendations by severity
-  const criticalRecs = dailyReport?.recommendations?.filter((r) => r.severity === "critical") || [];
-  const warningRecs = dailyReport?.recommendations?.filter((r) => r.severity === "warning") || [];
-  const infoRecs = dailyReport?.recommendations?.filter((r) => r.severity === "info") || [];
+  const criticalRecs = dailyReport?.recommendations?.filter((r: any) => r.severity === "critical") || [];
+  const warningRecs = dailyReport?.recommendations?.filter((r: any) => r.severity === "warning") || [];
+  const infoRecs = dailyReport?.recommendations?.filter((r: any) => r.severity === "info") || [];
 
   const metrics = dailyReport?.metrics;
   const insights = dailyReport?.insights;
@@ -167,7 +167,7 @@ export default function OptimizationAgent() {
                       Top 3 Priorities
                     </h3>
                     <div className="space-y-3">
-                      {insights.top_priorities.map((priority) => (
+                      {insights.top_priorities.map((priority: any) => (
                         <Card key={priority.rank} className="border-l-4 border-l-primary">
                           <CardContent className="pt-4">
                             <div className="flex items-start gap-3">
@@ -226,7 +226,7 @@ export default function OptimizationAgent() {
                       Next Steps (24-48 Hours)
                     </h3>
                     <ul className="space-y-2">
-                      {insights.next_steps.map((step, idx) => (
+                      {insights.next_steps.map((step: string, idx: number) => (
                         <li key={idx} className="flex items-start gap-2">
                           <Badge variant="outline" className="mt-0.5">
                             {idx + 1}
@@ -274,7 +274,7 @@ export default function OptimizationAgent() {
                   <AlertDescription>All ads are performing within acceptable thresholds.</AlertDescription>
                 </Alert>
               ) : (
-                criticalRecs.map((rec) => (
+                criticalRecs.map((rec: any) => (
                   <Alert key={rec.id} variant="destructive">
                     <AlertTriangle className="h-4 w-4" />
                     <AlertTitle>{rec.title}</AlertTitle>
@@ -332,7 +332,7 @@ export default function OptimizationAgent() {
                   <AlertDescription>All ads are performing well.</AlertDescription>
                 </Alert>
               ) : (
-                warningRecs.map((rec) => (
+                warningRecs.map((rec: any) => (
                   <Alert key={rec.id}>
                     <AlertCircle className="h-4 w-4" />
                     <AlertTitle>{rec.title}</AlertTitle>
@@ -383,7 +383,7 @@ export default function OptimizationAgent() {
                   <AlertDescription>All funnel stages are performing above thresholds.</AlertDescription>
                 </Alert>
               ) : (
-                funnelLeaks.map((leak, idx) => (
+                funnelLeaks.map((leak: any, idx: number) => (
                   <Alert key={idx} variant={leak.severity === "critical" ? "destructive" : "default"}>
                     <TrendingDown className="h-4 w-4" />
                     <AlertTitle>{leak.title}</AlertTitle>
@@ -433,7 +433,7 @@ export default function OptimizationAgent() {
                   <AlertDescription>All creatives are performing well with healthy frequency.</AlertDescription>
                 </Alert>
               ) : (
-                creativeFatigue.map((alert, idx) => (
+                creativeFatigue.map((alert: any, idx: number) => (
                   <Alert key={idx}>
                     <Info className="h-4 w-4" />
                     <AlertTitle>{alert.title}</AlertTitle>

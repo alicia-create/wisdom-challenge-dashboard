@@ -55,11 +55,13 @@ import {
   detectFunnelLeaks,
   detectCreativeFatigue,
 } from "./optimization-engine";
+import { cache } from "./cache";
 import {
   generateDailyReport,
   explainRecommendation,
   explainFunnelLeak,
 } from "./optimization-llm";
+import { getRecentAlerts, checkAllAlerts } from "./alert-service";
 
 export const appRouter = router({
   system: systemRouter,
@@ -457,6 +459,17 @@ export const appRouter = router({
     // Get LLM-powered daily report with insights
     dailyReport: publicProcedure
       .query(async () => {
+        // Check cache first (TTL: 30 minutes)
+        const cacheKey = "optimization:dailyReport";
+        const cached = cache.get<any>(cacheKey);
+        
+        if (cached) {
+          console.log("[Optimization] Returning cached daily report");
+          return { ...cached, cached: true };
+        }
+
+        console.log("[Optimization] Generating fresh daily report (cache miss)");
+
         // Fetch all optimization data
         const adRecommendations = await analyzeAdPerformance();
         const funnelLeaks = await detectFunnelLeaks();
@@ -500,7 +513,7 @@ export const appRouter = router({
           }
         );
 
-        return {
+        const result = {
           insights,
           metrics: {
             total_spend,
@@ -512,7 +525,13 @@ export const appRouter = router({
           recommendations: adRecommendations,
           funnel_leaks: funnelLeaks,
           creative_fatigue: creativeFatigue,
+          cached: false,
         };
+
+        // Cache the result for 30 minutes
+        cache.set(cacheKey, result, 30 * 60 * 1000);
+
+        return result;
       }),
 
     // Get detailed explanation for a specific recommendation
@@ -592,6 +611,24 @@ export const appRouter = router({
       const latestDate = await getLatestGA4SyncDate();
       return { latestDate };
     }),
+  }),
+
+  // Alert System
+  alerts: router({
+    // Get recent alerts from database
+    getRecent: publicProcedure
+      .input(z.object({ limit: z.number().optional() }).optional())
+      .query(async ({ input }) => {
+        const limit = input?.limit || 10;
+        return await getRecentAlerts(limit);
+      }),
+
+    // Manually trigger alert checks (for testing)
+    checkNow: publicProcedure
+      .mutation(async () => {
+        await checkAllAlerts();
+        return { success: true, message: "Alert checks completed" };
+      }),
   }),
 });
 

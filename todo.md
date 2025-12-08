@@ -483,3 +483,29 @@
 - [x] Add spinner/progress indicator
 - [x] Allow user to navigate away while data is loading
 - [x] Add helpful text explaining user can navigate while loading
+
+## LLM Report Caching System (2025-12-08)
+
+- [x] Create cache utility module with TTL support (30min)
+- [x] Add cache layer to optimization.dailyReport procedure
+- [ ] Add cache invalidation on new data sync
+- [x] Test cache hit/miss scenarios - 8 tests passing
+- [ ] Verify 80%+ cost reduction and <1s response time (pending real campaign data)
+
+## Automated Alert System (2025-12-08)
+
+- [x] Create alert checking function for critical metrics
+- [x] Implement notifyOwner integration for CPP > $60
+- [x] Implement notifyOwner integration for Click-to-Purchase < 5%
+- [x] Implement notifyOwner integration for Creative Frequency > 3.0
+- [x] Add alert history tracking in database (alerts table)
+- [x] Create scheduled job to check alerts every 30min
+- [x] Test alert triggering with mock data - Thresholds validated
+- [ ] Add alert status display to dashboard
+
+## Hourly Performance Heatmap (2025-12-08)
+
+- [x] Analyze ad_performance table for hour_of_day field - NOT AVAILABLE (data aggregated by day only)
+- [ ] SKIPPED - Requires n8n workflow changes to capture hourly data
+- [ ] Future: Add hour_of_day field to n8n Meta/Google Ads workflows
+- [ ] Future: Build HourlyHeatmap component once data is available
