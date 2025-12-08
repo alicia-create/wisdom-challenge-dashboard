@@ -43,6 +43,12 @@ import {
 } from "./facebook-db";
 import { isFacebookConfigured } from "./facebook";
 import { supabase } from "./supabase";
+import { isGA4Configured } from "./ga4";
+import {
+  syncGA4Metrics,
+  getAggregatedGA4Metrics,
+  getLatestGA4SyncDate,
+} from "./ga4-db";
 import {
   analyzeAdPerformance,
   detectFunnelLeaks,
@@ -528,6 +534,50 @@ export const appRouter = router({
 
         return await explainFunnelLeak(leak);
       }),
+  }),
+
+  // Google Analytics 4 Integration
+  ga4: router({
+    // Check if GA4 is configured
+    isConfigured: publicProcedure.query(() => {
+      return { configured: isGA4Configured() };
+    }),
+
+    // Sync GA4 metrics for a date range
+    sync: publicProcedure
+      .input(
+        z.object({
+          startDate: z.string(),
+          endDate: z.string(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const insertedCount = await syncGA4Metrics(input.startDate, input.endDate);
+        return {
+          success: true,
+          insertedCount,
+          message: `Synced ${insertedCount} GA4 metrics`,
+        };
+      }),
+
+    // Get aggregated GA4 metrics
+    getMetrics: publicProcedure
+      .input(
+        z.object({
+          startDate: z.string(),
+          endDate: z.string(),
+        })
+      )
+      .query(async ({ input }) => {
+        const metrics = await getAggregatedGA4Metrics(input.startDate, input.endDate);
+        return metrics || [];
+      }),
+
+    // Get latest sync date
+    getLatestSync: publicProcedure.query(async () => {
+      const latestDate = await getLatestGA4SyncDate();
+      return { latestDate };
+    }),
   }),
 });
 

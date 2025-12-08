@@ -367,3 +367,26 @@
 - [ ] Test LLM integration with real campaign data
 - [ ] Add error handling and retry logic for LLM failures
 - [ ] Implement caching for daily reports to reduce LLM costs
+
+## Navigation Reorganization & GA4 Integration (2025-12-07)
+
+- [x] Move Documentation page under Raw Data section
+- [x] Update DashboardHeader to remove Docs tab
+- [x] Add "Documentation" link to Raw Data page
+- [x] Request GA4 Property ID from user
+- [x] Request GA4 Service Account JSON key from user
+- [x] Create ga4.ts module for Google Analytics API integration
+- [x] Implement fetchLandingPageMetrics() function
+- [x] Implement testGA4Connection() function
+- [x] Create ga4-db.ts module for database operations
+- [x] Implement syncGA4Metrics() to store data in ga4_landing_page_metrics table
+- [x] Implement getAggregatedGA4Metrics() function
+- [x] Implement getLatestGA4SyncDate() function
+- [x] Create tRPC procedures for GA4 (isConfigured, sync, getMetrics, getLatestSync)
+- [x] Create GA4LandingPageMetrics page component
+- [x] Add GA4 Landing Pages card to Raw Data page
+- [x] Add route for /raw-data/ga4-landing-pages
+- [x] Write vitest test for GA4 connection (ga4.test.ts)
+- [x] Fix number parsing in GA4LandingPageMetrics component (parseFloat/parseInt)
+- [x] Test GA4 sync with real data in browser - Successfully synced 127 landing pages
+- [ ] Add GA4 metrics to Optimization Agent analysis (future enhancement)

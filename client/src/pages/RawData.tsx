@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { useLocation } from "wouter";
-import { Database, ShoppingCart, TrendingUp, AlertCircle, Users, Target } from "lucide-react";
+import { Database, ShoppingCart, TrendingUp, AlertCircle, Users, Target, FileText, BarChart3 } from "lucide-react";
 
 export default function RawData() {
   const [, setLocation] = useLocation();
@@ -55,6 +55,22 @@ export default function RawData() {
       path: "/raw-data/facebook-audiences",
       color: "text-indigo-600",
       bgColor: "bg-indigo-50 dark:bg-indigo-950",
+    },
+    {
+      title: "GA4 Landing Pages",
+      description: "Landing page performance metrics from Google Analytics 4",
+      icon: BarChart3,
+      path: "/raw-data/ga4-landing-pages",
+      color: "text-orange-600",
+      bgColor: "bg-orange-50 dark:bg-orange-950",
+    },
+    {
+      title: "Documentation",
+      description: "PRD, optimization rules, and API research documentation",
+      icon: FileText,
+      path: "/documentation",
+      color: "text-gray-600",
+      bgColor: "bg-gray-50 dark:bg-gray-950",
     },
   ];
 

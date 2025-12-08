@@ -16,6 +16,7 @@ import DebugGoogleCampaigns from "./pages/DebugGoogleCampaigns";
 import DebugMetaCampaigns from "./pages/DebugMetaCampaigns";
 import ErrorLogs from "./pages/ErrorLogs";
 import FacebookAudiences from "./pages/FacebookAudiences";
+import GA4LandingPageMetrics from "./pages/GA4LandingPageMetrics";
 import Documentation from "./pages/Documentation";
 import OptimizationAgent from "./pages/OptimizationAgent";
 
@@ -28,6 +29,7 @@ function Router() {
       <Route path={"/email-lead-quality"} component={EmailLeadQuality} />
       <Route path={"/raw-data"} component={RawData} />
       <Route path={"/raw-data/facebook-audiences"} component={FacebookAudiences} />
+      <Route path={"/raw-data/ga4-landing-pages"} component={GA4LandingPageMetrics} />
       <Route path={"/documentation"} component={Documentation} />
       <Route path={"/optimization-agent"} component={OptimizationAgent} />
       <Route path={"/debug/leads"} component={DebugLeads} />

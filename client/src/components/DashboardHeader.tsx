@@ -22,7 +22,6 @@ const tabs: Tab[] = [
   { label: "Email & Leads", path: "/email-lead-quality" },
   { label: "Raw Data", path: "/raw-data" },
   { label: "🎯 Agent", path: "/optimization-agent" },
-  { label: "Docs", path: "/documentation" },
 ];
 
 export function DashboardHeader() {
