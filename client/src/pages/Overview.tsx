@@ -4,7 +4,7 @@ import { DATE_RANGES, type DateRange } from "@shared/constants";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
-import { Users, DollarSign, ShoppingCart, TrendingUp, Info } from "lucide-react";
+import { Users, DollarSign, ShoppingCart, TrendingUp, Info, AlertTriangle, AlertCircle, TrendingDown } from "lucide-react";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { Breadcrumb } from "@/components/Breadcrumb";
@@ -34,6 +34,9 @@ export default function Overview() {
   const { data: channelPerformance, isLoading: channelLoading } = trpc.overview.channelPerformance.useQuery({
     dateRange,
   });
+
+  // Fetch recent alerts
+  const { data: recentAlerts, isLoading: alertsLoading } = trpc.alerts.getRecent.useQuery({ limit: 3 });
 
 
 
@@ -352,7 +355,70 @@ export default function Overview() {
           </Card>
         </div>
 
-
+        {/* Critical Alerts Card */}
+        <Card className="mb-6 border-l-4 border-l-red-500">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-red-600" />
+                <CardTitle>Critical Alerts</CardTitle>
+              </div>
+              <a 
+                href="/optimization-agent" 
+                className="text-sm text-primary hover:underline"
+              >
+                View in Optimization Agent →
+              </a>
+            </div>
+            <CardDescription>Recent performance warnings and recommendations</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {alertsLoading ? (
+              <div className="space-y-3">
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-16 w-full" />
+              </div>
+            ) : recentAlerts && recentAlerts.length > 0 ? (
+              <div className="space-y-3">
+                {recentAlerts.map((alert: any) => (
+                  <div 
+                    key={alert.id}
+                    className="flex items-start gap-3 p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="mt-0.5">
+                      {alert.metric_type === 'cpp' && <DollarSign className="h-5 w-5 text-red-600" />}
+                      {alert.metric_type === 'click_to_purchase' && <TrendingDown className="h-5 w-5 text-amber-600" />}
+                      {alert.metric_type === 'creative_frequency' && <AlertCircle className="h-5 w-5 text-orange-600" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium text-sm">{alert.alert_type}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(alert.triggered_at).toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {alert.message}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <AlertCircle className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">No critical alerts at the moment</p>
+                <p className="text-xs mt-1">System is monitoring CPP, Click-to-Purchase, and Creative Frequency</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

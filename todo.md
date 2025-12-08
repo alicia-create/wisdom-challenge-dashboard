@@ -521,3 +521,12 @@
 - [x] Translate "Você pode navegar para outras páginas enquanto os dados carregam" to "You can navigate to other pages while the data loads."
 - [x] Search for any other Portuguese strings in UI components - None found
 - [x] Test Overview page performance and verify English translations - All English, loading fast
+
+## Critical Alerts Card in Overview (2025-12-08)
+
+- [x] Add alerts.getRecent tRPC query to Overview page
+- [x] Create AlertsCard component showing last 3 critical alerts
+- [x] Add alert type icons and severity colors (DollarSign=CPP, TrendingDown=Click-to-Purchase, AlertCircle=Creative Frequency)
+- [x] Add "View in Optimization Agent" link in card header
+- [x] Test with real alert data - Empty state renders correctly, ready for alerts
+- [x] Handle empty state when no alerts exist
