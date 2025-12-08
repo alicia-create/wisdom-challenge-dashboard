@@ -418,3 +418,16 @@
 - [x] Add bounce rate distribution chart
 - [x] Fix NaN% issue by handling empty GA4 arrays correctly
 - [x] Test Analytics Dashboard with real data - Working correctly
+
+## GA4 Domain Filtering & Interactive Filters (2025-12-07)
+
+- [x] Add frontend filtering to only show relevant pages (step, checkout, wisdom, kot, wait, nextsteps, get-started, /, /login)
+- [x] Filter out irrelevant pages (organization/*, contacts/*, settings/*, etc.)
+- [x] Add search input filter for page name with Search icon
+- [x] Add bounce rate filter dropdown (High >80%, Medium 50-80%, Low <50%, All)
+- [x] Add engagement rate filter dropdown (High >50%, Medium 20-50%, Low <20%, All)
+- [x] Add conversions filter dropdown (With Conversions, Without Conversions, All)
+- [x] Implement client-side filtering logic with filteredMetrics
+- [x] Add "Showing X of Y pages" counter below filters
+- [x] Add empty state for no matching filters
+- [x] Test filters with real GA4 data - All filters working correctly (tested Conversions filter)

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { trpc } from "@/lib/trpc";
-import { RefreshCw, TrendingUp, Clock } from "lucide-react";
+import { RefreshCw, TrendingUp, Clock, Search } from "lucide-react";
 import { toast } from "sonner";
 import {
   Table,
@@ -17,6 +17,10 @@ import {
 
 export default function GA4LandingPageMetrics() {
   const [syncing, setSyncing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [bounceRateFilter, setBounceRateFilter] = useState<string>("all");
+  const [engagementRateFilter, setEngagementRateFilter] = useState<string>("all");
+  const [conversionsFilter, setConversionsFilter] = useState<string>("all");
 
   // Check if GA4 is configured
   const { data: configData } = trpc.ga4.isConfigured.useQuery();
@@ -60,6 +64,48 @@ export default function GA4LandingPageMetrics() {
     setSyncing(true);
     syncMutation.mutate({ startDate: syncStartDate, endDate: syncEndDate });
   };
+
+  // Filter metrics based on user selections
+  const filteredMetrics = metrics?.filter((metric: any) => {
+    // Domain filtering - only show relevant domains
+    const page = metric.landing_page.toLowerCase();
+    const isRelevantDomain = 
+      page.includes('step') || 
+      page.includes('checkout') || 
+      page.includes('wisdom') ||
+      page.includes('kot') ||
+      page.includes('wait') ||
+      page.includes('nextsteps') ||
+      page.includes('get-started') ||
+      page === '/' ||
+      page === '/login';
+    
+    if (!isRelevantDomain) return false;
+
+    // Search filter
+    if (searchQuery && !metric.landing_page.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false;
+    }
+
+    // Bounce rate filter
+    const bounceRate = parseFloat(metric.avg_bounce_rate || 0) * 100;
+    if (bounceRateFilter === 'high' && bounceRate <= 80) return false;
+    if (bounceRateFilter === 'medium' && (bounceRate < 50 || bounceRate > 80)) return false;
+    if (bounceRateFilter === 'low' && bounceRate >= 50) return false;
+
+    // Engagement rate filter
+    const engagementRate = parseFloat(metric.avg_engagement_rate || 0) * 100;
+    if (engagementRateFilter === 'high' && engagementRate <= 50) return false;
+    if (engagementRateFilter === 'medium' && (engagementRate < 20 || engagementRate > 50)) return false;
+    if (engagementRateFilter === 'low' && engagementRate >= 20) return false;
+
+    // Conversions filter
+    const conversions = parseInt(metric.total_conversions || 0);
+    if (conversionsFilter === 'with' && conversions === 0) return false;
+    if (conversionsFilter === 'without' && conversions > 0) return false;
+
+    return true;
+  }) || [];
 
   if (!isConfigured) {
     return (
@@ -124,6 +170,81 @@ export default function GA4LandingPageMetrics() {
           </div>
         </div>
 
+        {/* Filters */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Filters</CardTitle>
+            <CardDescription>Filter landing pages by performance metrics</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Search */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Search Page</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Search by page name..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 border rounded-md text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Bounce Rate Filter */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Bounce Rate</label>
+                <select
+                  value={bounceRateFilter}
+                  onChange={(e) => setBounceRateFilter(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-md text-sm"
+                >
+                  <option value="all">All</option>
+                  <option value="high">High (&gt;80%)</option>
+                  <option value="medium">Medium (50-80%)</option>
+                  <option value="low">Low (&lt;50%)</option>
+                </select>
+              </div>
+
+              {/* Engagement Rate Filter */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Engagement Rate</label>
+                <select
+                  value={engagementRateFilter}
+                  onChange={(e) => setEngagementRateFilter(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-md text-sm"
+                >
+                  <option value="all">All</option>
+                  <option value="high">High (&gt;50%)</option>
+                  <option value="medium">Medium (20-50%)</option>
+                  <option value="low">Low (&lt;20%)</option>
+                </select>
+              </div>
+
+              {/* Conversions Filter */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Conversions</label>
+                <select
+                  value={conversionsFilter}
+                  onChange={(e) => setConversionsFilter(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-md text-sm"
+                >
+                  <option value="all">All</option>
+                  <option value="with">With Conversions</option>
+                  <option value="without">Without Conversions</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Results count */}
+            <div className="mt-4 text-sm text-muted-foreground">
+              Showing {filteredMetrics.length} of {metrics?.length || 0} pages
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Metrics Table */}
         <Card>
           <CardHeader>
@@ -141,6 +262,10 @@ export default function GA4LandingPageMetrics() {
               <div className="text-center py-12 text-muted-foreground">
                 <p>No GA4 metrics found. Click "Sync from GA4" to fetch data.</p>
               </div>
+            ) : filteredMetrics.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <p>No pages match the selected filters. Try adjusting your filters.</p>
+              </div>
             ) : (
               <div className="rounded-md border">
                 <Table>
@@ -155,7 +280,7 @@ export default function GA4LandingPageMetrics() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {metrics.map((metric: any, index: number) => (
+                    {filteredMetrics.map((metric: any, index: number) => (
                       <TableRow key={index}>
                         <TableCell className="font-medium max-w-md truncate">
                           {metric.landing_page}
