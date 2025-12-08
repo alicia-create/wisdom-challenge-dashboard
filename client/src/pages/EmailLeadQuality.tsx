@@ -32,12 +32,12 @@ export default function EmailLeadQuality() {
         <div className="flex flex-col items-center justify-center py-12 space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           <div className="text-center space-y-2">
-            <p className="text-lg font-medium">Acessando API do Keap...</p>
+            <p className="text-lg font-medium">Accessing Keap API...</p>
             <p className="text-sm text-muted-foreground">
-              Carregando dados de email e qualidade de leads. Isso pode levar alguns segundos.
+              Loading email and lead quality data. This may take a few seconds.
             </p>
             <p className="text-xs text-muted-foreground">
-              Você pode navegar para outras páginas enquanto os dados carregam.
+              You can navigate to other pages while the data loads.
             </p>
           </div>
         </div>

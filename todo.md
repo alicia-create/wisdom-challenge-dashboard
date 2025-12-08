@@ -509,3 +509,15 @@
 - [ ] SKIPPED - Requires n8n workflow changes to capture hourly data
 - [ ] Future: Add hour_of_day field to n8n Meta/Google Ads workflows
 - [ ] Future: Build HourlyHeatmap component once data is available
+
+## Optimize Overview & Translate to English (2025-12-08)
+
+- [x] Verify if daily_kpis table is being populated by Supabase edge function - CONFIRMED
+- [x] Modify getOverviewMetrics() to use daily_kpis instead of real-time queries - Created getOverviewMetricsOptimized()
+- [ ] Add cache layer for Overview metrics (5min TTL) - Not needed, daily_kpis is already pre-aggregated
+- [x] Find all Portuguese text in codebase (grep search) - Found 3 strings in EmailLeadQuality.tsx
+- [x] Translate "Acessando API do Keap..." to "Accessing Keap API..."
+- [x] Translate "Carregando dados de email e qualidade de leads" to "Loading email and lead quality data. This may take a few seconds."
+- [x] Translate "Você pode navegar para outras páginas enquanto os dados carregam" to "You can navigate to other pages while the data loads."
+- [x] Search for any other Portuguese strings in UI components - None found
+- [x] Test Overview page performance and verify English translations - All English, loading fast

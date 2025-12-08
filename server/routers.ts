@@ -6,7 +6,6 @@ import { publicProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import {
   getDailyKpis,
-  getOverviewMetrics,
   getLeadsWithAttribution,
   getOrdersWithAttribution,
   getAdPerformanceByCampaign,
@@ -26,6 +25,7 @@ import {
   getMetaCampaignsPaginated,
   getFunnelConversionMetrics,
 } from "./supabase";
+import { getOverviewMetricsOptimized } from "./supabase-optimized";
 import {
   getContactActivities,
   getContactActivitySummary,
@@ -158,7 +158,7 @@ export const appRouter = router({
           ? getDateRangeValues(input.dateRange)
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS); // Default to 30 days
         
-        return await getOverviewMetrics(startDate, endDate);
+        return await getOverviewMetricsOptimized(startDate, endDate);
       }),
 
     // Get daily KPIs for charts (spend & leads trend, ROAS trend)
