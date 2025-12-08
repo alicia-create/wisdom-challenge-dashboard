@@ -403,3 +403,18 @@
 - [x] Integrate funnel component into Overview page (before charts section)
 - [x] Test funnel visualization with real campaign data - Working correctly
 - [x] Test GA4 filtering with new domain filter (wisdom + 31dwc26.obv.io) - Sync successful
+
+## Analytics Dashboard Reorganization (2025-12-07)
+
+- [x] Create AnalyticsDashboard.tsx page component
+- [x] Add Analytics Dashboard card to Raw Data page (first card)
+- [x] Add route for /raw-data/analytics-dashboard
+- [x] Move FunnelVisualization component from Overview to Analytics Dashboard
+- [x] Remove funnel from Overview page
+- [x] Add GA4 landing page performance summary to Analytics Dashboard
+- [x] Add engagement metrics section to Analytics Dashboard (avg engagement, bounce rate)
+- [x] Add top 5 landing pages by conversions chart
+- [x] Add engagement rate distribution chart
+- [x] Add bounce rate distribution chart
+- [x] Fix NaN% issue by handling empty GA4 arrays correctly
+- [x] Test Analytics Dashboard with real data - Working correctly

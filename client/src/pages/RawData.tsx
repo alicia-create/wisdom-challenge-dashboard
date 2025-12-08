@@ -9,6 +9,14 @@ export default function RawData() {
 
   const dataPages = [
     {
+      title: "Analytics Dashboard",
+      description: "Comprehensive analytics with conversion funnel and landing page performance",
+      icon: BarChart3,
+      path: "/raw-data/analytics-dashboard",
+      color: "text-purple-600",
+      bgColor: "bg-purple-50 dark:bg-purple-950",
+    },
+    {
       title: "Leads Data",
       description: "View all lead records with contact information and source tracking",
       icon: Users,

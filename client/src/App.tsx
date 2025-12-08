@@ -19,6 +19,7 @@ import FacebookAudiences from "./pages/FacebookAudiences";
 import GA4LandingPageMetrics from "./pages/GA4LandingPageMetrics";
 import Documentation from "./pages/Documentation";
 import OptimizationAgent from "./pages/OptimizationAgent";
+import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 
 function Router() {
   return (
@@ -28,6 +29,7 @@ function Router() {
       <Route path={"/engagement-sales"} component={EngagementSales} />
       <Route path={"/email-lead-quality"} component={EmailLeadQuality} />
       <Route path={"/raw-data"} component={RawData} />
+      <Route path={"/raw-data/analytics-dashboard"} component={AnalyticsDashboard} />
       <Route path={"/raw-data/facebook-audiences"} component={FacebookAudiences} />
       <Route path={"/raw-data/ga4-landing-pages"} component={GA4LandingPageMetrics} />
       <Route path={"/documentation"} component={Documentation} />

@@ -10,7 +10,6 @@ import { DashboardHeader } from "@/components/DashboardHeader";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { FunnelVisualization } from "@/components/FunnelVisualization";
 
 export default function Overview() {
   const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.LAST_30_DAYS);
@@ -36,10 +35,7 @@ export default function Overview() {
     dateRange,
   });
 
-  // Fetch funnel conversion metrics
-  const { data: funnelData, isLoading: funnelLoading } = trpc.overview.funnelMetrics.useQuery({
-    dateRange,
-  });
+
 
   // Format currency
   const formatCurrency = (value: number) => {
@@ -356,13 +352,7 @@ export default function Overview() {
           </Card>
         </div>
 
-        {/* Funnel Visualization */}
-        <div className="mb-8">
-          <FunnelVisualization 
-            steps={funnelData?.steps || []} 
-            isLoading={funnelLoading}
-          />
-        </div>
+
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
