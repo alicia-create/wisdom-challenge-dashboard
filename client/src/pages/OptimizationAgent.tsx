@@ -5,6 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
 import {
   AlertTriangle,
   TrendingDown,
@@ -13,34 +14,38 @@ import {
   AlertCircle,
   Info,
   CheckCircle2,
-  XCircle,
+  Sparkles,
+  Brain,
   Loader2,
 } from "lucide-react";
 import { useState } from "react";
+import { Streamdown } from "streamdown";
 
 export default function OptimizationAgent() {
   const [expandedSections, setExpandedSections] = useState({
+    insights: true,
     critical: true,
-    warnings: true,
+    warnings: false,
     leaks: true,
     fatigue: false,
   });
 
-  // Fetch optimization data
-  const { data: adRecommendations, isLoading: loadingAds } = trpc.optimization.adRecommendations.useQuery();
-  const { data: funnelLeaks, isLoading: loadingLeaks } = trpc.optimization.funnelLeaks.useQuery();
-  const { data: creativeFatigue, isLoading: loadingFatigue } = trpc.optimization.creativeFatigue.useQuery();
+  // Fetch LLM-powered daily report
+  const { data: dailyReport, isLoading: loadingReport } = trpc.optimization.dailyReport.useQuery();
 
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
   // Separate recommendations by severity
-  const criticalRecs = adRecommendations?.filter((r) => r.severity === "critical") || [];
-  const warningRecs = adRecommendations?.filter((r) => r.severity === "warning") || [];
-  const infoRecs = adRecommendations?.filter((r) => r.severity === "info") || [];
+  const criticalRecs = dailyReport?.recommendations?.filter((r) => r.severity === "critical") || [];
+  const warningRecs = dailyReport?.recommendations?.filter((r) => r.severity === "warning") || [];
+  const infoRecs = dailyReport?.recommendations?.filter((r) => r.severity === "info") || [];
 
-  const isLoading = loadingAds || loadingLeaks || loadingFatigue;
+  const metrics = dailyReport?.metrics;
+  const insights = dailyReport?.insights;
+  const funnelLeaks = dailyReport?.funnel_leaks || [];
+  const creativeFatigue = dailyReport?.creative_fatigue || [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -49,7 +54,13 @@ export default function OptimizationAgent() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2">🎯 Campaign Optimization Agent</h1>
+            <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
+              🎯 Campaign Optimization Agent
+              <Badge variant="outline" className="text-xs">
+                <Sparkles className="h-3 w-3 mr-1" />
+                AI-Powered
+              </Badge>
+            </h1>
             <p className="text-muted-foreground">
               AI-powered analysis of 31DWC2026 campaign performance with actionable recommendations
             </p>
@@ -69,24 +80,172 @@ export default function OptimizationAgent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid md:grid-cols-3 gap-4">
-              <div>
-                <p className="text-sm font-semibold mb-1">Click-to-Purchase Rate</p>
-                <p className="text-2xl font-bold">--</p>
-                <p className="text-xs text-muted-foreground">Target: 10%</p>
+            {loadingReport ? (
+              <div className="grid md:grid-cols-3 gap-4">
+                <Skeleton className="h-20" />
+                <Skeleton className="h-20" />
+                <Skeleton className="h-20" />
               </div>
-              <div>
-                <p className="text-sm font-semibold mb-1">Cost Per Purchase</p>
-                <p className="text-2xl font-bold">--</p>
-                <p className="text-xs text-muted-foreground">Target: $30-$60</p>
+            ) : (
+              <div className="grid md:grid-cols-3 gap-4">
+                <div>
+                  <p className="text-sm font-semibold mb-1">Click-to-Purchase Rate</p>
+                  <p className="text-2xl font-bold">
+                    {metrics ? `${(metrics.click_to_purchase_rate * 100).toFixed(1)}%` : "--"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Target: 10%</p>
+                  {metrics && metrics.click_to_purchase_rate < 0.1 && (
+                    <Badge variant="destructive" className="mt-1">
+                      Below Target
+                    </Badge>
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold mb-1">Cost Per Purchase</p>
+                  <p className="text-2xl font-bold">{metrics ? `$${metrics.avg_cpp.toFixed(2)}` : "--"}</p>
+                  <p className="text-xs text-muted-foreground">Target: $30-$60</p>
+                  {metrics && (metrics.avg_cpp < 30 || metrics.avg_cpp > 60) && (
+                    <Badge variant={metrics.avg_cpp < 30 ? "default" : "destructive"} className="mt-1">
+                      {metrics.avg_cpp < 30 ? "Below Target" : "Above Target"}
+                    </Badge>
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold mb-1">Total Purchases (7d)</p>
+                  <p className="text-2xl font-bold">{metrics ? metrics.total_purchases : "--"}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Spend: {metrics ? `$${metrics.total_spend.toLocaleString()}` : "--"}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-semibold mb-1">Campaign Spend</p>
-                <p className="text-2xl font-bold">--</p>
-                <p className="text-xs text-muted-foreground">Target: $150K/day</p>
-              </div>
-            </div>
+            )}
           </CardContent>
+        </Card>
+
+        {/* AI Insights */}
+        <Card className="border-primary/50 bg-gradient-to-br from-primary/5 to-primary/10">
+          <CardHeader className="cursor-pointer" onClick={() => toggleSection("insights")}>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Brain className="h-5 w-5 text-primary" />
+                🧠 AI Strategic Insights
+              </CardTitle>
+              <Badge variant="outline">
+                <Sparkles className="h-3 w-3 mr-1" />
+                LLM-Powered
+              </Badge>
+            </div>
+            <CardDescription>Comprehensive analysis with prioritized action plan</CardDescription>
+          </CardHeader>
+          {expandedSections.insights && (
+            <CardContent className="space-y-6">
+              {loadingReport ? (
+                <>
+                  <Skeleton className="h-32 w-full" />
+                  <Skeleton className="h-48 w-full" />
+                  <Skeleton className="h-32 w-full" />
+                </>
+              ) : insights ? (
+                <>
+                  {/* Executive Summary */}
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4" />
+                      Executive Summary
+                    </h3>
+                    <Alert>
+                      <AlertDescription className="text-base">{insights.executive_summary}</AlertDescription>
+                    </Alert>
+                  </div>
+
+                  <Separator />
+
+                  {/* Top Priorities */}
+                  <div>
+                    <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                      <Target className="h-4 w-4" />
+                      Top 3 Priorities
+                    </h3>
+                    <div className="space-y-3">
+                      {insights.top_priorities.map((priority) => (
+                        <Card key={priority.rank} className="border-l-4 border-l-primary">
+                          <CardContent className="pt-4">
+                            <div className="flex items-start gap-3">
+                              <Badge className="text-lg px-3 py-1">{priority.rank}</Badge>
+                              <div className="flex-1">
+                                <h4 className="font-semibold mb-1">{priority.issue}</h4>
+                                <p className="text-sm text-muted-foreground mb-2">
+                                  <strong>Impact:</strong> {priority.impact}
+                                </p>
+                                <p className="text-sm mb-2">
+                                  <strong>Action:</strong> {priority.action}
+                                </p>
+                                <p className="text-sm text-primary">
+                                  <strong>Expected Result:</strong> {priority.expected_result}
+                                </p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Narrative Analysis */}
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                      <Brain className="h-4 w-4" />
+                      Strategic Analysis
+                    </h3>
+                    <div className="prose prose-sm max-w-none">
+                      <Streamdown>{insights.narrative}</Streamdown>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Key Metrics Analysis */}
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4" />
+                      Key Metrics Deep Dive
+                    </h3>
+                    <div className="prose prose-sm max-w-none">
+                      <Streamdown>{insights.key_metrics_analysis}</Streamdown>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Next Steps */}
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4" />
+                      Next Steps (24-48 Hours)
+                    </h3>
+                    <ul className="space-y-2">
+                      {insights.next_steps.map((step, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <Badge variant="outline" className="mt-0.5">
+                            {idx + 1}
+                          </Badge>
+                          <span className="text-sm">{step}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </>
+              ) : (
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>AI Insights Unavailable</AlertTitle>
+                  <AlertDescription>Unable to generate AI insights at this time. Please review the rule-based recommendations below.</AlertDescription>
+                </Alert>
+              )}
+            </CardContent>
+          )}
         </Card>
 
         {/* Critical Actions */}
@@ -103,7 +262,7 @@ export default function OptimizationAgent() {
           </CardHeader>
           {expandedSections.critical && (
             <CardContent className="space-y-4">
-              {isLoading ? (
+              {loadingReport ? (
                 <>
                   <Skeleton className="h-24 w-full" />
                   <Skeleton className="h-24 w-full" />
@@ -161,7 +320,7 @@ export default function OptimizationAgent() {
           </CardHeader>
           {expandedSections.warnings && (
             <CardContent className="space-y-4">
-              {isLoading ? (
+              {loadingReport ? (
                 <>
                   <Skeleton className="h-24 w-full" />
                   <Skeleton className="h-24 w-full" />
@@ -204,20 +363,20 @@ export default function OptimizationAgent() {
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <TrendingDown className="h-5 w-5" />
-                🔍 Funnel Leaks Detected ({funnelLeaks?.length || 0})
+                🔍 Funnel Leaks Detected ({funnelLeaks.length})
               </CardTitle>
-              <Badge>{funnelLeaks?.length || 0}</Badge>
+              <Badge>{funnelLeaks.length}</Badge>
             </div>
             <CardDescription>Identify where users are dropping off in the conversion funnel</CardDescription>
           </CardHeader>
           {expandedSections.leaks && (
             <CardContent className="space-y-4">
-              {isLoading ? (
+              {loadingReport ? (
                 <>
                   <Skeleton className="h-32 w-full" />
                   <Skeleton className="h-32 w-full" />
                 </>
-              ) : !funnelLeaks || funnelLeaks.length === 0 ? (
+              ) : funnelLeaks.length === 0 ? (
                 <Alert>
                   <CheckCircle2 className="h-4 w-4" />
                   <AlertTitle>No Funnel Leaks</AlertTitle>
@@ -236,9 +395,7 @@ export default function OptimizationAgent() {
                       <p className="text-sm mb-3">
                         <strong>Action Required:</strong> {leak.action_required}
                       </p>
-                      <div className="text-xs text-muted-foreground mb-3">
-                        Affected Ads: {leak.affected_ads}
-                      </div>
+                      <div className="text-xs text-muted-foreground mb-3">Affected Ads: {leak.affected_ads}</div>
                       <Button size="sm" variant="outline">
                         View Funnel Visualization
                       </Button>
@@ -256,20 +413,20 @@ export default function OptimizationAgent() {
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
-                💡 Creative Fatigue Alerts ({creativeFatigue?.length || 0})
+                💡 Creative Fatigue Alerts ({creativeFatigue.length})
               </CardTitle>
-              <Badge variant="outline">{creativeFatigue?.length || 0}</Badge>
+              <Badge variant="outline">{creativeFatigue.length}</Badge>
             </div>
             <CardDescription>Creatives showing signs of audience saturation</CardDescription>
           </CardHeader>
           {expandedSections.fatigue && (
             <CardContent className="space-y-4">
-              {isLoading ? (
+              {loadingReport ? (
                 <>
                   <Skeleton className="h-24 w-full" />
                   <Skeleton className="h-24 w-full" />
                 </>
-              ) : !creativeFatigue || creativeFatigue.length === 0 ? (
+              ) : creativeFatigue.length === 0 ? (
                 <Alert>
                   <CheckCircle2 className="h-4 w-4" />
                   <AlertTitle>No Fatigue Detected</AlertTitle>

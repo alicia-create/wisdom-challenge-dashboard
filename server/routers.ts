@@ -42,11 +42,17 @@ import {
   getFacebookAudiencesFromDb,
 } from "./facebook-db";
 import { isFacebookConfigured } from "./facebook";
+import { supabase } from "./supabase";
 import {
   analyzeAdPerformance,
   detectFunnelLeaks,
   detectCreativeFatigue,
 } from "./optimization-engine";
+import {
+  generateDailyReport,
+  explainRecommendation,
+  explainFunnelLeak,
+} from "./optimization-llm";
 
 export const appRouter = router({
   system: systemRouter,
@@ -426,6 +432,101 @@ export const appRouter = router({
     creativeFatigue: publicProcedure
       .query(async () => {
         return await detectCreativeFatigue();
+      }),
+
+    // Get LLM-powered daily report with insights
+    dailyReport: publicProcedure
+      .query(async () => {
+        // Fetch all optimization data
+        const adRecommendations = await analyzeAdPerformance();
+        const funnelLeaks = await detectFunnelLeaks();
+        const creativeFatigue = await detectCreativeFatigue();
+
+        // Calculate campaign metrics from ad performance data
+        const { startDate, endDate } = getDateRangeValues(DATE_RANGES.LAST_7_DAYS);
+        const { data: ads } = await supabase
+          .from("ad_performance")
+          .select("*")
+          .eq("campaign_name", "31DWC2026")
+          .gte("date", startDate)
+          .lte("date", endDate);
+
+        let total_spend = 0;
+        let total_clicks = 0;
+        let total_purchases = 0;
+
+        if (ads) {
+          for (const ad of ads) {
+            total_spend += ad.spend || 0;
+            total_clicks += ad.inline_link_clicks || 0;
+            total_purchases += ad.purchases || 0;
+          }
+        }
+
+        const click_to_purchase_rate = total_clicks > 0 ? total_purchases / total_clicks : 0;
+        const avg_cpp = total_purchases > 0 ? total_spend / total_purchases : 0;
+
+        // Generate LLM-powered insights
+        const insights = await generateDailyReport(
+          adRecommendations,
+          funnelLeaks,
+          creativeFatigue,
+          {
+            total_spend,
+            total_clicks,
+            total_purchases,
+            click_to_purchase_rate,
+            avg_cpp,
+          }
+        );
+
+        return {
+          insights,
+          metrics: {
+            total_spend,
+            total_clicks,
+            total_purchases,
+            click_to_purchase_rate,
+            avg_cpp,
+          },
+          recommendations: adRecommendations,
+          funnel_leaks: funnelLeaks,
+          creative_fatigue: creativeFatigue,
+        };
+      }),
+
+    // Get detailed explanation for a specific recommendation
+    explainRecommendation: publicProcedure
+      .input(z.object({
+        recommendationId: z.string(),
+      }))
+      .query(async ({ input }) => {
+        // In a real implementation, fetch the recommendation from database
+        // For now, we'll need to re-run the analysis
+        const recommendations = await analyzeAdPerformance();
+        const recommendation = recommendations.find((r) => r.id === input.recommendationId);
+
+        if (!recommendation) {
+          throw new Error("Recommendation not found");
+        }
+
+        return await explainRecommendation(recommendation);
+      }),
+
+    // Get explanation for a funnel leak
+    explainFunnelLeak: publicProcedure
+      .input(z.object({
+        leakType: z.string(),
+      }))
+      .query(async ({ input }) => {
+        const leaks = await detectFunnelLeaks();
+        const leak = leaks.find((l) => l.type === input.leakType);
+
+        if (!leak) {
+          throw new Error("Funnel leak not found");
+        }
+
+        return await explainFunnelLeak(leak);
       }),
   }),
 });

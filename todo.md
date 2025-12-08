@@ -351,3 +351,19 @@
 - [ ] Add time-of-day performance analysis
 - [ ] Add budget redistribution suggestions
 - [ ] Add winner scaling recommendations
+
+## LLM Integration for Optimization Agent (2025-12-07)
+
+- [x] Design LLM prompt structure for optimization insights
+- [x] Create optimization-llm.ts module with LLM analysis functions
+- [x] Implement generateDailyReport() with LLM-powered narrative
+- [x] Implement explainRecommendation() for individual recommendations
+- [x] Implement explainFunnelLeak() for funnel leak explanations
+- [x] Create tRPC procedure for LLM-generated daily report (optimization.dailyReport)
+- [x] Create tRPC procedures for detailed explanations (explainRecommendation, explainFunnelLeak)
+- [x] Update OptimizationAgent UI to display LLM insights
+- [x] Add loading states and skeleton loaders for LLM generation
+- [x] Integrate Streamdown for markdown rendering of LLM narratives
+- [ ] Test LLM integration with real campaign data
+- [ ] Add error handling and retry logic for LLM failures
+- [ ] Implement caching for daily reports to reduce LLM costs
