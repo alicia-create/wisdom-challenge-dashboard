@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS ga4_landing_page_metrics (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  date DATE NOT NULL,\n  landing_page VARCHAR(500) NOT NULL,\n  session_source VARCHAR(100),\n  session_campaign VARCHAR(100),\n  sessions INT DEFAULT 0,\n  bounce_rate DECIMAL(5,4),\n  average_session_duration DECIMAL(10,2),\n  conversions INT DEFAULT 0,\n  engagement_rate DECIMAL(5,4),\n  created_at TIMESTAMP DEFAULT NOW(),\n  UNIQUE KEY unique_metric (date, landing_page, session_source, session_campaign)\n)",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2j9rVuZuRurkhgi.64ac36f98b86 --database DEFt9ARHDVCZprKAKnwLBw --execute CREATE TABLE IF NOT EXISTS ga4_landing_page_metrics (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  date DATE NOT NULL,\n  landing_page VARCHAR(500) NOT NULL,\n  session_source VARCHAR(100),\n  session_campaign VARCHAR(100),\n  sessions INT DEFAULT 0,\n  bounce_rate DECIMAL(5,4),\n  average_session_duration DECIMAL(10,2),\n  conversions INT DEFAULT 0,\n  engagement_rate DECIMAL(5,4),\n  created_at TIMESTAMP DEFAULT NOW(),\n  UNIQUE KEY unique_metric (date, landing_page, session_source, session_campaign)\n)",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 287
+}

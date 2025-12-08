@@ -42,6 +42,11 @@ import {
   getFacebookAudiencesFromDb,
 } from "./facebook-db";
 import { isFacebookConfigured } from "./facebook";
+import {
+  analyzeAdPerformance,
+  detectFunnelLeaks,
+  detectCreativeFatigue,
+} from "./optimization-engine";
 
 export const appRouter = router({
   system: systemRouter,
@@ -400,6 +405,27 @@ export const appRouter = router({
       }))
       .query(async ({ input }) => {
         return await getContactTimeline(input.contactId);
+      }),
+  }),
+
+  // Optimization Agent
+  optimization: router({
+    // Get ad-level recommendations
+    adRecommendations: publicProcedure
+      .query(async () => {
+        return await analyzeAdPerformance();
+      }),
+
+    // Get funnel leak analysis
+    funnelLeaks: publicProcedure
+      .query(async () => {
+        return await detectFunnelLeaks();
+      }),
+
+    // Get creative fatigue alerts
+    creativeFatigue: publicProcedure
+      .query(async () => {
+        return await detectCreativeFatigue();
       }),
   }),
 });

@@ -317,3 +317,37 @@
 - [ ] Add route for /raw-data/facebook-audiences
 - [ ] Test Facebook Audiences page displays correctly
 - [ ] Document data sources for Meta and Google campaigns
+
+## Optimization Agent Features (2025-12-07)
+
+- [x] Update optimization rules with adjusted priorities (Purchase Rate → Lead Rate → Connect Rate → CPC → CTR → CPM)
+- [x] Adjust funnel leak detection (Click-to-Purchase, Lead-to-Purchase)
+- [x] Update benchmarks (CTR 2%, Connect Rate 80%, Lead Rate 25% - remove fixed CPL/CPC)
+- [x] Add time-of-day performance analysis (for scaling decisions)
+- [x] Research and integrate VWO API for A/B test data
+- [x] Research Google Analytics 4 API for landing page metrics
+- [x] Create comprehensive AI PRD for Campaign Optimization Agent
+- [ ] Research Keap Lead Score API and webhook capabilities (Backlog)
+- [ ] Design campaign interference detection logic (broad audience overlap)
+- [ ] Build optimization agent backend with LLM recommendations
+- [ ] Create daily optimization report UI
+- [ ] Integrate Google Analytics API (pending user GA4 Property ID)
+- [ ] Integrate VWO API (pending user VWO export setup)
+- [ ] Test agent with real campaign data
+
+## PRD Download & Agent Implementation (2025-12-07)
+
+- [x] Create PRD download page/section in dashboard
+- [x] Add download button for PRD and supporting docs
+- [x] Implement optimization engine backend (FR1-FR3)
+- [x] Create optimization_recommendations table in database
+- [x] Create ga4_landing_page_metrics table in database
+- [x] Build tRPC optimization router with core procedures
+- [x] Create OptimizationAgent.tsx page with basic UI
+- [x] Add Optimization Agent tab to dashboard header
+- [x] Add route for /optimization-agent
+- [ ] Test ad-level analysis with real campaign data
+- [ ] Implement LLM-powered insights for recommendations
+- [ ] Add time-of-day performance analysis
+- [ ] Add budget redistribution suggestions
+- [ ] Add winner scaling recommendations

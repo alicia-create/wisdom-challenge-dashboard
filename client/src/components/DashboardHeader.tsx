@@ -1,7 +1,7 @@
 import { useLocation } from "wouter";
 import { APP_TITLE } from "@/const";
 import { cn } from "@/lib/utils";
-import { Bug } from "lucide-react";
+import { Bug, FileText } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +21,8 @@ const tabs: Tab[] = [
   { label: "Engagement", path: "/engagement-sales" },
   { label: "Email & Leads", path: "/email-lead-quality" },
   { label: "Raw Data", path: "/raw-data" },
+  { label: "🎯 Agent", path: "/optimization-agent" },
+  { label: "Docs", path: "/documentation" },
 ];
 
 export function DashboardHeader() {
