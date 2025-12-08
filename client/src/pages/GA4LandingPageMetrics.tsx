@@ -26,9 +26,16 @@ export default function GA4LandingPageMetrics() {
   const { data: syncData, refetch: refetchSyncDate } = trpc.ga4.getLatestSync.useQuery();
   const latestSync = syncData?.latestDate;
 
-  // Get GA4 metrics (last 30 days)
-  const endDate = new Date().toISOString().split("T")[0];
-  const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+  // Get GA4 metrics (from today forward, showing last 7 days for display)
+  const today = new Date().toISOString().split("T")[0];
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+  
+  const endDate = today;
+  const startDate = sevenDaysAgo; // Show last 7 days of data
+  
+  // For sync, we use today as both start and end to only fetch today's data going forward
+  const syncStartDate = today;
+  const syncEndDate = today;
   
   const { data: metrics, isLoading, refetch } = trpc.ga4.getMetrics.useQuery({
     startDate,
@@ -51,7 +58,7 @@ export default function GA4LandingPageMetrics() {
 
   const handleSync = () => {
     setSyncing(true);
-    syncMutation.mutate({ startDate, endDate });
+    syncMutation.mutate({ startDate: syncStartDate, endDate: syncEndDate });
   };
 
   if (!isConfigured) {
@@ -120,9 +127,9 @@ export default function GA4LandingPageMetrics() {
         {/* Metrics Table */}
         <Card>
           <CardHeader>
-            <CardTitle>Landing Page Performance (Last 30 Days)</CardTitle>
+            <CardTitle>Landing Page Performance (Last 7 Days)</CardTitle>
             <CardDescription>
-              Aggregated metrics by landing page from Google Analytics 4
+              Aggregated metrics by landing page from Google Analytics 4 (filtered: wisdom + 31dwc26.obv.io domains)
             </CardDescription>
           </CardHeader>
           <CardContent>

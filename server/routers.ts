@@ -24,6 +24,7 @@ import {
   getPurchasesPaginated,
   getGoogleCampaignsPaginated,
   getMetaCampaignsPaginated,
+  getFunnelConversionMetrics,
 } from "./supabase";
 import {
   getContactActivities,
@@ -196,6 +197,19 @@ export const appRouter = router({
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
         
         return await getChannelPerformance(startDate, endDate);
+      }),
+
+    // Get funnel conversion metrics for step-by-step visualization
+    funnelMetrics: publicProcedure
+      .input(z.object({
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        const { startDate, endDate } = input?.dateRange 
+          ? getDateRangeValues(input.dateRange)
+          : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
+        
+        return await getFunnelConversionMetrics(startDate, endDate);
       }),
   }),
 

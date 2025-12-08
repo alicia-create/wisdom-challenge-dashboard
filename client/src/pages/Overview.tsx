@@ -10,6 +10,7 @@ import { DashboardHeader } from "@/components/DashboardHeader";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { FunnelVisualization } from "@/components/FunnelVisualization";
 
 export default function Overview() {
   const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.LAST_30_DAYS);
@@ -32,6 +33,11 @@ export default function Overview() {
 
   // Fetch channel performance (Meta vs Google)
   const { data: channelPerformance, isLoading: channelLoading } = trpc.overview.channelPerformance.useQuery({
+    dateRange,
+  });
+
+  // Fetch funnel conversion metrics
+  const { data: funnelData, isLoading: funnelLoading } = trpc.overview.funnelMetrics.useQuery({
     dateRange,
   });
 
@@ -348,6 +354,14 @@ export default function Overview() {
               )}
             </CardContent>
           </Card>
+        </div>
+
+        {/* Funnel Visualization */}
+        <div className="mb-8">
+          <FunnelVisualization 
+            steps={funnelData?.steps || []} 
+            isLoading={funnelLoading}
+          />
         </div>
 
         {/* Charts */}

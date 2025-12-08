@@ -74,6 +74,33 @@ export async function fetchLandingPageMetrics(startDate: string, endDate: string
         { name: "conversions" },
         { name: "engagementRate" },
       ],
+      // Filter to only include pages from wisdom challenge domains
+      dimensionFilter: {
+        orGroup: {
+          expressions: [
+            {
+              filter: {
+                fieldName: "hostName",
+                stringFilter: {
+                  matchType: "CONTAINS",
+                  value: "wisdom",
+                  caseSensitive: false,
+                },
+              },
+            },
+            {
+              filter: {
+                fieldName: "hostName",
+                stringFilter: {
+                  matchType: "EXACT",
+                  value: "31dwc26.obv.io",
+                  caseSensitive: false,
+                },
+              },
+            },
+          ],
+        },
+      },
     });
 
     if (!response.rows || response.rows.length === 0) {

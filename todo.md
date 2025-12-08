@@ -390,3 +390,16 @@
 - [x] Fix number parsing in GA4LandingPageMetrics component (parseFloat/parseInt)
 - [x] Test GA4 sync with real data in browser - Successfully synced 127 landing pages
 - [ ] Add GA4 metrics to Optimization Agent analysis (future enhancement)
+
+## GA4 Filtering & Funnel Visualization (2025-12-07)
+
+- [x] Update GA4 fetchLandingPageMetrics() to filter pages with "wisdom" OR "31dwc26.obv.io" in hostname
+- [x] Update GA4 sync to only fetch data from today forward (last 7 days for display)
+- [x] Update GA4LandingPageMetrics card description to reflect both domains
+- [x] Design funnel visualization component for Overview page
+- [x] Create getFunnelConversionMetrics() query in Supabase
+- [x] Build FunnelVisualization component showing Ad Clicks → Step1 (LP/Lead) → Step2 (Purchase) → Step3 (OTO)
+- [x] Add conversion rates between each funnel step with color coding (green/yellow/red)
+- [x] Integrate funnel component into Overview page (before charts section)
+- [x] Test funnel visualization with real campaign data - Working correctly
+- [x] Test GA4 filtering with new domain filter (wisdom + 31dwc26.obv.io) - Sync successful

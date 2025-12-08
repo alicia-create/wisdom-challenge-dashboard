@@ -1213,3 +1213,106 @@ export async function getMetaCampaignsPaginated(params: {
     totalPages: Math.ceil((count || 0) / pageSize),
   };
 }
+
+/**
+ * Get funnel conversion metrics for step-by-step visualization
+ * Returns counts for each step: step1 → step2 → step3 → checkout → purchase
+ */
+export async function getFunnelConversionMetrics(startDate?: string, endDate?: string) {
+  try {
+    // Get total clicks (funnel entry point)
+    let clicksQuery = supabase
+      .from('ad_performance')
+      .select('clicks')
+      .eq('campaign_name', CAMPAIGN_NAME_FILTER);
+    
+    if (startDate) clicksQuery = clicksQuery.gte('date', startDate);
+    if (endDate) clicksQuery = clicksQuery.lte('date', endDate);
+    
+    const { data: clicksData } = await clicksQuery;
+    const totalClicks = clicksData?.reduce((sum, row) => sum + (row.clicks || 0), 0) || 0;
+
+    // Get landing page views (step1)
+    let lpViewsQuery = supabase
+      .from('ad_performance')
+      .select('landing_page_views')
+      .eq('campaign_name', CAMPAIGN_NAME_FILTER);
+    
+    if (startDate) lpViewsQuery = lpViewsQuery.gte('date', startDate);
+    if (endDate) lpViewsQuery = lpViewsQuery.lte('date', endDate);
+    
+    const { data: lpViewsData } = await lpViewsQuery;
+    const totalLandingPageViews = lpViewsData?.reduce((sum, row) => sum + (row.landing_page_views || 0), 0) || 0;
+
+    // Get leads (step2 - optin)
+    let leadsQuery = supabase
+      .from('leads')
+      .select('id', { count: 'exact', head: true });
+    
+    if (startDate) leadsQuery = leadsQuery.gte('created_at', startDate);
+    if (endDate) leadsQuery = leadsQuery.lte('created_at', endDate);
+    
+    const { count: totalLeads } = await leadsQuery;
+
+    // Get VIP purchases (step3 - VIP offer)
+    let vipQuery = supabase
+      .from('purchases')
+      .select('id', { count: 'exact', head: true })
+      .eq('product_type', 'VIP');
+    
+    if (startDate) vipQuery = vipQuery.gte('created_at', startDate);
+    if (endDate) vipQuery = vipQuery.lte('created_at', endDate);
+    
+    const { count: totalVIP } = await vipQuery;
+
+    // Get all purchases (final conversion)
+    let purchasesQuery = supabase
+      .from('purchases')
+      .select('id', { count: 'exact', head: true });
+    
+    if (startDate) purchasesQuery = purchasesQuery.gte('created_at', startDate);
+    if (endDate) purchasesQuery = purchasesQuery.lte('created_at', endDate);
+    
+    const { count: totalPurchases } = await purchasesQuery;
+
+    // Calculate percentages based on total clicks
+    const calculatePercentage = (count: number) => {
+      return totalClicks > 0 ? (count / totalClicks) * 100 : 0;
+    };
+
+    return {
+      steps: [
+        {
+          name: "Ad Clicks",
+          count: totalClicks,
+          percentage: 100,
+        },
+        {
+          name: "Step 1: Landing Page Views",
+          count: totalLandingPageViews,
+          percentage: calculatePercentage(totalLandingPageViews),
+        },
+        {
+          name: "Step 1: Leads (Optin)",
+          count: totalLeads || 0,
+          percentage: calculatePercentage(totalLeads || 0),
+        },
+        {
+          name: "Step 2: Purchases (VIP)",
+          count: totalVIP || 0,
+          percentage: calculatePercentage(totalVIP || 0),
+        },
+        {
+          name: "Step 3: OTO (Upsell)",
+          count: totalPurchases || 0,
+          percentage: calculatePercentage(totalPurchases || 0),
+        },
+      ],
+    };
+  } catch (error) {
+    console.error('[Supabase] Error fetching funnel metrics:', error);
+    return {
+      steps: [],
+    };
+  }
+}
