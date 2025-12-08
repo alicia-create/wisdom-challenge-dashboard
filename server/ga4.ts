@@ -63,6 +63,7 @@ export async function fetchLandingPageMetrics(startDate: string, endDate: string
       ],
       dimensions: [
         { name: "date" },
+        { name: "hostName" },
         { name: "landingPage" },
         { name: "sessionSource" },
         { name: "sessionCampaignName" },
@@ -114,9 +115,10 @@ export async function fetchLandingPageMetrics(startDate: string, endDate: string
 
       return {
         date: dimensionValues[0]?.value || "",
-        landing_page: dimensionValues[1]?.value || "",
-        session_source: dimensionValues[2]?.value || "",
-        session_campaign: dimensionValues[3]?.value || "",
+        hostname: dimensionValues[1]?.value || "",
+        landing_page: dimensionValues[2]?.value || "",
+        session_source: dimensionValues[3]?.value || "",
+        session_campaign: dimensionValues[4]?.value || "",
         sessions: parseInt(metricValues[0]?.value || "0", 10),
         bounce_rate: parseFloat(metricValues[1]?.value || "0"),
         average_session_duration: parseFloat(metricValues[2]?.value || "0"),

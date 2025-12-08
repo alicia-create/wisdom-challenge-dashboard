@@ -27,8 +27,8 @@ export async function syncGA4Metrics(startDate: string, endDate: string): Promis
       try {
         await db.execute(
           sql`INSERT IGNORE INTO ga4_landing_page_metrics 
-           (date, landing_page, session_source, session_campaign, sessions, bounce_rate, average_session_duration, conversions, engagement_rate)
-           VALUES (${metric.date}, ${metric.landing_page}, ${metric.session_source}, ${metric.session_campaign}, ${metric.sessions}, ${metric.bounce_rate}, ${metric.average_session_duration}, ${metric.conversions}, ${metric.engagement_rate})`
+           (date, landing_page, hostname, session_source, session_campaign, sessions, bounce_rate, average_session_duration, conversions, engagement_rate)
+           VALUES (${metric.date}, ${metric.landing_page}, ${metric.hostname}, ${metric.session_source}, ${metric.session_campaign}, ${metric.sessions}, ${metric.bounce_rate}, ${metric.average_session_duration}, ${metric.conversions}, ${metric.engagement_rate})`
         );
         insertedCount++;
       } catch (error: any) {
@@ -86,15 +86,16 @@ export async function getAggregatedGA4Metrics(startDate: string, endDate: string
     const result: any = await db.execute(
       sql`SELECT 
          landing_page,
-         SUM(sessions) as total_sessions,
-         AVG(bounce_rate) as avg_bounce_rate,
+         hostname,
+         SUM(sessions) as sessions,
+         AVG(bounce_rate) as bounce_rate,
          AVG(average_session_duration) as avg_session_duration,
-         SUM(conversions) as total_conversions,
-         AVG(engagement_rate) as avg_engagement_rate
+         SUM(conversions) as conversions,
+         AVG(engagement_rate) as engagement_rate
        FROM ga4_landing_page_metrics 
        WHERE date BETWEEN ${startDate} AND ${endDate}
-       GROUP BY landing_page
-       ORDER BY total_sessions DESC`
+       GROUP BY landing_page, hostname
+       ORDER BY sessions DESC`
     );
     return result[0] || [];
   } catch (error) {

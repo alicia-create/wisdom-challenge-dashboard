@@ -431,3 +431,29 @@
 - [x] Add "Showing X of Y pages" counter below filters
 - [x] Add empty state for no matching filters
 - [x] Test filters with real GA4 data - All filters working correctly (tested Conversions filter)
+
+## GA4 Funnel-Only Filtering (2025-12-07)
+
+- [x] Update GA4 filtering to show only 6 main funnel pages (step1-a, step2-a, step3-a from both domains)
+- [x] Filter by hostname to separate organic (31daywisdomchallenge.com) vs ads (31daywisdom.com)
+- [x] Create separate cards/sections for Organic Funnel vs Ads Funnel
+- [x] Update Analytics Dashboard to show only relevant funnel pages
+- [x] Remove generic filtering (search, bounce rate, engagement rate) since we only show 6 pages
+- [x] Add funnel metrics summary (Total Sessions, Total Conversions, Conversion Rate, Step 1→2, Step 2→3)
+- [x] Add Organic vs Ads comparison table
+- [ ] Test with real GA4 data to ensure correct pages are displayed
+
+## GA4 Hostname Dimension Implementation (2025-12-08)
+
+- [x] Add `hostName` dimension to GA4 fetchLandingPageMetrics() query
+- [x] Update dimension mapping in ga4.ts to include hostname
+- [x] Update ga4_landing_page_metrics table schema to include hostname column
+- [x] Run database migration to add hostname column (ALTER TABLE)
+- [x] Update syncGA4Metrics() to store hostname from API response
+- [x] Update getAggregatedGA4Metrics() to return hostname and GROUP BY hostname
+- [x] Rewrite AnalyticsDashboard to filter by hostname for organic vs ads separation
+- [x] Add funnel visualizations for both organic and ads funnels
+- [x] Add Organic vs Ads comparison table
+- [x] Clear old GA4 data and re-sync to populate hostname field
+- [x] Test Analytics Dashboard structure - Working correctly (waiting for campaign data)
+- [ ] Verify with real campaign data once ads are running (hostname will auto-populate)

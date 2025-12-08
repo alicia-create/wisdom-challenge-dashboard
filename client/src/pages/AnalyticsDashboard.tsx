@@ -1,22 +1,13 @@
 import { useState } from "react";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { Breadcrumb } from "@/components/Breadcrumb";
-import { FunnelVisualization } from "@/components/FunnelVisualization";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { DATE_RANGES, type DateRange } from "@shared/constants";
-import { DateRangeFilter } from "@/components/DateRangeFilter";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from "recharts";
-import { TrendingUp, TrendingDown, Activity } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { TrendingUp, TrendingDown, ArrowRight } from "lucide-react";
 
 export default function AnalyticsDashboard() {
-  const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.LAST_30_DAYS);
-
-  // Fetch funnel conversion metrics
-  const { data: funnelData, isLoading: funnelLoading } = trpc.overview.funnelMetrics.useQuery({
-    dateRange,
-  });
-
   // Fetch GA4 metrics for landing page performance
   const today = new Date().toISOString().split("T")[0];
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
@@ -26,19 +17,162 @@ export default function AnalyticsDashboard() {
     endDate: today,
   });
 
-  // Calculate top performing landing pages
-  const topLandingPages = ga4Metrics
-    ?.sort((a: any, b: any) => b.conversions - a.conversions)
-    .slice(0, 5) || [];
+  // Filter only the 3 main funnel pages and separate by hostname
+  const organicFunnel = (ga4Metrics || []).filter((page: any) => 
+    page.hostname?.includes("31daywisdomchallenge.com") &&
+    (page.landing_page === "/step1-a" || 
+     page.landing_page === "/step2-a" || 
+     page.landing_page === "/step3-a")
+  );
 
-  // Calculate engagement metrics
-  const avgEngagementRate = ga4Metrics && ga4Metrics.length > 0
-    ? (ga4Metrics.reduce((sum: number, page: any) => sum + page.engagement_rate, 0) / ga4Metrics.length).toFixed(1)
-    : "0.0";
+  const adsFunnel = (ga4Metrics || []).filter((page: any) => 
+    page.hostname?.includes("31daywisdom.com") &&
+    (page.landing_page === "/step1-a" || 
+     page.landing_page === "/step2-a" || 
+     page.landing_page === "/step3-a")
+  );
 
-  const avgBounceRate = ga4Metrics && ga4Metrics.length > 0
-    ? (ga4Metrics.reduce((sum: number, page: any) => sum + page.bounce_rate, 0) / ga4Metrics.length).toFixed(1)
-    : "0.0";
+  // Calculate funnel metrics
+  const calculateFunnelMetrics = (funnelPages: any[]) => {
+    const step1 = funnelPages.find(p => p.landing_page === "/step1-a");
+    const step2 = funnelPages.find(p => p.landing_page === "/step2-a");
+    const step3 = funnelPages.find(p => p.landing_page === "/step3-a");
+
+    const step1Sessions = parseInt(step1?.sessions || 0);
+    const step2Sessions = parseInt(step2?.sessions || 0);
+    const step3Sessions = parseInt(step3?.sessions || 0);
+
+    const step1ToStep2Rate = step1Sessions > 0 
+      ? ((step2Sessions / step1Sessions) * 100).toFixed(1)
+      : "0.0";
+    
+    const step2ToStep3Rate = step2Sessions > 0
+      ? ((step3Sessions / step2Sessions) * 100).toFixed(1)
+      : "0.0";
+
+    const totalSessions = funnelPages.reduce((sum: number, page: any) => sum + parseInt(page.sessions || 0), 0);
+    const totalConversions = funnelPages.reduce((sum: number, page: any) => sum + parseInt(page.conversions || 0), 0);
+    const overallConversionRate = totalSessions > 0 
+      ? ((totalConversions / totalSessions) * 100).toFixed(1)
+      : "0.0";
+
+    return {
+      step1Sessions,
+      step2Sessions,
+      step3Sessions,
+      step1ToStep2Rate,
+      step2ToStep3Rate,
+      totalSessions,
+      totalConversions,
+      overallConversionRate,
+    };
+  };
+
+  const organicMetrics = calculateFunnelMetrics(organicFunnel);
+  const adsMetrics = calculateFunnelMetrics(adsFunnel);
+
+  const formatPageName = (url: string) => {
+    if (url === "/step1-a") return "Step 1 - Landing Page A";
+    if (url === "/step2-a") return "Step 2 - Wisdom+ (VIP A)";
+    if (url === "/step3-a") return "Step 3 - OTO";
+    return url;
+  };
+
+  const renderFunnelTable = (funnelPages: any[], funnelType: "Organic" | "Ads") => {
+    if (ga4Loading) {
+      return (
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      );
+    }
+
+    if (funnelPages.length === 0) {
+      return (
+        <div className="text-center py-8 text-muted-foreground">
+          No data available for {funnelType} funnel
+        </div>
+      );
+    }
+
+    // Sort by step order
+    const sortedPages = [...funnelPages].sort((a, b) => {
+      const getStepOrder = (url: string) => {
+        if (url === "/step1-a") return 1;
+        if (url === "/step2-a") return 2;
+        if (url === "/step3-a") return 3;
+        return 4;
+      };
+      return getStepOrder(a.landing_page) - getStepOrder(b.landing_page);
+    });
+
+    return (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Page</TableHead>
+            <TableHead className="text-right">Sessions</TableHead>
+            <TableHead className="text-right">Bounce Rate</TableHead>
+            <TableHead className="text-right">Avg Duration</TableHead>
+            <TableHead className="text-right">Conversions</TableHead>
+            <TableHead className="text-right">Engagement Rate</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {sortedPages.map((page: any) => {
+            const bounceRate = parseFloat(page.bounce_rate || 0);
+            const engagementRate = parseFloat(page.engagement_rate || 0);
+            const avgDuration = parseFloat(page.avg_session_duration || 0);
+
+            return (
+              <TableRow key={`${page.hostname}-${page.landing_page}`}>
+                <TableCell className="font-medium">{formatPageName(page.landing_page)}</TableCell>
+                <TableCell className="text-right">{parseInt(page.sessions || 0).toLocaleString()}</TableCell>
+                <TableCell className="text-right">
+                  <Badge variant={bounceRate > 80 ? "destructive" : bounceRate > 50 ? "secondary" : "default"}>
+                    {bounceRate.toFixed(1)}%
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">{avgDuration.toFixed(1)}s</TableCell>
+                <TableCell className="text-right">
+                  <span className="font-semibold">{parseInt(page.conversions || 0).toLocaleString()}</span>
+                </TableCell>
+                <TableCell className="text-right">
+                  <Badge variant={engagementRate > 50 ? "default" : engagementRate > 20 ? "secondary" : "outline"}>
+                    {engagementRate.toFixed(1)}%
+                  </Badge>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    );
+  };
+
+  const renderFunnelVisualization = (metrics: any) => (
+    <div className="flex items-center justify-between gap-4 p-6 bg-muted/50 rounded-lg mb-6">
+      <div className="flex-1 text-center">
+        <div className="text-sm text-muted-foreground mb-1">Step 1</div>
+        <div className="text-3xl font-bold">{metrics.step1Sessions.toLocaleString()}</div>
+        <div className="text-xs text-muted-foreground mt-1">Landing Page A</div>
+      </div>
+      <ArrowRight className="h-6 w-6 text-muted-foreground flex-shrink-0" />
+      <div className="flex-1 text-center">
+        <div className="text-sm text-muted-foreground mb-1">Step 2</div>
+        <div className="text-3xl font-bold">{metrics.step2Sessions.toLocaleString()}</div>
+        <div className="text-xs text-muted-foreground mt-1">Wisdom+ (VIP A)</div>
+        <div className="text-xs font-semibold text-primary mt-1">{metrics.step1ToStep2Rate}% conversion</div>
+      </div>
+      <ArrowRight className="h-6 w-6 text-muted-foreground flex-shrink-0" />
+      <div className="flex-1 text-center">
+        <div className="text-sm text-muted-foreground mb-1">Step 3</div>
+        <div className="text-3xl font-bold">{metrics.step3Sessions.toLocaleString()}</div>
+        <div className="text-xs text-muted-foreground mt-1">OTO</div>
+        <div className="text-xs font-semibold text-primary mt-1">{metrics.step2ToStep3Rate}% conversion</div>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -52,177 +186,143 @@ export default function AnalyticsDashboard() {
           ]}
         />
 
-        <div className="flex items-center justify-between mb-6">
+        <div className="mt-6 space-y-6">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
-            <p className="text-muted-foreground mt-1">
-              Comprehensive analytics and conversion funnel insights
+            <p className="text-muted-foreground mt-2">
+              Performance metrics for Organic and Ads funnels (Last 7 Days)
             </p>
           </div>
-          <DateRangeFilter value={dateRange} onChange={setDateRange} />
-        </div>
 
-        {/* Key Metrics Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Avg Engagement Rate
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div className="text-3xl font-bold">{avgEngagementRate}%</div>
-                <Activity className="h-8 w-8 text-primary opacity-50" />
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Across all landing pages (last 7 days)
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Avg Bounce Rate
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div className="text-3xl font-bold">{avgBounceRate}%</div>
-                <TrendingDown className="h-8 w-8 text-red-500 opacity-50" />
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Across all landing pages (last 7 days)
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total Landing Pages
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div className="text-3xl font-bold">{ga4Metrics?.length || 0}</div>
-                <TrendingUp className="h-8 w-8 text-green-500 opacity-50" />
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Tracked in Google Analytics 4
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Conversion Funnel */}
-        <div className="mb-8">
-          <FunnelVisualization 
-            steps={funnelData?.steps || []} 
-            isLoading={funnelLoading}
-          />
-        </div>
-
-        {/* Top Performing Landing Pages */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Top 5 Landing Pages by Conversions</CardTitle>
-            <CardDescription>
-              Best performing pages in the last 7 days
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {ga4Loading ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
-              </div>
-            ) : topLandingPages.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <p>No landing page data available</p>
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={topLandingPages}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="landing_page" 
-                    angle={-45}
-                    textAnchor="end"
-                    height={100}
-                  />
-                  <YAxis />
-                  <RechartsTooltip />
-                  <Legend />
-                  <Bar dataKey="conversions" fill="#560BAD" name="Conversions" />
-                  <Bar dataKey="sessions" fill="#7209B7" name="Sessions" />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Engagement vs Bounce Rate Scatter */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Organic Funnel */}
           <Card>
             <CardHeader>
-              <CardTitle>Engagement Rate Distribution</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-green-600" />
+                Organic Funnel (31daywisdomchallenge.com)
+              </CardTitle>
               <CardDescription>
-                Engagement rate across all landing pages
+                Performance metrics for organic traffic funnel
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {ga4Loading ? (
-                <div className="flex items-center justify-center py-12">
-                  <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Total Sessions</p>
+                  <p className="text-2xl font-bold">{organicMetrics.totalSessions.toLocaleString()}</p>
                 </div>
-              ) : (
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={ga4Metrics?.slice(0, 10) || []}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="landing_page" 
-                      angle={-45}
-                      textAnchor="end"
-                      height={100}
-                    />
-                    <YAxis />
-                    <RechartsTooltip />
-                    <Bar dataKey="engagement_rate" fill="#560BAD" name="Engagement Rate (%)" />
-                  </BarChart>
-                </ResponsiveContainer>
-              )}
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Total Conversions</p>
+                  <p className="text-2xl font-bold">{organicMetrics.totalConversions.toLocaleString()}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Conversion Rate</p>
+                  <p className="text-2xl font-bold">{organicMetrics.overallConversionRate}%</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Step 1 → 2</p>
+                  <p className="text-2xl font-bold">{organicMetrics.step1ToStep2Rate}%</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Step 2 → 3</p>
+                  <p className="text-2xl font-bold">{organicMetrics.step2ToStep3Rate}%</p>
+                </div>
+              </div>
+              {renderFunnelVisualization(organicMetrics)}
+              {renderFunnelTable(organicFunnel, "Organic")}
             </CardContent>
           </Card>
 
+          {/* Ads Funnel */}
           <Card>
             <CardHeader>
-              <CardTitle>Bounce Rate Distribution</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingDown className="h-5 w-5 text-blue-600" />
+                Ads Funnel (31daywisdom.com)
+              </CardTitle>
               <CardDescription>
-                Bounce rate across all landing pages
+                Performance metrics for paid ads traffic funnel
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {ga4Loading ? (
-                <div className="flex items-center justify-center py-12">
-                  <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Total Sessions</p>
+                  <p className="text-2xl font-bold">{adsMetrics.totalSessions.toLocaleString()}</p>
                 </div>
-              ) : (
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={ga4Metrics?.slice(0, 10) || []}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="landing_page" 
-                      angle={-45}
-                      textAnchor="end"
-                      height={100}
-                    />
-                    <YAxis />
-                    <RechartsTooltip />
-                    <Bar dataKey="bounce_rate" fill="#DC2626" name="Bounce Rate (%)" />
-                  </BarChart>
-                </ResponsiveContainer>
-              )}
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Total Conversions</p>
+                  <p className="text-2xl font-bold">{adsMetrics.totalConversions.toLocaleString()}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Conversion Rate</p>
+                  <p className="text-2xl font-bold">{adsMetrics.overallConversionRate}%</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Step 1 → 2</p>
+                  <p className="text-2xl font-bold">{adsMetrics.step1ToStep2Rate}%</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Step 2 → 3</p>
+                  <p className="text-2xl font-bold">{adsMetrics.step2ToStep3Rate}%</p>
+                </div>
+              </div>
+              {renderFunnelVisualization(adsMetrics)}
+              {renderFunnelTable(adsFunnel, "Ads")}
+            </CardContent>
+          </Card>
+
+          {/* Comparison Summary */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Organic vs Ads Comparison</CardTitle>
+              <CardDescription>
+                Side-by-side performance comparison
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Metric</TableHead>
+                    <TableHead className="text-right">Organic</TableHead>
+                    <TableHead className="text-right">Ads</TableHead>
+                    <TableHead className="text-right">Winner</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-medium">Total Sessions</TableCell>
+                    <TableCell className="text-right">{organicMetrics.totalSessions.toLocaleString()}</TableCell>
+                    <TableCell className="text-right">{adsMetrics.totalSessions.toLocaleString()}</TableCell>
+                    <TableCell className="text-right">
+                      <Badge variant={organicMetrics.totalSessions > adsMetrics.totalSessions ? "default" : "secondary"}>
+                        {organicMetrics.totalSessions > adsMetrics.totalSessions ? "Organic" : "Ads"}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Total Conversions</TableCell>
+                    <TableCell className="text-right">{organicMetrics.totalConversions.toLocaleString()}</TableCell>
+                    <TableCell className="text-right">{adsMetrics.totalConversions.toLocaleString()}</TableCell>
+                    <TableCell className="text-right">
+                      <Badge variant={organicMetrics.totalConversions > adsMetrics.totalConversions ? "default" : "secondary"}>
+                        {organicMetrics.totalConversions > adsMetrics.totalConversions ? "Organic" : "Ads"}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Conversion Rate</TableCell>
+                    <TableCell className="text-right">{organicMetrics.overallConversionRate}%</TableCell>
+                    <TableCell className="text-right">{adsMetrics.overallConversionRate}%</TableCell>
+                    <TableCell className="text-right">
+                      <Badge variant={parseFloat(organicMetrics.overallConversionRate) > parseFloat(adsMetrics.overallConversionRate) ? "default" : "secondary"}>
+                        {parseFloat(organicMetrics.overallConversionRate) > parseFloat(adsMetrics.overallConversionRate) ? "Organic" : "Ads"}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         </div>
