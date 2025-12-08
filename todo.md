@@ -457,3 +457,29 @@
 - [x] Clear old GA4 data and re-sync to populate hostname field
 - [x] Test Analytics Dashboard structure - Working correctly (waiting for campaign data)
 - [ ] Verify with real campaign data once ads are running (hostname will auto-populate)
+
+## Fix tRPC API Error on Analytics Dashboard (2025-12-08)
+
+- [ ] Check dev server logs for error details
+- [ ] Identify which tRPC procedure is causing HTML response
+- [ ] Fix server-side error in ga4.getMetrics or related procedures
+- [ ] Test Analytics Dashboard to verify fix
+
+## Navigation Reorganization (2025-12-08)
+
+- [x] Rename "Raw Data" to "Other Data" in DashboardHeader
+- [x] Add "Analytics" tab to main menu in DashboardHeader
+- [x] Create OtherData.tsx page with Email & Leads and Engagement cards at top
+- [x] Move Email & Leads card to Other Data section
+- [x] Move Engagement card to Other Data section
+- [x] Add /other-data route to App.tsx
+- [x] Keep /raw-data routes for backward compatibility
+- [x] Test all navigation paths - All working correctly
+
+## Email & Leads Loading Improvement (2025-12-08)
+
+- [x] Add informative loading message "Acessando API do Keap..." to Email & Leads page
+- [x] Keep navigation available during loading (non-blocking)
+- [x] Add spinner/progress indicator
+- [x] Allow user to navigate away while data is loading
+- [x] Add helpful text explaining user can navigate while loading

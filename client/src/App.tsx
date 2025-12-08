@@ -10,6 +10,7 @@ import DailyAnalysis from "./pages/DailyAnalysis";
 import EngagementSales from "./pages/EngagementSales";
 import EmailLeadQuality from "./pages/EmailLeadQuality";
 import RawData from "./pages/RawData";
+import OtherData from "./pages/OtherData";
 import DebugLeads from "./pages/DebugLeads";
 import DebugPurchases from "./pages/DebugPurchases";
 import DebugGoogleCampaigns from "./pages/DebugGoogleCampaigns";
@@ -29,6 +30,7 @@ function Router() {
       <Route path={"/engagement-sales"} component={EngagementSales} />
       <Route path={"/email-lead-quality"} component={EmailLeadQuality} />
       <Route path={"/raw-data"} component={RawData} />
+      <Route path={"/other-data"} component={OtherData} />
       <Route path={"/raw-data/analytics-dashboard"} component={AnalyticsDashboard} />
       <Route path={"/raw-data/facebook-audiences"} component={FacebookAudiences} />
       <Route path={"/raw-data/ga4-landing-pages"} component={GA4LandingPageMetrics} />

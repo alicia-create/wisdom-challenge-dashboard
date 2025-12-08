@@ -12,11 +12,38 @@ export default function EmailLeadQuality() {
   if (emailLoading || qualityLoading || tagsLoading) {
     return (
       <div className="container py-8">
+        {/* Breadcrumb */}
+        <Breadcrumb
+          items={[
+            { label: "Dashboard", href: "/" },
+            { label: "Email & Lead Quality" },
+          ]}
+        />
+        
+        {/* Header */}
         <div className="mb-8">
-          <Skeleton className="h-8 w-64 mb-2" />
-          <Skeleton className="h-4 w-96" />
+          <h1 className="text-3xl font-bold tracking-tight">Email & Lead Quality</h1>
+          <p className="text-muted-foreground mt-2">
+            Email engagement and lead quality metrics from Keap
+          </p>
         </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+
+        {/* Loading Message */}
+        <div className="flex flex-col items-center justify-center py-12 space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <div className="text-center space-y-2">
+            <p className="text-lg font-medium">Acessando API do Keap...</p>
+            <p className="text-sm text-muted-foreground">
+              Carregando dados de email e qualidade de leads. Isso pode levar alguns segundos.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Você pode navegar para outras páginas enquanto os dados carregam.
+            </p>
+          </div>
+        </div>
+
+        {/* Skeleton Preview */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 opacity-50">
           {[...Array(6)].map((_, i) => (
             <Skeleton key={i} className="h-32" />
           ))}
