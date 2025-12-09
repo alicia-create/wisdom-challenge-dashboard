@@ -23,6 +23,7 @@ import OptimizationAgent from "./pages/OptimizationAgent";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import Products from "./pages/Products";
 import Invites from "./pages/Invites";
+import AdsDiary from "./pages/AdsDiary";
 
 function Router() {
   return (
@@ -42,6 +43,7 @@ function Router() {
       <Route path={"/debug/purchases"} component={DebugPurchases} />
       <Route path={"/products"} component={Products} />
       <Route path={"/invites"} component={Invites} />
+      <Route path={"/ads-diary"} component={AdsDiary} />
       <Route path={"/debug/google-campaigns"} component={DebugGoogleCampaigns} />
       <Route path={"/debug/meta-campaigns"} component={DebugMetaCampaigns} />
       <Route path={"/debug/error-logs"} component={ErrorLogs} />

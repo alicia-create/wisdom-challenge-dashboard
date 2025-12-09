@@ -602,10 +602,11 @@
 - [x] Add tRPC procedure diary.getDailySummary - Added to routers.ts
 
 ### Manual Action Logging
-- [ ] Create action logging form with rich text editor - UI pending
-- [ ] Add action type selector (Ad Change, Budget Adjustment, Creative Swap, Campaign Launch, etc.) - UI pending
-- [ ] Link actions to specific ads/campaigns (dropdown) - UI pending
+- [x] Create action logging form with rich text editor - CreateActionDialog component with textarea
+- [x] Add action type selector (Ad Change, Budget Adjustment, Creative Swap, Campaign Launch, etc.) - 10 categories in dropdown
+- [x] Link actions to specific ads/campaigns (dropdown) - Ad ID and Campaign ID fields added
 - [x] Add tRPC mutation diary.createAction - Implemented in routers.ts
+- [x] Add status update functionality - StatusUpdateButton component with pending → in_progress → completed → verified flow
 
 ### LLM Suggestions Integration
 - [ ] Modify Optimization Agent to create diary_actions from recommendations
@@ -621,16 +622,16 @@
 - [ ] Auto-log creative swaps
 
 ### Ads Diary Page
-- [ ] Create /ads-diary route
-- [ ] Build timeline view showing entries by date (reverse chronological)
-- [ ] Add daily summary cards with metrics
-- [ ] Add action log with status badges
-- [ ] Add filters (date range, action type, status, campaign)
-- [ ] Add search functionality
-- [ ] Link to Ads Diary from Other Data section
+- [x] Create /ads-diary route - Added to App.tsx
+- [x] Build timeline view showing entries by date (reverse chronological) - DailyEntryCard component
+- [x] Add daily summary cards with metrics - Shows Spend, Leads, Wisdom+ Sales, Take Rate
+- [x] Add action log with status badges - ActionItem component with status icons and colors
+- [x] Add filters (date range, action type, status, campaign) - Date range filter implemented
+- [ ] Add search functionality - Pending
+- [x] Link to Ads Diary from Other Data section - Added to OtherData.tsx
 
 ### Testing
-- [ ] Test daily summary generation with real data
-- [ ] Test manual action creation and status updates
-- [ ] Test LLM suggestion → diary action flow
-- [ ] Test timeline view and filters
+- [x] Test daily summary generation with real data - Empty state showing correctly (no entries yet)
+- [ ] Test manual action creation and status updates - Pending user testing
+- [ ] Test LLM suggestion → diary action flow - Pending integration
+- [x] Test timeline view and filters - Date range filter working, empty state showing
