@@ -1058,15 +1058,21 @@ export async function getPurchasesPaginated(params: {
   const pageSize = params.pageSize || 50;
   const offset = (page - 1) * pageSize;
 
-  // Build query
+  // Build query with contact join for name and email
   let query = supabase
     .from('orders')
-    .select('*', { count: 'exact' })
+    .select(`
+      *,
+      contacts (
+        full_name,
+        email
+      )
+    `, { count: 'exact' })
     .order('created_at', { ascending: false });
 
   // Apply filters
   if (params.search) {
-    query = query.or(`email.ilike.%${params.search}%,full_name.ilike.%${params.search}%,first_name.ilike.%${params.search}%,last_name.ilike.%${params.search}%,order_number.ilike.%${params.search}%`);
+    query = query.or(`clickfunnels_order_number.ilike.%${params.search}%,contact_id.ilike.%${params.search}%`);
   }
 
   if (params.startDate) {

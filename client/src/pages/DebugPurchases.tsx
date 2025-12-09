@@ -241,17 +241,14 @@ export default function DebugPurchases() {
                             {purchase.id}
                           </TableCell>
                           <TableCell>
-                            {purchase.full_name || 
-                             (purchase.first_name || purchase.last_name 
-                               ? `${purchase.first_name || ''} ${purchase.last_name || ''}`.trim()
-                               : '-')}
+                            {purchase.contacts?.full_name || '-'}
                           </TableCell>
-                          <TableCell>{purchase.email || '-'}</TableCell>
+                          <TableCell>{purchase.contacts?.email || '-'}</TableCell>
                           <TableCell className="font-semibold">
                             {formatCurrency(purchase.order_total || 0)}
                           </TableCell>
-                          <TableCell className="max-w-[200px] truncate" title={purchase.order_number}>
-                            {purchase.order_number || '-'}
+                          <TableCell className="max-w-[200px] truncate" title={purchase.clickfunnels_order_number}>
+                            {purchase.clickfunnels_order_number || '-'}
                           </TableCell>
                           <TableCell className="text-sm">
                             {new Date(purchase.created_at).toLocaleString('en-US', {

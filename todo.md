@@ -530,3 +530,13 @@
 - [x] Add "View in Optimization Agent" link in card header
 - [x] Test with real alert data - Empty state renders correctly, ready for alerts
 - [x] Handle empty state when no alerts exist
+
+## Fix Purchases Table & Add Goals (2025-12-08)
+
+- [x] Check orders table schema for name, email, order_number fields - Found contacts.full_name, contacts.email, orders.clickfunnels_order_number
+- [x] Update getPurchasesPaginated query to include contact name and email - Added join with contacts table
+- [x] Add order_number field to DebugPurchases table display - Using clickfunnels_order_number
+- [x] Add goal progress to Total Leads card (200K goal) - Added progress bar and percentage
+- [x] Add goal progress to Total VIP Sales card (30K goal) - Added progress bar and percentage
+- [x] Test purchases table shows correct data - Name, Email, Order Number showing correctly (some contacts have no full_name, showing '-')
+- [x] Test goal progress displays correctly in Overview - Progress bars and percentages working (67/200K leads = 0.0%, 0/30K VIP = 0.0%)

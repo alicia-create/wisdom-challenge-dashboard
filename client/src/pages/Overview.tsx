@@ -100,7 +100,21 @@ export default function Overview() {
               {metricsLoading ? (
                 <Skeleton className="h-8 w-20" />
               ) : (
-                <div className="text-3xl font-bold">{metrics?.totalLeads || 0}</div>
+                <>
+                  <div className="text-3xl font-bold">{metrics?.totalLeads || 0}</div>
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    <div className="flex items-center justify-between mb-1">
+                      <span>Goal: 200,000</span>
+                      <span className="font-semibold">{((metrics?.totalLeads || 0) / 200000 * 100).toFixed(1)}%</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-1.5">
+                      <div 
+                        className="bg-[#560BAD] h-1.5 rounded-full transition-all" 
+                        style={{ width: `${Math.min(((metrics?.totalLeads || 0) / 200000 * 100), 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                </>
               )}
             </CardContent>
           </Card>
@@ -125,7 +139,21 @@ export default function Overview() {
               {metricsLoading ? (
                 <Skeleton className="h-8 w-20" />
               ) : (
-                <div className="text-3xl font-bold">{metrics?.vipSales || 0}</div>
+                <>
+                  <div className="text-3xl font-bold">{metrics?.vipSales || 0}</div>
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    <div className="flex items-center justify-between mb-1">
+                      <span>Goal: 30,000</span>
+                      <span className="font-semibold">{((metrics?.vipSales || 0) / 30000 * 100).toFixed(1)}%</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-1.5">
+                      <div 
+                        className="bg-[#B5179E] h-1.5 rounded-full transition-all" 
+                        style={{ width: `${Math.min(((metrics?.vipSales || 0) / 30000 * 100), 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                </>
               )}
             </CardContent>
           </Card>
