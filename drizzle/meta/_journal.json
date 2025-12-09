@@ -43,6 +43,13 @@
       "when": 1765280622118,
       "tag": "0005_amusing_the_leader",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1765293016878,
+      "tag": "0006_perpetual_argent",
+      "breakpoints": true
     }
   ]
 }

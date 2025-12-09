@@ -2,7 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { DATE_RANGES, getDateRangeValues, type DateRange } from "@shared/constants";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router } from "./_core/trpc";
+import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import {
   getDailyKpis,
@@ -62,9 +62,21 @@ import {
   explainFunnelLeak,
 } from "./optimization-llm";
 import { getRecentAlerts, checkAllAlerts } from "./alert-service";
-import { getProductsWithSales } from "./products";
-import { createInvite, getAllInvites, revokeInvite, deleteInvite } from "./invites";
-import { protectedProcedure } from "./_core/trpc";
+import { getProductsWithSales } from "./products";import {
+  createInvite,
+  getAllInvites,
+  revokeInvite,
+  deleteInvite,
+} from "./invites";
+import {
+  generateDailySummary,
+  upsertDiaryEntry,
+  getDiaryEntry,
+  getDiaryEntries,
+  createDiaryAction,
+  getDiaryActions,
+  updateDiaryActionStatus,
+} from "./diary";
 import { invokeLLM } from "./_core/llm";
 
 export const appRouter = router({
@@ -795,6 +807,128 @@ Creative Fatigue Alerts: ${creativeFatigue.length}
 
         await deleteInvite(input.inviteId);
         return { success: true };
+      }),
+  }),
+
+  // Ads Diary router
+  diary: router({
+    // Get daily summary for a specific date
+    getDailySummary: protectedProcedure
+      .input(z.object({ date: z.string() })) // YYYY-MM-DD
+      .query(async ({ input }) => {
+        const date = new Date(input.date);
+        const metrics = await generateDailySummary(date);
+        return metrics;
+      }),
+
+    // Get diary entry for a specific date (includes metrics + actions)
+    getEntry: protectedProcedure
+      .input(z.object({ date: z.string() }))
+      .query(async ({ input }) => {
+        const date = new Date(input.date);
+        const entry = await getDiaryEntry(date);
+        
+        if (!entry) {
+          // Generate fresh summary if no entry exists
+          const metrics = await generateDailySummary(date);
+          return {
+            date: input.date,
+            metrics,
+            actions: [],
+          };
+        }
+
+        const actions = await getDiaryActions(entry.id);
+        return {
+          ...entry,
+          actions,
+        };
+      }),
+
+    // Get diary entries for a date range
+    getEntries: protectedProcedure
+      .input(
+        z.object({
+          startDate: z.string(),
+          endDate: z.string(),
+        })
+      )
+      .query(async ({ input }) => {
+        const start = new Date(input.startDate);
+        const end = new Date(input.endDate);
+        const entries = await getDiaryEntries(start, end);
+        
+        // Get actions for each entry
+        const entriesWithActions = await Promise.all(
+          entries.map(async (entry) => {
+            const actions = await getDiaryActions(entry.id);
+            return { ...entry, actions };
+          })
+        );
+        
+        return entriesWithActions;
+      }),
+
+    // Create a manual action
+    createAction: protectedProcedure
+      .input(
+        z.object({
+          date: z.string().optional(),
+          category: z.string(),
+          description: z.string(),
+          adId: z.string().optional(),
+          campaignId: z.string().optional(),
+          scheduledFor: z.string().optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        // If date provided, ensure diary entry exists
+        let entryId: number | undefined;
+        if (input.date) {
+          const date = new Date(input.date);
+          const metrics = await generateDailySummary(date);
+          entryId = await upsertDiaryEntry(date, metrics);
+        }
+
+        const actionId = await createDiaryAction({
+          entryId,
+          actionType: "manual",
+          category: input.category,
+          description: input.description,
+          status: "pending",
+          source: "Manual",
+          adId: input.adId,
+          campaignId: input.campaignId,
+          scheduledFor: input.scheduledFor ? new Date(input.scheduledFor) : undefined,
+          createdBy: ctx.user.email || "unknown",
+        });
+
+        return { actionId };
+      }),
+
+    // Update action status
+    updateActionStatus: protectedProcedure
+      .input(
+        z.object({
+          actionId: z.number(),
+          status: z.enum(["pending", "in_progress", "completed", "verified", "cancelled"]),
+        })
+      )
+      .mutation(async ({ input }) => {
+        await updateDiaryActionStatus(input.actionId, input.status);
+        return { success: true };
+      }),
+
+    // Get all actions (with optional filters)
+    getActions: protectedProcedure
+      .input(
+        z.object({
+          limit: z.number().optional(),
+          entryId: z.number().optional(),
+        })
+      )
+      .query(async ({ input }) => {
+        return await getDiaryActions(input.entryId, input.limit);
       }),
   }),
 });

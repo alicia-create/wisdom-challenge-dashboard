@@ -586,3 +586,51 @@
 - [x] Add chat history display - Chat component shows Q&A history
 - [x] Test manual refresh clears cache and regenerates report - Refresh button visible, cache metadata showing
 - [x] Test chat responds to custom analysis questions - Chat component with input + example questions working
+
+## Ads Diary Feature (2025-12-08)
+
+### Database Schema
+- [x] Create diary_entries table (date, summary_type, metrics_json, created_at) - Migration 0006_perpetual_argent.sql applied
+- [x] Create diary_actions table (entry_id, action_type, description, status, source, ad_id, campaign_id, created_at, completed_at) - Migration applied
+- [x] Add action_type enum (manual, llm_suggestion, meta_api_sync, scheduled) - Added to diaryActions
+- [x] Add status enum (pending, in_progress, completed, verified, cancelled) - Added to diaryActions
+
+### Daily Summary Auto-generation
+- [x] Create getDailySummary query pulling from daily_kpis - Implemented in diary.ts
+- [ ] Group metrics by campaign type (Sales, Leads, LATAM) - TODO: Add campaign-specific filtering
+- [x] Calculate CPA, CPL, VIP Take Rate automatically - Using daily_kpis data
+- [x] Add tRPC procedure diary.getDailySummary - Added to routers.ts
+
+### Manual Action Logging
+- [ ] Create action logging form with rich text editor - UI pending
+- [ ] Add action type selector (Ad Change, Budget Adjustment, Creative Swap, Campaign Launch, etc.) - UI pending
+- [ ] Link actions to specific ads/campaigns (dropdown) - UI pending
+- [x] Add tRPC mutation diary.createAction - Implemented in routers.ts
+
+### LLM Suggestions Integration
+- [ ] Modify Optimization Agent to create diary_actions from recommendations
+- [ ] Add "Add to Diary" button on each LLM recommendation
+- [ ] Auto-create pending tasks from Critical Actions
+- [ ] Add tRPC mutation diary.createFromLLM
+
+### Meta API Sync (Future)
+- [ ] Research Meta Marketing API for ad change history
+- [ ] Create webhook endpoint for Meta ad status changes
+- [ ] Auto-log ad pause/resume events
+- [ ] Auto-log budget changes
+- [ ] Auto-log creative swaps
+
+### Ads Diary Page
+- [ ] Create /ads-diary route
+- [ ] Build timeline view showing entries by date (reverse chronological)
+- [ ] Add daily summary cards with metrics
+- [ ] Add action log with status badges
+- [ ] Add filters (date range, action type, status, campaign)
+- [ ] Add search functionality
+- [ ] Link to Ads Diary from Other Data section
+
+### Testing
+- [ ] Test daily summary generation with real data
+- [ ] Test manual action creation and status updates
+- [ ] Test LLM suggestion → diary action flow
+- [ ] Test timeline view and filters

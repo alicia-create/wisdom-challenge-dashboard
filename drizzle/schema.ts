@@ -184,3 +184,54 @@ export const invites = mysqlTable("invites", {
 
 export type Invite = typeof invites.$inferSelect;
 export type InsertInvite = typeof invites.$inferInsert;
+
+/**
+ * Diary Entries table - stores daily summaries with auto-generated metrics
+ * Each entry represents one day's performance snapshot
+ */
+export const diaryEntries = mysqlTable("diary_entries", {
+  id: int("id").autoincrement().primaryKey(),
+  date: datetime("date").notNull().unique(), // One entry per day
+  summaryType: varchar("summary_type", { length: 50 }).default("daily").notNull(), // daily, weekly, monthly
+  metricsJson: text("metrics_json").notNull(), // JSON with spend, CPA, CPL, VIP take rate by campaign type
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type DiaryEntry = typeof diaryEntries.$inferSelect;
+export type InsertDiaryEntry = typeof diaryEntries.$inferInsert;
+
+/**
+ * Diary Actions table - tracks all changes and tasks related to ads/campaigns
+ * Sources: manual input, LLM suggestions, Meta API sync, scheduled tasks
+ */
+export const diaryActions = mysqlTable("diary_actions", {
+  id: int("id").autoincrement().primaryKey(),
+  entryId: int("entry_id"), // Optional link to diary_entries.id
+  actionType: mysqlEnum("action_type", [
+    "manual",
+    "llm_suggestion",
+    "meta_api_sync",
+    "scheduled"
+  ]).notNull(),
+  category: varchar("category", { length: 100 }), // Ad Change, Budget Adjustment, Creative Swap, Campaign Launch, etc.
+  description: text("description").notNull(),
+  status: mysqlEnum("status", [
+    "pending",
+    "in_progress",
+    "completed",
+    "verified",
+    "cancelled"
+  ]).default("pending").notNull(),
+  source: varchar("source", { length: 255 }), // "Optimization Agent", "Meta API", "Manual", etc.
+  adId: varchar("ad_id", { length: 255 }), // Optional link to specific ad
+  campaignId: varchar("campaign_id", { length: 255 }), // Optional link to campaign
+  scheduledFor: datetime("scheduled_for"), // For scheduled tasks
+  createdBy: varchar("created_by", { length: 320 }), // Email of user who created action
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  completedAt: timestamp("completed_at"),
+  verifiedAt: timestamp("verified_at"),
+});
+
+export type DiaryAction = typeof diaryActions.$inferSelect;
+export type InsertDiaryAction = typeof diaryActions.$inferInsert;
