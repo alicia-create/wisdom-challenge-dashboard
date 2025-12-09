@@ -553,3 +553,13 @@
 - [x] Add products table with name, price, sales count - Added table with description, type, sales, revenue
 - [x] Test VIP/Wisdom+ sales count is accurate - Overview shows 7 Wisdom+ Sales (5x Backstage Pass + 2x Wisdom+ Experience)
 - [x] Test products page displays correctly - Products page shows all 7 products with sales counts and revenue
+
+## Add LLM Rules Document + GitHub Repository (2025-12-08)
+
+- [x] Find optimization rules .md document - Found docs/optimization-rules-v2.md
+- [x] Add rules document display to Optimization Agent page - Added collapsible section with Streamdown rendering
+- [ ] Create GitHub repository for wisdom-challenge-dashboard
+- [ ] Initialize git repo and commit all code
+- [ ] Push to GitHub remote
+- [ ] Add README.md with project description
+- [ ] Test GitHub repo is accessible

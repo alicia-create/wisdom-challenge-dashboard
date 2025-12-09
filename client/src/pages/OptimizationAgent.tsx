@@ -17,8 +17,9 @@ import {
   Sparkles,
   Brain,
   Loader2,
+  FileText,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Streamdown } from "streamdown";
 
 export default function OptimizationAgent() {
@@ -28,7 +29,18 @@ export default function OptimizationAgent() {
     warnings: false,
     leaks: true,
     fatigue: false,
+    rules: false,
   });
+
+  const [rulesContent, setRulesContent] = useState<string>("");
+
+  // Load optimization rules document
+  useEffect(() => {
+    fetch("/docs/optimization-rules-v2.md")
+      .then((res) => res.text())
+      .then((text) => setRulesContent(text))
+      .catch((err) => console.error("Failed to load optimization rules:", err));
+  }, []);
 
   // Fetch LLM-powered daily report
   const { data: dailyReport, isLoading: loadingReport } = trpc.optimization.dailyReport.useQuery();
@@ -460,6 +472,31 @@ export default function OptimizationAgent() {
                   </Alert>
                 ))
               )}
+            </CardContent>
+          )}
+        </Card>
+
+        {/* Optimization Rules */}
+        <Card>
+          <CardHeader className="cursor-pointer" onClick={() => toggleSection("rules")}>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                📋 Optimization Rules (v2)
+              </CardTitle>
+              <Badge variant="outline">{expandedSections.rules ? "Hide" : "Show"}</Badge>
+            </div>
+            <CardDescription>Campaign optimization rules and thresholds used by the AI agent</CardDescription>
+          </CardHeader>
+          {expandedSections.rules && (
+            <CardContent>
+              <div className="prose prose-sm dark:prose-invert max-w-none">
+                {rulesContent ? (
+                  <Streamdown>{rulesContent}</Streamdown>
+                ) : (
+                  <Skeleton className="h-96 w-full" />
+                )}
+              </div>
             </CardContent>
           )}
         </Card>
