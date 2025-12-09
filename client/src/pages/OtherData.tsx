@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { useLocation } from "wouter";
-import { Database, ShoppingCart, TrendingUp, AlertCircle, Users, Target, FileText, BarChart3, Mail, Activity, Package } from "lucide-react";
+import { Database, ShoppingCart, TrendingUp, AlertCircle, Users, Target, FileText, BarChart3, Mail, Activity, Package, UserPlus } from "lucide-react";
 
 export default function OtherData() {
   const [, setLocation] = useLocation();
@@ -47,6 +47,14 @@ export default function OtherData() {
       path: "/products",
       color: "text-teal-600",
       bgColor: "bg-teal-50 dark:bg-teal-950",
+    },
+    {
+      title: "User Management",
+      description: "Generate invite links for users outside @pedroadao.com domain",
+      icon: UserPlus,
+      path: "/invites",
+      color: "text-violet-600",
+      bgColor: "bg-violet-50 dark:bg-violet-950",
     },
     {
       title: "Google Campaigns",

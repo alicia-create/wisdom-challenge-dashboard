@@ -18,9 +18,12 @@ import {
   Brain,
   Loader2,
   FileText,
+  RefreshCw,
+  MessageSquare,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Streamdown } from "streamdown";
+import OptimizationChat from "@/components/OptimizationChat";
 
 export default function OptimizationAgent() {
   const [expandedSections, setExpandedSections] = useState({
@@ -43,7 +46,21 @@ export default function OptimizationAgent() {
   }, []);
 
   // Fetch LLM-powered daily report
-  const { data: dailyReport, isLoading: loadingReport } = trpc.optimization.dailyReport.useQuery();
+  const { data: dailyReport, isLoading: loadingReport, refetch: refetchReport } = trpc.optimization.dailyReport.useQuery();
+  
+  // Fetch cache metadata
+  const { data: cacheMetadata } = trpc.optimization.getCacheMetadata.useQuery();
+  
+  // Invalidate cache mutation
+  const invalidateCache = trpc.optimization.invalidateCache.useMutation({
+    onSuccess: () => {
+      refetchReport();
+    },
+  });
+  
+  const handleRefresh = () => {
+    invalidateCache.mutate();
+  };
 
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
@@ -77,9 +94,29 @@ export default function OptimizationAgent() {
               AI-powered analysis of 31DWC2026 campaign performance with actionable recommendations
             </p>
           </div>
-          <div className="text-right text-sm text-muted-foreground">
-            <p>Last Updated: Just now</p>
-            <p>Next Refresh: 30 minutes</p>
+          <div className="flex items-center gap-2">
+            <div className="text-right text-sm text-muted-foreground">
+              {cacheMetadata?.cached && cacheMetadata.lastUpdated && cacheMetadata.expiresAt ? (
+                <>
+                  <p>Last Updated: {new Date(cacheMetadata.lastUpdated).toLocaleString()}</p>
+                  <p>Expires: {new Date(cacheMetadata.expiresAt).toLocaleString()}</p>
+                </>
+              ) : (
+                <p>Generating fresh report...</p>
+              )}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={invalidateCache.isPending}
+            >
+              {invalidateCache.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+            </Button>
           </div>
         </div>
 
@@ -500,6 +537,9 @@ export default function OptimizationAgent() {
             </CardContent>
           )}
         </Card>
+
+        {/* Interactive Chat */}
+        <OptimizationChat />
       </div>
     </div>
   );

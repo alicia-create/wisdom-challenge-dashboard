@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
+import { hasAccess } from './auth-guard';
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -21,6 +22,16 @@ export async function getDb() {
 export async function upsertUser(user: InsertUser): Promise<void> {
   if (!user.openId) {
     throw new Error("User openId is required for upsert");
+  }
+
+  // Check access before allowing user creation/update
+  if (user.email) {
+    const allowed = await hasAccess(user.email);
+    if (!allowed) {
+      throw new Error(
+        `Access denied for ${user.email}. Only @pedroadao.com emails or invited users can access this dashboard. Contact the administrator for an invite.`
+      );
+    }
   }
 
   const db = await getDb();

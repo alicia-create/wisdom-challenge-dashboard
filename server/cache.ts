@@ -6,6 +6,7 @@
 interface CacheEntry<T> {
   value: T;
   expiresAt: number;
+  createdAt: number;
 }
 
 class Cache {
@@ -39,8 +40,9 @@ class Cache {
    * @param ttlMs Time to live in milliseconds (default: 30 minutes)
    */
   set<T>(key: string, value: T, ttlMs: number = 30 * 60 * 1000): void {
-    const expiresAt = Date.now() + ttlMs;
-    this.store.set(key, { value, expiresAt });
+    const now = Date.now();
+    const expiresAt = now + ttlMs;
+    this.store.set(key, { value, expiresAt, createdAt: now });
   }
 
   /**
@@ -99,6 +101,30 @@ class Cache {
       totalEntries: this.store.size,
       validEntries,
       expiredEntries,
+    };
+  }
+
+  /**
+   * Get cache metadata (created timestamp, expires timestamp)
+   * @param key Cache key
+   * @returns Metadata object or undefined if not found
+   */
+  getMetadata(key: string): { createdAt: number; expiresAt: number } | undefined {
+    const entry = this.store.get(key);
+    
+    if (!entry) {
+      return undefined;
+    }
+
+    // Check if expired
+    if (Date.now() > entry.expiresAt) {
+      this.store.delete(key);
+      return undefined;
+    }
+
+    return {
+      createdAt: entry.createdAt,
+      expiresAt: entry.expiresAt,
     };
   }
 

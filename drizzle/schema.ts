@@ -166,3 +166,21 @@ export const alerts = mysqlTable("alerts", {
 
 export type Alert = typeof alerts.$inferSelect;
 export type InsertAlert = typeof alerts.$inferInsert;
+
+/**
+ * Invites table - tracks invitation tokens for non-whitelisted users
+ * Allows admin to generate invite links for specific emails
+ */
+export const invites = mysqlTable("invites", {
+  id: int("id").autoincrement().primaryKey(),
+  email: varchar("email", { length: 320 }).notNull(),
+  token: varchar("token", { length: 64 }).notNull().unique(),
+  createdBy: varchar("created_by", { length: 320 }).notNull(), // Email of admin who created invite
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at").notNull(), // 7 days from creation
+  usedAt: timestamp("used_at"),
+  revokedAt: timestamp("revoked_at"),
+});
+
+export type Invite = typeof invites.$inferSelect;
+export type InsertInvite = typeof invites.$inferInsert;

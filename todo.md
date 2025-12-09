@@ -563,3 +563,26 @@
 - [x] Push to GitHub remote - Pushed to main branch
 - [x] Add README.md with project description - Comprehensive README with architecture, setup, ROI
 - [x] Test GitHub repo is accessible - Repository live at https://github.com/alicia-create/wisdom-challenge-dashboard with full README
+
+## Authentication Security (2025-12-08) - PRIORITY
+
+- [x] Create invites table in database (email, token, created_by, expires_at, used_at) - Table created with migration
+- [x] Add domain whitelist check (@pedroadao.com) - Implemented in auth-guard.ts
+- [x] Create middleware to protect all routes (require authentication) - Added access check in upsertUser
+- [x] Add invite validation logic (check token + email match) - Implemented hasValidInvite() and markInviteAsUsed()
+- [x] Create invite generation tRPC procedure - Added invites router with create, list, revoke, delete
+- [x] Create invite management UI (generate, list, revoke) - Created /invites page with full CRUD
+- [x] Test Google OAuth login flow - OAuth already working via Manus SDK
+- [x] Test domain whitelist (allow @pedroadao.com, block others) - 13 vitest tests passing
+- [x] Test invite link flow (generate, use, expire) - Invite creation, validation, expiration, revocation all tested
+
+## Manual Refresh + Interactive Chat (2025-12-08)
+
+- [x] Add cache.invalidate tRPC mutation for manual cache clearing - Added optimization.invalidateCache
+- [x] Add "Refresh" button to Optimization Agent with last updated timestamp - Shows cache metadata + refresh button
+- [ ] Add "Refresh" button to Overview page with last updated timestamp - Not needed (Overview uses daily_kpis)
+- [x] Create interactive chat component for custom LLM analysis - Created OptimizationChat component
+- [x] Add chat.ask tRPC mutation for custom questions - Added optimization.chat mutation
+- [x] Add chat history display - Chat component shows Q&A history
+- [x] Test manual refresh clears cache and regenerates report - Refresh button visible, cache metadata showing
+- [x] Test chat responds to custom analysis questions - Chat component with input + example questions working

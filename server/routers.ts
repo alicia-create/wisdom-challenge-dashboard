@@ -63,6 +63,9 @@ import {
 } from "./optimization-llm";
 import { getRecentAlerts, checkAllAlerts } from "./alert-service";
 import { getProductsWithSales } from "./products";
+import { createInvite, getAllInvites, revokeInvite, deleteInvite } from "./invites";
+import { protectedProcedure } from "./_core/trpc";
+import { invokeLLM } from "./_core/llm";
 
 export const appRouter = router({
   system: systemRouter,
@@ -457,6 +460,32 @@ export const appRouter = router({
         return await detectCreativeFatigue();
       }),
 
+    // Invalidate cache (manual refresh)
+    invalidateCache: publicProcedure
+      .mutation(async () => {
+        const cacheKey = "optimization:dailyReport";
+        cache.delete(cacheKey);
+        console.log("[Optimization] Cache invalidated manually");
+        return { success: true, message: "Cache cleared. Next request will generate fresh report." };
+      }),
+
+    // Get cache metadata (last updated timestamp)
+    getCacheMetadata: publicProcedure
+      .query(async () => {
+        const cacheKey = "optimization:dailyReport";
+        const metadata = cache.getMetadata(cacheKey);
+        
+        if (!metadata) {
+          return { cached: false, lastUpdated: null, expiresAt: null };
+        }
+
+        return {
+          cached: true,
+          lastUpdated: metadata.createdAt,
+          expiresAt: metadata.expiresAt,
+        };
+      }),
+
     // Get LLM-powered daily report with insights
     dailyReport: publicProcedure
       .query(async () => {
@@ -568,6 +597,75 @@ export const appRouter = router({
 
         return await explainFunnelLeak(leak);
       }),
+
+    // Interactive chat for custom analysis
+    chat: publicProcedure
+      .input(z.object({
+        question: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        // Get current campaign data for context
+        const adRecommendations = await analyzeAdPerformance();
+        const funnelLeaks = await detectFunnelLeaks();
+        const creativeFatigue = await detectCreativeFatigue();
+
+        // Calculate metrics
+        const ads = await getAdPerformanceDetailed();
+        let total_spend = 0;
+        let total_clicks = 0;
+        let total_purchases = 0;
+
+        for (const ad of ads) {
+          total_spend += ad.spend || 0;
+          total_clicks += ad.inline_link_clicks || 0;
+          total_purchases += ad.purchases || 0;
+        }
+
+        const click_to_purchase_rate = total_clicks > 0 ? total_purchases / total_clicks : 0;
+        const avg_cpp = total_purchases > 0 ? total_spend / total_purchases : 0;
+
+        // Build context for LLM
+        const context = `
+Current Campaign Metrics (Last 30 Days):
+- Total Spend: $${total_spend.toFixed(2)}
+- Total Clicks: ${total_clicks}
+- Total Purchases: ${total_purchases}
+- Click-to-Purchase Rate: ${(click_to_purchase_rate * 100).toFixed(2)}%
+- Average CPP: $${avg_cpp.toFixed(2)}
+
+Active Recommendations: ${adRecommendations.length}
+Funnel Leaks Detected: ${funnelLeaks.length}
+Creative Fatigue Alerts: ${creativeFatigue.length}
+`;
+
+        // Call LLM with user question + context
+        const response = await invokeLLM({
+          messages: [
+            {
+              role: "system",
+              content: `You are an expert marketing analyst for the 31-Day Wisdom Challenge campaign. Answer questions about campaign performance, provide actionable insights, and suggest optimizations based on the data provided.${context}`,
+            },
+            {
+              role: "user",
+              content: input.question,
+            },
+          ],
+        });
+
+        const answer = response.choices[0]?.message?.content || "Unable to generate response";
+
+        return {
+          question: input.question,
+          answer,
+          context: {
+            total_spend,
+            total_clicks,
+            total_purchases,
+            click_to_purchase_rate,
+            avg_cpp,
+          },
+        };
+      }),
   }),
 
   // Google Analytics 4 Integration
@@ -638,6 +736,66 @@ export const appRouter = router({
     list: publicProcedure.query(async () => {
       return await getProductsWithSales();
     }),
+  }),
+
+  // Invites (admin only)
+  invites: router({
+    // Create a new invite
+    create: protectedProcedure
+      .input(z.object({
+        email: z.string().email(),
+        expiresInDays: z.number().min(1).max(30).default(7),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Only admin can create invites
+        if (ctx.user.role !== "admin") {
+          throw new Error("Only admins can create invites");
+        }
+
+        const result = await createInvite(
+          input.email,
+          ctx.user.email || "unknown",
+          input.expiresInDays
+        );
+
+        return result;
+      }),
+
+    // Get all invites (admin only)
+    list: protectedProcedure.query(async ({ ctx }) => {
+      // Only admin can view invites
+      if (ctx.user.role !== "admin") {
+        throw new Error("Only admins can view invites");
+      }
+
+      return await getAllInvites();
+    }),
+
+    // Revoke an invite
+    revoke: protectedProcedure
+      .input(z.object({ inviteId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        // Only admin can revoke invites
+        if (ctx.user.role !== "admin") {
+          throw new Error("Only admins can revoke invites");
+        }
+
+        await revokeInvite(input.inviteId);
+        return { success: true };
+      }),
+
+    // Delete an invite
+    delete: protectedProcedure
+      .input(z.object({ inviteId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        // Only admin can delete invites
+        if (ctx.user.role !== "admin") {
+          throw new Error("Only admins can delete invites");
+        }
+
+        await deleteInvite(input.inviteId);
+        return { success: true };
+      }),
   }),
 });
 

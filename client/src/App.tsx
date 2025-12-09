@@ -22,6 +22,7 @@ import Documentation from "./pages/Documentation";
 import OptimizationAgent from "./pages/OptimizationAgent";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import Products from "./pages/Products";
+import Invites from "./pages/Invites";
 
 function Router() {
   return (
@@ -40,6 +41,7 @@ function Router() {
       <Route path={"/debug/leads"} component={DebugLeads} />
       <Route path={"/debug/purchases"} component={DebugPurchases} />
       <Route path={"/products"} component={Products} />
+      <Route path={"/invites"} component={Invites} />
       <Route path={"/debug/google-campaigns"} component={DebugGoogleCampaigns} />
       <Route path={"/debug/meta-campaigns"} component={DebugMetaCampaigns} />
       <Route path={"/debug/error-logs"} component={ErrorLogs} />
