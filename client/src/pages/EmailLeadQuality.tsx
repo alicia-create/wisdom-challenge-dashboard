@@ -399,16 +399,16 @@ export default function EmailLeadQuality() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium">VIP Buyers</CardTitle>
+              <CardTitle className="text-sm font-medium">Wisdom+ Buyers</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Total VIP Buyers:</span>
+                  <span className="text-xs text-muted-foreground">Total Wisdom+ Buyers:</span>
                   <span className="text-sm font-semibold">{wisdomTags?.vipBuyers || 0}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">VIP Take Rate:</span>
+                  <span className="text-xs text-muted-foreground">Wisdom+ Conversion Rate:</span>
                   <span className="text-sm font-semibold">{wisdomTags?.vipTakeRate.toFixed(2) || 0}%</span>
                 </div>
               </div>

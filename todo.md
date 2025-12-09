@@ -540,3 +540,16 @@
 - [x] Add goal progress to Total VIP Sales card (30K goal) - Added progress bar and percentage
 - [x] Test purchases table shows correct data - Name, Email, Order Number showing correctly (some contacts have no full_name, showing '-')
 - [x] Test goal progress displays correctly in Overview - Progress bars and percentages working (67/200K leads = 0.0%, 0/30K VIP = 0.0%)
+
+## Fix VIP Sales Count + Products Page (2025-12-08)
+
+- [x] Check products table structure in Supabase - Found products table with 7 products
+- [x] Investigate why VIP sales showing 0 instead of Wisdom+ count - Query was filtering order_total $1-$10, but Wisdom+ costs $31
+- [x] Check orders table for product_name field to identify Wisdom+ sales - No product_name in orders, but found order_items table
+- [x] Update getOverviewMetricsOptimized to count Wisdom+ products correctly - Now counts product_id 1 (Backstage Pass) + 7 (Wisdom+ Experience) = 7 sales
+- [x] Rename "VIP Sales" to "Wisdom+ Sales" across all pages - Updated Overview, DailyAnalysis, EmailLeadQuality
+- [x] Rename "VIP Take Rate" to "Wisdom+ Conversion Rate" - Updated Overview, DailyAnalysis, EmailLeadQuality
+- [x] Create Products page under Other Data tab - Created /products route
+- [x] Add products table with name, price, sales count - Added table with description, type, sales, revenue
+- [x] Test VIP/Wisdom+ sales count is accurate - Overview shows 7 Wisdom+ Sales (5x Backstage Pass + 2x Wisdom+ Experience)
+- [x] Test products page displays correctly - Products page shows all 7 products with sales counts and revenue

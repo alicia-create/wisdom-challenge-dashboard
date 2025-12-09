@@ -33,8 +33,22 @@ export async function getOverviewMetricsOptimized(startDate?: string, endDate?: 
     
     const totalLeads = kpisData.reduce((sum, row) => sum + (row.total_leads || 0), 0);
     const totalSpend = kpisData.reduce((sum, row) => sum + parseFloat(row.total_spend || '0'), 0);
-    const vipSales = kpisData.reduce((sum, row) => sum + (row.vip_sales || 0), 0);
-    const vipRevenue = kpisData.reduce((sum, row) => sum + parseFloat(row.vip_revenue || '0'), 0);
+    
+    // Count Wisdom+ sales from order_items (product_id 1 = Backstage Pass, 7 = Wisdom+ Experience)
+    const { data: wisdomPlusItems } = await supabase
+      .from('order_items')
+      .select('order_id, products!inner(product_name)')
+      .or('product_id.eq.1,product_id.eq.7'); // Backstage Pass or Wisdom+ Experience
+    
+    const vipSales = wisdomPlusItems ? new Set(wisdomPlusItems.map((item: any) => item.order_id)).size : 0;
+    
+    // Calculate Wisdom+ revenue from order_items
+    const { data: wisdomPlusRevenue } = await supabase
+      .from('order_items')
+      .select('amount')
+      .or('product_id.eq.1,product_id.eq.7');
+    
+    const vipRevenue = wisdomPlusRevenue ? wisdomPlusRevenue.reduce((sum, item) => sum + (item.amount || 0), 0) : 0;
     const welcomeEmailClicks = kpisData.reduce((sum, row) => sum + (row.welcome_email_clicks || 0), 0);
 
     // Calculate derived metrics

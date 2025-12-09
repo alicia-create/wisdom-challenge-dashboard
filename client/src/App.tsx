@@ -21,6 +21,7 @@ import GA4LandingPageMetrics from "./pages/GA4LandingPageMetrics";
 import Documentation from "./pages/Documentation";
 import OptimizationAgent from "./pages/OptimizationAgent";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
+import Products from "./pages/Products";
 
 function Router() {
   return (
@@ -38,6 +39,7 @@ function Router() {
       <Route path={"/optimization-agent"} component={OptimizationAgent} />
       <Route path={"/debug/leads"} component={DebugLeads} />
       <Route path={"/debug/purchases"} component={DebugPurchases} />
+      <Route path={"/products"} component={Products} />
       <Route path={"/debug/google-campaigns"} component={DebugGoogleCampaigns} />
       <Route path={"/debug/meta-campaigns"} component={DebugMetaCampaigns} />
       <Route path={"/debug/error-logs"} component={ErrorLogs} />

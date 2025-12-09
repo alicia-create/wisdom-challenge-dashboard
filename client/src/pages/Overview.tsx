@@ -119,17 +119,17 @@ export default function Overview() {
             </CardContent>
           </Card>
 
-          {/* Total VIP Sales */}
+          {/* Total Wisdom+ Sales */}
           <Card className="border-l-4 border-l-[#B5179E]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <div className="flex items-center gap-2">
-                <CardTitle className="text-sm font-medium">Total VIP Sales</CardTitle>
+                <CardTitle className="text-sm font-medium">Total Wisdom+ Sales</CardTitle>
                 <Tooltip>
                   <TooltipTrigger>
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Number of VIP ($1-$10) purchases from challenge participants</p>
+                    <p>Number of Wisdom+ (Backstage Pass + Wisdom+ Experience) purchases</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -218,7 +218,7 @@ export default function Overview() {
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Total revenue from VIP sales only (excludes high-ticket)</p>
+                    <p>Total revenue from Wisdom+ sales (Backstage Pass + Wisdom+ Experience)</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -270,7 +270,7 @@ export default function Overview() {
                     <Info className="h-3 w-3 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Total Spend ÷ Total VIP Sales</p>
+                    <p>Total Spend ÷ Total Wisdom+ Sales</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -294,7 +294,7 @@ export default function Overview() {
                     <Info className="h-3 w-3 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Average Order Value: Total Revenue ÷ Total VIP Sales</p>
+                    <p>Average Order Value: Total Revenue ÷ Total Wisdom+ Sales</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -332,17 +332,17 @@ export default function Overview() {
             </CardContent>
           </Card>
 
-          {/* VIP Take Rate */}
+          {/* Wisdom+ Conversion Rate */}
           <Card className="border-l-2 border-l-[#4361EE]">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-1">
-                <CardTitle className="text-xs font-medium text-muted-foreground">VIP Take Rate</CardTitle>
+                <CardTitle className="text-xs font-medium text-muted-foreground">Wisdom+ Conversion Rate</CardTitle>
                 <Tooltip>
                   <TooltipTrigger>
                     <Info className="h-3 w-3 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Conversion rate: Total VIP Sales ÷ Total Leads</p>
+                    <p>Conversion rate: Total Wisdom+ Sales ÷ Total Leads</p>
                   </TooltipContent>
                 </Tooltip>
               </div>

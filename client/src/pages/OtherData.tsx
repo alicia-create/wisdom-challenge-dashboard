@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { useLocation } from "wouter";
-import { Database, ShoppingCart, TrendingUp, AlertCircle, Users, Target, FileText, BarChart3, Mail, Activity } from "lucide-react";
+import { Database, ShoppingCart, TrendingUp, AlertCircle, Users, Target, FileText, BarChart3, Mail, Activity, Package } from "lucide-react";
 
 export default function OtherData() {
   const [, setLocation] = useLocation();
@@ -39,6 +39,14 @@ export default function OtherData() {
       path: "/debug/purchases",
       color: "text-green-600",
       bgColor: "bg-green-50 dark:bg-green-950",
+    },
+    {
+      title: "Products",
+      description: "All products with sales counts and revenue breakdown",
+      icon: Package,
+      path: "/products",
+      color: "text-teal-600",
+      bgColor: "bg-teal-50 dark:bg-teal-950",
     },
     {
       title: "Google Campaigns",

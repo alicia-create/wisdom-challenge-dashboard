@@ -157,9 +157,9 @@ export default function DailyAnalysis() {
   const metrics = [
     // Summary Data
     { category: "🔑 Summary Data", label: "Total Optins", key: "totalOptins", format: "number", totalValue: totals?.totalOptins },
-    { category: "🔑 Summary Data", label: "Total VIP Sales", key: "totalVipSales", format: "number", totalValue: totals?.totalVipSales },
-    { category: "🔑 Summary Data", label: "% VIP Take Rate", key: "vipTakeRate", format: "percent", totalValue: totalVipTakeRate },
-    { category: "🔑 Summary Data", label: "Total VIP Revenue", key: "totalVipRevenue", format: "currency", totalValue: totals?.totalVipRevenue },
+    { category: "🔑 Summary Data", label: "Total Wisdom+ Sales", key: "totalVipSales", format: "number", totalValue: totals?.totalVipSales },
+    { category: "🔑 Summary Data", label: "% Wisdom+ Conversion Rate", key: "vipTakeRate", format: "percent", totalValue: totalVipTakeRate },
+    { category: "🔑 Summary Data", label: "Total Wisdom+ Revenue", key: "totalVipRevenue", format: "currency", totalValue: totals?.totalVipRevenue },
     
     // Costs & ROAS
     { category: "💰 Costs & ROAS", label: "Total Ad Spend", key: "totalSpend", format: "currency", totalValue: totals?.totalSpend },
@@ -173,7 +173,7 @@ export default function DailyAnalysis() {
     { category: "📢 Meta Ads", label: "Meta Reported CPL", key: "metaCPL", format: "currency", totalValue: totalMetaCPL },
     { category: "📢 Meta Ads", label: "Meta Reported CPP", key: "metaCPP", format: "currency", totalValue: totalMetaCPP },
     { category: "📢 Meta Ads", label: "Meta Ad Optins", key: "metaOptins", format: "number", totalValue: totals?.metaOptins },
-    { category: "📢 Meta Ads", label: "Meta Ad VIP Sales", key: "metaVipSales", format: "number", totalValue: totals?.metaVipSales },
+    { category: "📢 Meta Ads", label: "Meta Ad Wisdom+ Sales", key: "metaVipSales", format: "number", totalValue: totals?.metaVipSales },
     { category: "📢 Meta Ads", label: "Meta Clicks", key: "metaClicks", format: "number", totalValue: totals?.metaClicks },
     { category: "📢 Meta Ads", label: "Meta Impressions", key: "metaImpressions", format: "number", totalValue: totals?.metaImpressions },
     { category: "📢 Meta Ads", label: "Meta Page Views", key: "metaLandingPageViews", format: "number", totalValue: totals?.metaLandingPageViews },
@@ -186,7 +186,7 @@ export default function DailyAnalysis() {
     { category: "📢 Google Ads", label: "Google Reported CPL", key: "googleCPL", format: "currency", totalValue: totalGoogleCPL },
     { category: "📢 Google Ads", label: "Google Reported CPP", key: "googleCPP", format: "currency", totalValue: totalGoogleCPP },
     { category: "📢 Google Ads", label: "Google Ad Optins", key: "googleOptins", format: "number", totalValue: totals?.googleOptins },
-    { category: "📢 Google Ads", label: "Google Ad VIP Sales", key: "googleVipSales", format: "number", totalValue: totals?.googleVipSales },
+    { category: "📢 Google Ads", label: "Google Ad Wisdom+ Sales", key: "googleVipSales", format: "number", totalValue: totals?.googleVipSales },
     { category: "📢 Google Ads", label: "Google Clicks", key: "googleClicks", format: "number", totalValue: totals?.googleClicks },
     { category: "📢 Google Ads", label: "Google Impressions", key: "googleImpressions", format: "number", totalValue: totals?.googleImpressions },
     { category: "📢 Google Ads", label: "Google Click to Lead Rate", key: "googleClickToLeadRate", format: "percent", totalValue: totalGoogleClickToLeadRate },

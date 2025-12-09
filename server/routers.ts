@@ -62,6 +62,7 @@ import {
   explainFunnelLeak,
 } from "./optimization-llm";
 import { getRecentAlerts, checkAllAlerts } from "./alert-service";
+import { getProductsWithSales } from "./products";
 
 export const appRouter = router({
   system: systemRouter,
@@ -629,6 +630,14 @@ export const appRouter = router({
         await checkAllAlerts();
         return { success: true, message: "Alert checks completed" };
       }),
+  }),
+
+  // Products
+  products: router({
+    // Get all products with sales count and revenue
+    list: publicProcedure.query(async () => {
+      return await getProductsWithSales();
+    }),
   }),
 });
 
