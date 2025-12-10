@@ -250,16 +250,16 @@ export default function DailyAnalysis() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-sm">
-                  <thead>
+                  <thead className="sticky top-0 z-20 bg-background shadow-sm">
                     <tr className="border-b-2 border-border">
-                      <th className="sticky left-0 z-10 bg-background text-left p-3 font-semibold min-w-[250px]">
+                      <th className="sticky left-0 z-30 bg-background text-left p-3 font-semibold min-w-[250px]">
                         Metric
                       </th>
                       <th className="text-right p-3 font-semibold min-w-[120px] bg-muted">
                         Total
                       </th>
                       {dailyData?.map((day) => (
-                        <th key={day.date} className="text-right p-3 font-semibold min-w-[120px]">
+                        <th key={day.date} className="text-right p-3 font-semibold min-w-[120px] bg-background">
                           {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </th>
                       ))}

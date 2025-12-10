@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { trpc } from "@/lib/trpc";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, ArrowRight } from "lucide-react";
+import { TrendingUp, TrendingDown, ArrowRight, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function AnalyticsDashboard() {
   // Fetch GA4 metrics for landing page performance
@@ -18,19 +19,26 @@ export default function AnalyticsDashboard() {
   });
 
   // Filter only the 3 main funnel pages and separate by hostname
-  const organicFunnel = (ga4Metrics || []).filter((page: any) => 
-    page.hostname?.includes("31daywisdomchallenge.com") &&
-    (page.landing_page === "/step1-a" || 
-     page.landing_page === "/step2-a" || 
-     page.landing_page === "/step3-a")
-  );
+  // Organic = 31daywisdomchallenge.com (with or without www)
+  // Ads = 31daywisdom.com (with or without www)
+  const organicFunnel = (ga4Metrics || []).filter((page: any) => {
+    const hostname = page.hostname?.toLowerCase() || "";
+    const isOrganicDomain = hostname.includes("31daywisdomchallenge.com");
+    const isFunnelPage = page.landing_page === "/step1-a" || 
+                         page.landing_page === "/step2-a" || 
+                         page.landing_page === "/step3-a";
+    return isOrganicDomain && isFunnelPage;
+  });
 
-  const adsFunnel = (ga4Metrics || []).filter((page: any) => 
-    page.hostname?.includes("31daywisdom.com") &&
-    (page.landing_page === "/step1-a" || 
-     page.landing_page === "/step2-a" || 
-     page.landing_page === "/step3-a")
-  );
+  const adsFunnel = (ga4Metrics || []).filter((page: any) => {
+    const hostname = page.hostname?.toLowerCase() || "";
+    // Match 31daywisdom.com but NOT 31daywisdomchallenge.com
+    const isAdsDomain = hostname.includes("31daywisdom.com") && !hostname.includes("31daywisdomchallenge.com");
+    const isFunnelPage = page.landing_page === "/step1-a" || 
+                         page.landing_page === "/step2-a" || 
+                         page.landing_page === "/step3-a";
+    return isAdsDomain && isFunnelPage;
+  });
 
   // Calculate funnel metrics
   const calculateFunnelMetrics = (funnelPages: any[]) => {
@@ -187,11 +195,28 @@ export default function AnalyticsDashboard() {
         />
 
         <div className="mt-6 space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
-            <p className="text-muted-foreground mt-2">
-              Performance metrics for Organic and Ads funnels (Last 7 Days)
-            </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
+              <p className="text-muted-foreground mt-2">
+                Performance metrics for Organic and Ads funnels (Last 7 Days)
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              asChild
+            >
+              <a
+                href="https://analytics.google.com/analytics/web/?utm_source=marketingplatform.google.com&utm_medium=et&utm_campaign=marketingplatform.google.com%2Fabout%2Fanalytics%2F#/a282571182p418349926/realtime/overview"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Real-Time Overview
+              </a>
+            </Button>
           </div>
 
           {/* Organic Funnel */}
@@ -287,7 +312,6 @@ export default function AnalyticsDashboard() {
                     <TableHead>Metric</TableHead>
                     <TableHead className="text-right">Organic</TableHead>
                     <TableHead className="text-right">Ads</TableHead>
-                    <TableHead className="text-right">Winner</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -295,31 +319,16 @@ export default function AnalyticsDashboard() {
                     <TableCell className="font-medium">Total Sessions</TableCell>
                     <TableCell className="text-right">{organicMetrics.totalSessions.toLocaleString()}</TableCell>
                     <TableCell className="text-right">{adsMetrics.totalSessions.toLocaleString()}</TableCell>
-                    <TableCell className="text-right">
-                      <Badge variant={organicMetrics.totalSessions > adsMetrics.totalSessions ? "default" : "secondary"}>
-                        {organicMetrics.totalSessions > adsMetrics.totalSessions ? "Organic" : "Ads"}
-                      </Badge>
-                    </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Total Conversions</TableCell>
                     <TableCell className="text-right">{organicMetrics.totalConversions.toLocaleString()}</TableCell>
                     <TableCell className="text-right">{adsMetrics.totalConversions.toLocaleString()}</TableCell>
-                    <TableCell className="text-right">
-                      <Badge variant={organicMetrics.totalConversions > adsMetrics.totalConversions ? "default" : "secondary"}>
-                        {organicMetrics.totalConversions > adsMetrics.totalConversions ? "Organic" : "Ads"}
-                      </Badge>
-                    </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Conversion Rate</TableCell>
                     <TableCell className="text-right">{organicMetrics.overallConversionRate}%</TableCell>
                     <TableCell className="text-right">{adsMetrics.overallConversionRate}%</TableCell>
-                    <TableCell className="text-right">
-                      <Badge variant={parseFloat(organicMetrics.overallConversionRate) > parseFloat(adsMetrics.overallConversionRate) ? "default" : "secondary"}>
-                        {parseFloat(organicMetrics.overallConversionRate) > parseFloat(adsMetrics.overallConversionRate) ? "Organic" : "Ads"}
-                      </Badge>
-                    </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>

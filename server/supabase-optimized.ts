@@ -32,7 +32,11 @@ export async function getOverviewMetricsOptimized(startDate?: string, endDate?: 
     console.log(`[Overview Metrics] Using daily_kpis (${kpisData.length} days)`);
     
     const totalLeads = kpisData.reduce((sum, row) => sum + (row.total_leads || 0), 0);
-    const totalSpend = kpisData.reduce((sum, row) => sum + parseFloat(row.total_spend || '0'), 0);
+    const totalSpend = kpisData.reduce((sum, row) => {
+      const metaSpend = parseFloat(row.total_spend_meta || '0');
+      const googleSpend = parseFloat(row.total_spend_google || '0');
+      return sum + metaSpend + googleSpend;
+    }, 0);
     
     // Count Wisdom+ sales from order_items (product_id 1 = Backstage Pass, 7 = Wisdom+ Experience)
     const { data: wisdomPlusItems } = await supabase

@@ -670,3 +670,18 @@
 - [x] Update tRPC updateAction procedure to match new function signature
 - [x] Update createDiaryAction to return full action object (not just ID)
 - [ ] Complete vitest tests for diary edit functionality (needs debugging)
+
+
+## Ad Spend Data Inconsistency Fix (2025-12-09)
+- [x] Investigate why Overview shows $0.00 ad spend while Daily Analysis shows $2,101.57
+- [x] Check getOverviewMetrics query for ad spend calculation
+- [x] Fix getOverviewMetricsOptimized to sum total_spend_meta + total_spend_google
+- [x] Make date header row sticky in Daily Analysis table when scrolling
+- [ ] **ROOT CAUSE**: daily_kpis table has all spend values = 0 (Supabase Edge Function not populating correctly)
+- [ ] **SOLUTION**: Switch Overview and charts to read directly from ad_performance table instead of daily_kpis
+- [ ] Fix getChannelPerformance query for Meta/Google spend (also depends on ad_performance)
+
+## Analytics Page Improvements (2025-12-09)
+- [x] Remove "Winner" column from Organic vs Ads Comparison table
+- [x] Fix GA4 hostname filter to include 31daywisdomchallenge.com (now matches both with/without www)
+- [x] Add Real-Time Overview link to Analytics page header
