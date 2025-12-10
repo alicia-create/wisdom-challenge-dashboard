@@ -272,6 +272,7 @@ export default function GA4LandingPageMetrics() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Landing Page</TableHead>
+                      <TableHead>Hostname</TableHead>
                       <TableHead className="text-right">Sessions</TableHead>
                       <TableHead className="text-right">Bounce Rate</TableHead>
                       <TableHead className="text-right">Avg Duration (s)</TableHead>
@@ -284,6 +285,9 @@ export default function GA4LandingPageMetrics() {
                       <TableRow key={index}>
                         <TableCell className="font-medium max-w-md truncate">
                           {metric.landing_page}
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {metric.hostname || 'N/A'}
                         </TableCell>
                         <TableCell className="text-right">
                           {metric.total_sessions?.toLocaleString() || 0}

@@ -202,21 +202,32 @@ export default function AnalyticsDashboard() {
                 Performance metrics for Organic and Ads funnels (Last 7 Days)
               </p>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              asChild
-            >
-              <a
-                href="https://analytics.google.com/analytics/web/?utm_source=marketingplatform.google.com&utm_medium=et&utm_campaign=marketingplatform.google.com%2Fabout%2Fanalytics%2F#/a282571182p418349926/realtime/overview"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2"
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
               >
-                <ExternalLink className="h-4 w-4" />
-                Real-Time Overview
-              </a>
-            </Button>
+                <a
+                  href="https://analytics.google.com/analytics/web/?utm_source=marketingplatform.google.com&utm_medium=et&utm_campaign=marketingplatform.google.com%2Fabout%2Fanalytics%2F#/a282571182p418349926/realtime/overview"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Real-Time Overview
+                </a>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+              >
+                <a href="/raw-data/ga4-landing-pages">
+                  GA4 Landing Pages
+                </a>
+              </Button>
+            </div>
           </div>
 
           {/* Organic Funnel */}

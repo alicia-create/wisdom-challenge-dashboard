@@ -710,3 +710,41 @@
 - [x] Fix query to capture organic traffic data from GA4 (added explicit filter for 31daywisdomchallenge.com)
 - [x] Trigger GA4 sync and imported 108 new records
 - [x] Test that Organic Funnel displays correct session counts (139 sessions, 141 conversions)
+
+
+## Data Hub Reorganization (2025-12-10)
+- [ ] Rename "Other Data" to "Data Hub" in navigation and page title
+- [ ] Reorganize cards by priority:
+  - Large cards (most important): Leads Data, Purchases Data, Ads Diary, Meta Campaigns
+  - Medium cards (data pages): Google Campaigns, Products, Email & Leads, Engagement
+  - Small cards (system): Error Logs, User Management, Documentation, Facebook Audiences
+- [ ] Remove GA4 Landing Pages from Data Hub
+- [ ] Add link to GA4 Landing Pages in Analytics Dashboard page
+
+## GA4 Landing Pages Improvements (2025-12-10)
+- [ ] Add "Hostname" column to GA4 Landing Pages table
+- [ ] Investigate why GA4 Landing Pages shows 0 sessions for all rows
+- [ ] Fix data display issue in GA4 Landing Pages
+
+## Overview Email & Engagement Metrics (2025-12-10)
+- [ ] Add Welcome Email Performance card to Overview:
+  - Total clicks on first email (event: "Clicked NTN In Email")
+  - Click Rate = clicks / leads with "wisdom" in form.submitted
+- [ ] Add Lead Score distribution to Keap panel:
+  - Show count of leads at each score level (1-5)
+  - Highlight "engaged" leads (score ≥3)
+  - Display as bar chart or distribution visualization
+
+## Mobile Responsiveness (2025-12-10)
+- [ ] Ensure Overview page is fully responsive on mobile devices
+- [ ] Test Conversion Funnel visualization on mobile
+- [ ] Test VSL Performance card on mobile
+- [ ] Test all metric cards on mobile
+
+## Data Hub Reorganization (2025-12-10)
+- [x] Reorganize cards by priority:
+  * Primary (large, 4 cards): Leads Data, Purchases Data, Ads Diary, Meta Campaigns
+  * Secondary (medium, 4 cards): Google Campaigns, Products, Email & Leads, Engagement
+  * Tertiary (small, 4 cards): Error Logs, User Management, Documentation, Facebook Audiences
+- [x] Remove duplicate cards from previous structure
+- [x] Ensure all cards link to correct pages

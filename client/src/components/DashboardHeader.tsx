@@ -19,7 +19,7 @@ const tabs: Tab[] = [
   { label: "Overview", path: "/overview" },
   { label: "Daily", path: "/daily-analysis" },
   { label: "Analytics", path: "/raw-data/analytics-dashboard" },
-  { label: "Other Data", path: "/other-data" },
+  { label: "Data Hub", path: "/other-data" },
   { label: "🎯 Agent", path: "/optimization-agent" },
 ];
 

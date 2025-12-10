@@ -87,15 +87,15 @@ export async function getAggregatedGA4Metrics(startDate: string, endDate: string
       sql`SELECT 
          landing_page,
          hostname,
-         SUM(sessions) as sessions,
-         AVG(bounce_rate) as bounce_rate,
+         SUM(sessions) as total_sessions,
+         AVG(bounce_rate) as avg_bounce_rate,
          AVG(average_session_duration) as avg_session_duration,
-         SUM(conversions) as conversions,
-         AVG(engagement_rate) as engagement_rate
+         SUM(conversions) as total_conversions,
+         AVG(engagement_rate) as avg_engagement_rate
        FROM ga4_landing_page_metrics 
        WHERE date BETWEEN ${startDate} AND ${endDate}
        GROUP BY landing_page, hostname
-       ORDER BY sessions DESC`
+       ORDER BY total_sessions DESC`
     );
     return result[0] || [];
   } catch (error) {
