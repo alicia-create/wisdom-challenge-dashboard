@@ -1,5 +1,6 @@
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { trpc } from "@/lib/trpc";
+import { AddToDiaryButton } from "@/components/AddToDiaryButton";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -20,10 +21,12 @@ import {
   FileText,
   RefreshCw,
   MessageSquare,
+  BookOpen,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Streamdown } from "streamdown";
 import OptimizationChat from "@/components/OptimizationChat";
+import { Link } from "wouter";
 
 export default function OptimizationAgent() {
   const [expandedSections, setExpandedSections] = useState({
@@ -94,7 +97,13 @@ export default function OptimizationAgent() {
               AI-powered analysis of 31DWC2026 campaign performance with actionable recommendations
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <Link href="/ads-diary">
+              <Button variant="outline" size="sm">
+                <BookOpen className="h-4 w-4 mr-2" />
+                Ads Diary
+              </Button>
+            </Link>
             <div className="text-right text-sm text-muted-foreground">
               {cacheMetadata?.cached && cacheMetadata.lastUpdated && cacheMetadata.expiresAt ? (
                 <>
@@ -343,6 +352,7 @@ export default function OptimizationAgent() {
                         <Button size="sm" variant="outline">
                           View Details
                         </Button>
+                        <AddToDiaryButton recommendation={rec} />
                         <Button size="sm" variant="ghost">
                           Reject
                         </Button>
@@ -394,6 +404,7 @@ export default function OptimizationAgent() {
                         <Button size="sm" variant="outline">
                           View Details
                         </Button>
+                        <AddToDiaryButton recommendation={rec} />
                         <Button size="sm" variant="ghost">
                           Reject
                         </Button>

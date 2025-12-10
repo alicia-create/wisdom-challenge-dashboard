@@ -225,7 +225,9 @@ export const diaryActions = mysqlTable("diary_actions", {
   ]).default("pending").notNull(),
   source: varchar("source", { length: 255 }), // "Optimization Agent", "Meta API", "Manual", etc.
   adId: varchar("ad_id", { length: 255 }), // Optional link to specific ad
+  adName: varchar("ad_name", { length: 500 }), // Ad name for easy identification
   campaignId: varchar("campaign_id", { length: 255 }), // Optional link to campaign
+  campaignName: varchar("campaign_name", { length: 500 }), // Campaign name for easy identification
   scheduledFor: datetime("scheduled_for"), // For scheduled tasks
   createdBy: varchar("created_by", { length: 320 }), // Email of user who created action
   createdAt: timestamp("created_at").defaultNow().notNull(),

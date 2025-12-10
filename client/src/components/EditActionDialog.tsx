@@ -20,48 +20,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 
-interface CreateActionDialogProps {
-  defaultDate?: string;
+interface EditActionDialogProps {
+  action: any;
   onSuccess?: () => void;
 }
 
-export function CreateActionDialog({ defaultDate, onSuccess }: CreateActionDialogProps) {
+export function EditActionDialog({ action, onSuccess }: EditActionDialogProps) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
-    date: defaultDate || new Date().toISOString().split("T")[0],
-    category: "",
-    description: "",
-    adName: "",
-    campaignName: "",
-    adId: "",
-    campaignId: "",
-    scheduledFor: "",
+    category: action.category || "",
+    description: action.description || "",
+    adName: action.adName || "",
+    campaignName: action.campaignName || "",
+    adId: action.adId || "",
+    campaignId: action.campaignId || "",
+    scheduledFor: action.scheduledFor ? new Date(action.scheduledFor).toISOString().slice(0, 16) : "",
   });
 
   const utils = trpc.useUtils();
-  const createAction = trpc.diary.createAction.useMutation({
+  const updateAction = trpc.diary.updateAction.useMutation({
     onSuccess: () => {
-      toast.success("Action created successfully");
+      toast.success("Action updated successfully");
       utils.diary.getEntries.invalidate();
       utils.diary.getActions.invalidate();
       setOpen(false);
-      setFormData({
-        date: defaultDate || new Date().toISOString().split("T")[0],
-        category: "",
-        description: "",
-        adName: "",
-        campaignName: "",
-        adId: "",
-        campaignId: "",
-        scheduledFor: "",
-      });
       onSuccess?.();
     },
     onError: (error) => {
-      toast.error(`Failed to create action: ${error.message}`);
+      toast.error(`Failed to update action: ${error.message}`);
     },
   });
 
@@ -73,8 +62,8 @@ export function CreateActionDialog({ defaultDate, onSuccess }: CreateActionDialo
       return;
     }
 
-    createAction.mutate({
-      date: formData.date,
+    updateAction.mutate({
+      actionId: action.id,
       category: formData.category,
       description: formData.description,
       adName: formData.adName || undefined,
@@ -101,32 +90,21 @@ export function CreateActionDialog({ defaultDate, onSuccess }: CreateActionDialo
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Action
+        <Button variant="ghost" size="sm">
+          <Pencil className="w-3 h-3 mr-1" />
+          Edit
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Create Action</DialogTitle>
+            <DialogTitle>Edit Action</DialogTitle>
             <DialogDescription>
-              Log a manual action or task for campaign management
+              Update action details for campaign management
             </DialogDescription>
           </DialogHeader>
           
           <div className="grid gap-4 py-4">
-            {/* Date */}
-            <div className="grid gap-2">
-              <Label htmlFor="date">Date</Label>
-              <Input
-                id="date"
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              />
-            </div>
-
             {/* Category */}
             <div className="grid gap-2">
               <Label htmlFor="category">Category *</Label>
@@ -232,8 +210,8 @@ export function CreateActionDialog({ defaultDate, onSuccess }: CreateActionDialo
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={createAction.isPending}>
-              {createAction.isPending ? "Creating..." : "Create Action"}
+            <Button type="submit" disabled={updateAction.isPending}>
+              {updateAction.isPending ? "Updating..." : "Update Action"}
             </Button>
           </DialogFooter>
         </form>

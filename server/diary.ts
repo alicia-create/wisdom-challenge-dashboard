@@ -197,7 +197,16 @@ export async function createDiaryAction(action: InsertDiaryAction) {
   if (!db) throw new Error("Database not available");
 
   const result = await db.insert(diaryActions).values(action);
-  return Number((result as any).insertId || 0);
+  const actionId = Number((result as any).insertId || 0);
+  
+  // Fetch and return the created action
+  const created = await db
+    .select()
+    .from(diaryActions)
+    .where(eq(diaryActions.id, actionId))
+    .limit(1);
+  
+  return created[0]!;
 }
 
 /**
@@ -239,4 +248,67 @@ export async function updateDiaryActionStatus(
     .update(diaryActions)
     .set(updates)
     .where(eq(diaryActions.id, actionId));
+}
+
+/**
+ * Update diary action (full update)
+ */
+export async function updateDiaryAction(params: {
+  actionId: number;
+  category?: string;
+  description?: string;
+  status?: "pending" | "in_progress" | "completed" | "verified" | "cancelled";
+  adId?: string;
+  adName?: string;
+  campaignId?: string;
+  campaignName?: string;
+  scheduledFor?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const { actionId, ...updates } = params;
+
+  // Check if action exists
+  const existing = await db
+    .select()
+    .from(diaryActions)
+    .where(eq(diaryActions.id, actionId))
+    .limit(1);
+
+  if (existing.length === 0) {
+    throw new Error("Action not found");
+  }
+
+  const dbUpdates: any = {};
+  
+  // Only include fields that are provided
+  if (updates.category !== undefined) dbUpdates.category = updates.category;
+  if (updates.description !== undefined) dbUpdates.description = updates.description;
+  if (updates.status !== undefined) dbUpdates.status = updates.status;
+  if (updates.adId !== undefined) dbUpdates.adId = updates.adId;
+  if (updates.adName !== undefined) dbUpdates.adName = updates.adName;
+  if (updates.campaignId !== undefined) dbUpdates.campaignId = updates.campaignId;
+  if (updates.campaignName !== undefined) dbUpdates.campaignName = updates.campaignName;
+  if (updates.scheduledFor !== undefined) {
+    dbUpdates.scheduledFor = updates.scheduledFor ? new Date(updates.scheduledFor) : null;
+  }
+  
+  if (updates.status === "completed" && !dbUpdates.completedAt) {
+    dbUpdates.completedAt = new Date();
+  }
+
+  await db
+    .update(diaryActions)
+    .set(dbUpdates)
+    .where(eq(diaryActions.id, actionId));
+
+  // Return updated action
+  const updated = await db
+    .select()
+    .from(diaryActions)
+    .where(eq(diaryActions.id, actionId))
+    .limit(1);
+
+  return updated[0];
 }

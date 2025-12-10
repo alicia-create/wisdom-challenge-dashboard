@@ -75,6 +75,7 @@ import {
   getDiaryEntries,
   createDiaryAction,
   getDiaryActions,
+  updateDiaryAction,
   updateDiaryActionStatus,
 } from "./diary";
 import { invokeLLM } from "./_core/llm";
@@ -876,8 +877,12 @@ Creative Fatigue Alerts: ${creativeFatigue.length}
           date: z.string().optional(),
           category: z.string(),
           description: z.string(),
+          status: z.enum(["pending", "in_progress", "completed", "verified", "cancelled"]).optional(),
+          source: z.string().optional(),
           adId: z.string().optional(),
+          adName: z.string().optional(),
           campaignId: z.string().optional(),
+          campaignName: z.string().optional(),
           scheduledFor: z.string().optional(),
         })
       )
@@ -890,20 +895,22 @@ Creative Fatigue Alerts: ${creativeFatigue.length}
           entryId = await upsertDiaryEntry(date, metrics);
         }
 
-        const actionId = await createDiaryAction({
+        const action = await createDiaryAction({
           entryId,
-          actionType: "manual",
+          actionType: input.source === "llm_suggestion" ? "llm_suggestion" : "manual",
           category: input.category,
           description: input.description,
-          status: "pending",
-          source: "Manual",
+          status: input.status || "pending",
+          source: input.source || "Manual",
           adId: input.adId,
+          adName: input.adName,
           campaignId: input.campaignId,
+          campaignName: input.campaignName,
           scheduledFor: input.scheduledFor ? new Date(input.scheduledFor) : undefined,
           createdBy: ctx.user.email || "unknown",
         });
 
-        return { actionId };
+        return action;
       }),
 
     // Update action status
@@ -917,6 +924,28 @@ Creative Fatigue Alerts: ${creativeFatigue.length}
       .mutation(async ({ input }) => {
         await updateDiaryActionStatus(input.actionId, input.status);
         return { success: true };
+      }),
+
+    // Update action (full update)
+    updateAction: protectedProcedure
+      .input(
+        z.object({
+          actionId: z.number(),
+          category: z.string().optional(),
+          description: z.string().optional(),
+          status: z.enum(["pending", "in_progress", "completed", "verified", "cancelled"]).optional(),
+          adId: z.string().optional(),
+          adName: z.string().optional(),
+          campaignId: z.string().optional(),
+          campaignName: z.string().optional(),
+          scheduledFor: z.string().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const result = await updateDiaryAction({
+          ...input,
+        });
+        return result;
       }),
 
     // Get all actions (with optional filters)

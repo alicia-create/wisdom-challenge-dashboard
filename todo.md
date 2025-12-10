@@ -635,3 +635,38 @@
 - [ ] Test manual action creation and status updates - Pending user testing
 - [ ] Test LLM suggestion → diary action flow - Pending integration
 - [x] Test timeline view and filters - Date range filter working, empty state showing
+
+## LLM Recommendations → Ads Diary Integration (2025-12-09)
+
+- [x] Add "Add to Diary" button to each recommendation card in Optimization Agent - Added to critical and warning recs
+- [x] Create mapRecommendationToCategory() helper to auto-detect action category from LLM text - 7 categories mapped
+- [x] Pre-fill CreateActionDialog with recommendation description when opened from button - Auto-filled via AddToDiaryButton
+- [x] Add visual feedback (toast) when action is added to diary - Success/error toasts implemented
+- [ ] Test Add to Diary flow with critical, warning, and info recommendations
+
+## Ads Diary - Add Ad Name & Campaign Name Fields (2025-12-09)
+
+- [x] Add ad_name and campaign_name fields to diary_actions table schema - Added varchar(500) fields
+- [x] Run database migration to add new fields - Migration 0007_lucky_gabe_jones.sql applied
+- [ ] Update CreateActionDialog to include ad_name and campaign_name inputs
+- [ ] Update AddToDiaryButton to pass ad_name and campaign_name from recommendations
+- [ ] Update AdsDiary timeline to display ad_name and campaign_name instead of IDs
+- [ ] Add "View Ads Diary" link in Optimization Agent header
+- [ ] Add Edit button to each diary action
+- [ ] Create EditActionDialog component for editing existing actions
+- [ ] Add tRPC mutation diary.updateAction (description, category, status, ad_name, campaign_name)
+- [ ] Test editing existing diary actions
+- [ ] Test that names display correctly in diary entries
+
+
+## Ads Diary Enhancements (2025-12-09)
+- [x] Create EditActionDialog component for editing diary entries
+- [x] Add ad_name and campaign_name fields to diary_actions table
+- [x] Update CreateActionDialog to include ad_name and campaign_name inputs
+- [x] Update AdsDiary page to display ad_name and campaign_name
+- [x] Add Edit button to each diary action item
+- [x] Add link to Ads Diary from Optimization Agent page
+- [x] Update updateDiaryAction backend function to accept object parameter
+- [x] Update tRPC updateAction procedure to match new function signature
+- [x] Update createDiaryAction to return full action object (not just ID)
+- [ ] Complete vitest tests for diary edit functionality (needs debugging)

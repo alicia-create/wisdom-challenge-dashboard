@@ -50,6 +50,13 @@
       "when": 1765293016878,
       "tag": "0006_perpetual_argent",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1765325418067,
+      "tag": "0007_lucky_gabe_jones",
+      "breakpoints": true
     }
   ]
 }

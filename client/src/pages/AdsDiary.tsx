@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { CreateActionDialog } from "@/components/CreateActionDialog";
+import { EditActionDialog } from "@/components/EditActionDialog";
 import { toast } from "sonner";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -328,6 +329,18 @@ function ActionItem({ action }: { action: any }) {
         
         <p className="text-sm">{action.description}</p>
         
+        {/* Ad and Campaign Names */}
+        {(action.adName || action.campaignName) && (
+          <div className="flex items-center gap-4 mt-2 text-xs">
+            {action.adName && (
+              <span className="font-medium text-purple-600">📢 {action.adName}</span>
+            )}
+            {action.campaignName && (
+              <span className="font-medium text-blue-600">🎯 {action.campaignName}</span>
+            )}
+          </div>
+        )}
+        
         <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
           {action.source && <span>Source: {action.source}</span>}
           {action.createdBy && <span>By: {action.createdBy}</span>}
@@ -345,6 +358,7 @@ function ActionItem({ action }: { action: any }) {
       </div>
       
       <div className="flex gap-1">
+        <EditActionDialog action={action} />
         <StatusUpdateButton actionId={action.id} currentStatus={action.status} />
       </div>
     </div>
