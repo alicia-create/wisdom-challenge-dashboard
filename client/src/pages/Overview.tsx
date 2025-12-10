@@ -10,6 +10,8 @@ import { DashboardHeader } from "@/components/DashboardHeader";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { ConversionFunnel } from "@/components/ConversionFunnel";
+import { VSLPerformance } from "@/components/VSLPerformance";
 
 export default function Overview() {
   const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.LAST_30_DAYS);
@@ -24,6 +26,16 @@ export default function Overview() {
 
   // Fetch daily KPIs for charts with date range
   const { data: dailyKpis, isLoading: kpisLoading } = trpc.overview.dailyKpis.useQuery({
+    dateRange,
+  });
+
+  // Fetch funnel metrics
+  const { data: funnelMetrics, isLoading: funnelLoading } = trpc.overview.funnelMetrics.useQuery({
+    dateRange,
+  });
+
+  // Fetch VSL performance metrics
+  const { data: vslMetrics, isLoading: vslLoading } = trpc.overview.vslMetrics.useQuery({
     dateRange,
   });
 
@@ -59,13 +71,14 @@ export default function Overview() {
     return new Intl.NumberFormat('en-US').format(value);
   };
 
-  // Prepare chart data (reverse to show oldest to newest, left to right)
-  const chartData = dailyKpis?.map((kpi: any) => ({
+  // Prepare chart data and sort by date (oldest to newest, left to right)
+  const chartData = (dailyKpis?.map((kpi: any) => ({
     date: new Date(kpi.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    dateObj: new Date(kpi.date),
     spend: parseFloat(kpi.total_spend_meta || '0') + parseFloat(kpi.total_spend_google || '0'),
     leads: kpi.total_leads || 0,
     roas: parseFloat(kpi.roas || '0'),
-  })) || [];
+  })) || []).sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
 
   return (
     <div className="min-h-screen bg-background">
@@ -308,30 +321,6 @@ export default function Overview() {
             </CardContent>
           </Card>
 
-          {/* ManyChat Bot Users */}
-          <Card className="border-l-2 border-l-[#3A0CA3]">
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-1">
-                <CardTitle className="text-xs font-medium text-muted-foreground">ManyChat Bot Users</CardTitle>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-3 w-3 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Contacts who have interacted with the ManyChat bot</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {metricsLoading ? (
-                <Skeleton className="h-6 w-16" />
-              ) : (
-                <div className="text-xl font-bold">{metrics?.manychatBotUsers || 0}</div>
-              )}
-            </CardContent>
-          </Card>
-
           {/* Wisdom+ Conversion Rate */}
           <Card className="border-l-2 border-l-[#4361EE]">
             <CardHeader className="pb-2">
@@ -355,94 +344,45 @@ export default function Overview() {
               )}
             </CardContent>
           </Card>
-
-          {/* Broadcast Subscribers (Keap) */}
-          <Card className="border-l-2 border-l-[#4895EF]">
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-1">
-                <CardTitle className="text-xs font-medium text-muted-foreground">Broadcast Subscribers</CardTitle>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-3 w-3 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Total email broadcast subscribers from Keap (Reminder + Replay + Promo opt-ins)</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {metricsLoading ? (
-                <Skeleton className="h-6 w-16" />
-              ) : (
-                <div className="text-xl font-bold">
-                  {metrics?.broadcastSubscribers || 0}
-                </div>
-              )}
-            </CardContent>
-          </Card>
         </div>
 
-        {/* Critical Alerts Card */}
-        <Card className="mb-6 border-l-4 border-l-red-500">
+        {/* Conversion Funnel */}
+        <Card className="mb-6">
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-red-600" />
-                <CardTitle>Critical Alerts</CardTitle>
-              </div>
-              <a 
-                href="/optimization-agent" 
-                className="text-sm text-primary hover:underline"
-              >
-                View in Optimization Agent →
-              </a>
-            </div>
-            <CardDescription>Recent performance warnings and recommendations</CardDescription>
+            <CardTitle>Conversion Funnel</CardTitle>
+            <CardDescription>
+              User journey from lead to bot alerts subscriber
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            {alertsLoading ? (
-              <div className="space-y-3">
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-16 w-full" />
-              </div>
-            ) : recentAlerts && recentAlerts.length > 0 ? (
-              <div className="space-y-3">
-                {recentAlerts.map((alert: any) => (
-                  <div 
-                    key={alert.id}
-                    className="flex items-start gap-3 p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="mt-0.5">
-                      {alert.metric_type === 'cpp' && <DollarSign className="h-5 w-5 text-red-600" />}
-                      {alert.metric_type === 'click_to_purchase' && <TrendingDown className="h-5 w-5 text-amber-600" />}
-                      {alert.metric_type === 'creative_frequency' && <AlertCircle className="h-5 w-5 text-orange-600" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium text-sm">{alert.alert_type}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(alert.triggered_at).toLocaleDateString('en-US', { 
-                            month: 'short', 
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {alert.message}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            {funnelLoading ? (
+              <Skeleton className="h-[400px] w-full" />
+            ) : funnelMetrics ? (
+              <ConversionFunnel data={funnelMetrics} />
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                <AlertCircle className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">No critical alerts at the moment</p>
-                <p className="text-xs mt-1">System is monitoring CPP, Click-to-Purchase, and Creative Frequency</p>
+                No funnel data available
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* VSL Performance */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>VSL Performance</CardTitle>
+            <CardDescription>
+              Vidalytics watch milestones and Wisdom+ conversion
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {vslLoading ? (
+              <Skeleton className="h-[300px] w-full" />
+            ) : vslMetrics ? (
+              <VSLPerformance data={vslMetrics} />
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                No VSL data available
               </div>
             )}
           </CardContent>

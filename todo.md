@@ -685,3 +685,19 @@
 - [x] Remove "Winner" column from Organic vs Ads Comparison table
 - [x] Fix GA4 hostname filter to include 31daywisdomchallenge.com (now matches both with/without www)
 - [x] Add Real-Time Overview link to Analytics page header
+
+
+## Overview Page Reorganization (2025-12-10)
+- [x] Remove ManyChat Bot Users card
+- [x] Remove Broadcast Subscribers card
+- [x] Remove Critical Alerts section
+- [x] Create Conversion Funnel visualization with 5 stages:
+  - Stage 1: Lead (contact created)
+  - Stage 2: Wisdom+ Purchase (product_id 1 or 7)
+  - Stage 3: Kingdom Seekers Trial (product_id 5)
+  - Stage 4: ManyChat Connected (manychat_id not null)
+  - Stage 5: Bot Alerts Subscribed (ntn_subscribe event)
+- [x] Add conversion rates and drop-off percentages for each funnel stage
+- [x] Create VSL Performance card with Vidalytics metrics (5%, 25%, 75%, 95% watch rates)
+- [x] Fix Daily Ad Spend chart to show dates in chronological order (oldest to newest)
+- [x] Fix Daily Leads chart to show dates in chronological order (oldest to newest)

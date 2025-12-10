@@ -79,6 +79,7 @@ import {
   updateDiaryActionStatus,
 } from "./diary";
 import { invokeLLM } from "./_core/llm";
+import { getFunnelMetrics, getVSLMetrics } from "./funnel";
 
 export const appRouter = router({
   system: systemRouter,
@@ -218,7 +219,7 @@ export const appRouter = router({
         return await getChannelPerformance(startDate, endDate);
       }),
 
-    // Get funnel conversion metrics for step-by-step visualization
+    // Get conversion funnel metrics (Lead → Wisdom+ → Kingdom Seekers → ManyChat → Bot Alerts)
     funnelMetrics: publicProcedure
       .input(z.object({
         dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
@@ -228,7 +229,20 @@ export const appRouter = router({
           ? getDateRangeValues(input.dateRange)
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
         
-        return await getFunnelConversionMetrics(startDate, endDate);
+        return await getFunnelMetrics(startDate, endDate);
+      }),
+
+    // Get VSL performance metrics from Vidalytics
+    vslMetrics: publicProcedure
+      .input(z.object({
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        const { startDate, endDate } = input?.dateRange 
+          ? getDateRangeValues(input.dateRange)
+          : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
+        
+        return await getVSLMetrics(startDate, endDate);
       }),
   }),
 
