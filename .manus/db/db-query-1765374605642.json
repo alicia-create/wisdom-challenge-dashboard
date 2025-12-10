@@ -1,0 +1,46 @@
+{
+  "query": "SELECT landing_page, hostname, sessions, date \nFROM ga4_landing_page_metrics \nWHERE landing_page LIKE '%step%'\nORDER BY date DESC\nLIMIT 10",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2j9rVuZuRurkhgi.64ac36f98b86 --database DEFt9ARHDVCZprKAKnwLBw --execute SELECT landing_page, hostname, sessions, date \nFROM ga4_landing_page_metrics \nWHERE landing_page LIKE '%step%'\nORDER BY date DESC\nLIMIT 10",
+  "rows": [
+    {
+      "landing_page": "/step3-a",
+      "hostname": "www.31daywisdom.com",
+      "sessions": "3",
+      "date": "2025-12-09"
+    },
+    {
+      "landing_page": "/step1-a",
+      "hostname": "www.31daywisdom.com",
+      "sessions": "2",
+      "date": "2025-12-09"
+    },
+    {
+      "landing_page": "/step2-a",
+      "hostname": "www.31daywisdom.com",
+      "sessions": "2",
+      "date": "2025-12-09"
+    },
+    {
+      "landing_page": "/step2-a",
+      "hostname": "www.31daywisdom.com",
+      "sessions": "2",
+      "date": "2025-12-09"
+    },
+    {
+      "landing_page": "/step1-a",
+      "hostname": "www.31daywisdom.com",
+      "sessions": "1",
+      "date": "2025-12-09"
+    },
+    {
+      "landing_page": "/step1-a",
+      "hostname": "www.31daywisdom.com",
+      "sessions": "6",
+      "date": "2025-12-09"
+    }
+  ],
+  "messages": [],
+  "stdout": "landing_page\thostname\tsessions\tdate\n/step3-a\twww.31daywisdom.com\t3\t2025-12-09\n/step1-a\twww.31daywisdom.com\t2\t2025-12-09\n/step2-a\twww.31daywisdom.com\t2\t2025-12-09\n/step2-a\twww.31daywisdom.com\t2\t2025-12-09\n/step1-a\twww.31daywisdom.com\t1\t2025-12-09\n/step1-a\twww.31daywisdom.com\t6\t2025-12-09\n",
+  "stderr": "",
+  "execution_time_ms": 99
+}

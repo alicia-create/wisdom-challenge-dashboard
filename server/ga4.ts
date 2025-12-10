@@ -93,6 +93,16 @@ export async function fetchLandingPageMetrics(startDate: string, endDate: string
               filter: {
                 fieldName: "hostName",
                 stringFilter: {
+                  matchType: "CONTAINS",
+                  value: "31daywisdomchallenge.com",
+                  caseSensitive: false,
+                },
+              },
+            },
+            {
+              filter: {
+                fieldName: "hostName",
+                stringFilter: {
                   matchType: "EXACT",
                   value: "31dwc26.obv.io",
                   caseSensitive: false,

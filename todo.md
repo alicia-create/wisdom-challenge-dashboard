@@ -701,3 +701,12 @@
 - [x] Create VSL Performance card with Vidalytics metrics (5%, 25%, 75%, 95% watch rates)
 - [x] Fix Daily Ad Spend chart to show dates in chronological order (oldest to newest)
 - [x] Fix Daily Leads chart to show dates in chronological order (oldest to newest)
+
+
+## Analytics Dashboard Organic Funnel Fix (2025-12-10)
+- [x] Investigate why Organic Funnel shows 0 sessions when GA4 shows 365 sessions for www.31daywisdomchallenge.com
+- [x] Check GA4 query filtering logic in backend (found filter was not capturing 31daywisdomchallenge.com)
+- [x] Verify hostname filter is correctly matching www.31daywisdomchallenge.com
+- [x] Fix query to capture organic traffic data from GA4 (added explicit filter for 31daywisdomchallenge.com)
+- [x] Trigger GA4 sync and imported 108 new records
+- [x] Test that Organic Funnel displays correct session counts (139 sessions, 141 conversions)

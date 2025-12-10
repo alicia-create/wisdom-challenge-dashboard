@@ -1,0 +1,70 @@
+{
+  "query": "SELECT hostname, landing_page, SUM(sessions) as total_sessions, date\nFROM ga4_landing_page_metrics \nWHERE hostname LIKE '%31daywisdomchallenge%'\nGROUP BY hostname, landing_page, date\nORDER BY total_sessions DESC\nLIMIT 10",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2j9rVuZuRurkhgi.64ac36f98b86 --database DEFt9ARHDVCZprKAKnwLBw --execute SELECT hostname, landing_page, SUM(sessions) as total_sessions, date\nFROM ga4_landing_page_metrics \nWHERE hostname LIKE '%31daywisdomchallenge%'\nGROUP BY hostname, landing_page, date\nORDER BY total_sessions DESC\nLIMIT 10",
+  "rows": [
+    {
+      "hostname": "www.31daywisdomchallenge.com",
+      "landing_page": "/step2-a",
+      "total_sessions": "30",
+      "date": "2025-12-05"
+    },
+    {
+      "hostname": "www.31daywisdomchallenge.com",
+      "landing_page": "/step1-a",
+      "total_sessions": "26",
+      "date": "2025-12-05"
+    },
+    {
+      "hostname": "www.31daywisdomchallenge.com",
+      "landing_page": "/wisdomplus",
+      "total_sessions": "23",
+      "date": "2025-12-05"
+    },
+    {
+      "hostname": "www.31daywisdomchallenge.com",
+      "landing_page": "/redirect",
+      "total_sessions": "21",
+      "date": "2025-12-05"
+    },
+    {
+      "hostname": "www.31daywisdomchallenge.com",
+      "landing_page": "/step1-a",
+      "total_sessions": "20",
+      "date": "2025-12-04"
+    },
+    {
+      "hostname": "www.31daywisdomchallenge.com",
+      "landing_page": "/step2-a",
+      "total_sessions": "19",
+      "date": "2025-12-04"
+    },
+    {
+      "hostname": "www.31daywisdomchallenge.com",
+      "landing_page": "/step1-a",
+      "total_sessions": "19",
+      "date": "2025-12-03"
+    },
+    {
+      "hostname": "www.31daywisdomchallenge.com",
+      "landing_page": "/step3-a",
+      "total_sessions": "18",
+      "date": "2025-12-05"
+    },
+    {
+      "hostname": "www.31daywisdomchallenge.com",
+      "landing_page": "/step1-b",
+      "total_sessions": "10",
+      "date": "2025-12-05"
+    },
+    {
+      "hostname": "www.31daywisdomchallenge.com",
+      "landing_page": "/step1-b",
+      "total_sessions": "8",
+      "date": "2025-12-04"
+    }
+  ],
+  "messages": [],
+  "stdout": "hostname\tlanding_page\ttotal_sessions\tdate\nwww.31daywisdomchallenge.com\t/step2-a\t30\t2025-12-05\nwww.31daywisdomchallenge.com\t/step1-a\t26\t2025-12-05\nwww.31daywisdomchallenge.com\t/wisdomplus\t23\t2025-12-05\nwww.31daywisdomchallenge.com\t/redirect\t21\t2025-12-05\nwww.31daywisdomchallenge.com\t/step1-a\t20\t2025-12-04\nwww.31daywisdomchallenge.com\t/step2-a\t19\t2025-12-04\nwww.31daywisdomchallenge.com\t/step1-a\t19\t2025-12-03\nwww.31daywisdomchallenge.com\t/step3-a\t18\t2025-12-05\nwww.31daywisdomchallenge.com\t/step1-b\t10\t2025-12-05\nwww.31daywisdomchallenge.com\t/step1-b\t8\t2025-12-04\n",
+  "stderr": "",
+  "execution_time_ms": 70
+}

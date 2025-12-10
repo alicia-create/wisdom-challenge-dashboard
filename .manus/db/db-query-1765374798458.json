@@ -1,0 +1,26 @@
+{
+  "query": "SELECT DISTINCT hostname, COUNT(*) as count \nFROM ga4_landing_page_metrics \nGROUP BY hostname\nORDER BY count DESC",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2j9rVuZuRurkhgi.64ac36f98b86 --database DEFt9ARHDVCZprKAKnwLBw --execute SELECT DISTINCT hostname, COUNT(*) as count \nFROM ga4_landing_page_metrics \nGROUP BY hostname\nORDER BY count DESC",
+  "rows": [
+    {
+      "hostname": "www.31daywisdomchallenge.com",
+      "count": "51"
+    },
+    {
+      "hostname": "31dwc26.obv.io",
+      "count": "30"
+    },
+    {
+      "hostname": "www.31daywisdom.com",
+      "count": "16"
+    },
+    {
+      "hostname": "www.wisdom2023.com",
+      "count": "6"
+    }
+  ],
+  "messages": [],
+  "stdout": "hostname\tcount\nwww.31daywisdomchallenge.com\t51\n31dwc26.obv.io\t30\nwww.31daywisdom.com\t16\nwww.wisdom2023.com\t6\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}
