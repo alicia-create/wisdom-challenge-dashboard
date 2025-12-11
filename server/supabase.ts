@@ -852,7 +852,7 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
   let metaQuery = supabase
     .from('ad_performance')
     .select('spend, reported_leads, reported_purchases')
-    .eq('platform', 'meta')
+    .ilike('platform', 'meta')
     .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`);
   
   if (startDate) metaQuery = metaQuery.gte('date', startDate);
@@ -865,7 +865,7 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
   let googleQuery = supabase
     .from('ad_performance')
     .select('spend, reported_leads, reported_purchases')
-    .eq('platform', 'google')
+    .ilike('platform', 'google')
     .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`);
   
   if (startDate) googleQuery = googleQuery.gte('date', startDate);

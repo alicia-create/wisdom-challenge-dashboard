@@ -824,3 +824,8 @@
 - [x] Remove API Connections card from client/src/pages/OtherData.tsx
 - [x] Rollback database migration (drop api_tokens table)
 - [x] Verify Performance by Channel still works with ad_performance data from n8n
+
+## Fix Performance by Channel Platform Filter (2025-12-10)
+- [x] Change platform filter from .eq('platform', 'meta') to .ilike('platform', 'meta')
+- [x] Change platform filter from .eq('platform', 'google') to .ilike('platform', 'google')
+- [x] Test Performance by Channel shows real data from ad_performance table (Meta: $5,052.99)
