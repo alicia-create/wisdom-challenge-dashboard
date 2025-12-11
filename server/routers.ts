@@ -81,10 +81,12 @@ import {
 import { invokeLLM } from "./_core/llm";
 import { getFunnelMetrics, getVSLMetrics } from "./funnel";
 import { adsRouter } from "./ads-api";
+import { oauthRouter } from "./ads-oauth";
 
 export const appRouter = router({
   system: systemRouter,
   ads: adsRouter,
+  oauth: oauthRouter,
   
   // Facebook API integration
   facebook: router({

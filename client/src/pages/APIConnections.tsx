@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "wouter";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,45 +9,50 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { CheckCircle2, XCircle, Loader2, RefreshCw, Link as LinkIcon } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, RefreshCw, Link as LinkIcon, LogOut } from "lucide-react";
 
 export default function APIConnections() {
-  // Meta Ads state
-  const [metaAccessToken, setMetaAccessToken] = useState("");
-  const [metaAdAccountId, setMetaAdAccountId] = useState("");
-  const [metaConnectionStatus, setMetaConnectionStatus] = useState<"idle" | "testing" | "success" | "error">("idle");
-
-  // Google Ads state
-  const [googleRefreshToken, setGoogleRefreshToken] = useState("");
-  const [googleCustomerId, setGoogleCustomerId] = useState("");
-  const [googleConnectionStatus, setGoogleConnectionStatus] = useState<"idle" | "testing" | "success" | "error">("idle");
-
-  // Sync state
+  const [location] = useLocation();
   const [syncStartDate, setSyncStartDate] = useState("");
   const [syncEndDate, setSyncEndDate] = useState("");
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // Test Meta connection
-  const testMetaConnection = trpc.ads.testMetaConnection.useMutation({
-    onSuccess: () => {
-      setMetaConnectionStatus("success");
-      toast.success("Meta Ads API connection successful!");
+  // Get connection status
+  const { data: connectionStatus, refetch: refetchStatus } = trpc.oauth.getConnectionStatus.useQuery();
+
+  // Get OAuth URLs
+  const { data: metaAuthUrl } = trpc.oauth.getMetaAuthUrl.useQuery();
+  const { data: googleAuthUrl } = trpc.oauth.getGoogleAuthUrl.useQuery();
+
+  // Handle OAuth callbacks
+  const handleMetaCallback = trpc.oauth.handleMetaCallback.useMutation({
+    onSuccess: (result: any) => {
+      toast.success(`Connected to Meta Ads: ${result.accountName}`);
+      refetchStatus();
     },
     onError: (error: any) => {
-      setMetaConnectionStatus("error");
       toast.error(`Meta connection failed: ${error.message}`);
     },
   });
 
-  // Test Google connection
-  const testGoogleConnection = trpc.ads.testGoogleConnection.useMutation({
+  const handleGoogleCallback = trpc.oauth.handleGoogleCallback.useMutation({
     onSuccess: () => {
-      setGoogleConnectionStatus("success");
-      toast.success("Google Ads API connection successful!");
+      toast.success("Connected to Google Ads successfully!");
+      refetchStatus();
     },
     onError: (error: any) => {
-      setGoogleConnectionStatus("error");
       toast.error(`Google connection failed: ${error.message}`);
+    },
+  });
+
+  // Disconnect mutation
+  const disconnectMutation = trpc.oauth.disconnect.useMutation({
+    onSuccess: () => {
+      toast.success("Disconnected successfully");
+      refetchStatus();
+    },
+    onError: (error: any) => {
+      toast.error(`Disconnect failed: ${error.message}`);
     },
   });
 
@@ -62,28 +68,40 @@ export default function APIConnections() {
     },
   });
 
-  const handleTestMeta = () => {
-    if (!metaAccessToken || !metaAdAccountId) {
-      toast.error("Please provide both Meta Access Token and Ad Account ID");
-      return;
+  // Handle success/error messages from OAuth callback
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const success = params.get('success');
+    const error = params.get('error');
+
+    if (success === 'meta_connected') {
+      toast.success('Successfully connected to Meta Ads!');
+      refetchStatus();
+      window.history.replaceState({}, '', '/api-connections');
+    } else if (success === 'google_connected') {
+      toast.success('Successfully connected to Google Ads!');
+      refetchStatus();
+      window.history.replaceState({}, '', '/api-connections');
+    } else if (error) {
+      toast.error(`Connection failed: ${decodeURIComponent(error)}`);
+      window.history.replaceState({}, '', '/api-connections');
     }
-    setMetaConnectionStatus("testing");
-    testMetaConnection.mutate({
-      accessToken: metaAccessToken,
-      adAccountId: metaAdAccountId,
-    });
+  }, [location]);
+
+  const handleConnectMeta = () => {
+    if (metaAuthUrl?.url) {
+      window.location.href = metaAuthUrl.url;
+    }
   };
 
-  const handleTestGoogle = () => {
-    if (!googleRefreshToken || !googleCustomerId) {
-      toast.error("Please provide both Google Refresh Token and Customer ID");
-      return;
+  const handleConnectGoogle = () => {
+    if (googleAuthUrl?.url) {
+      window.location.href = googleAuthUrl.url;
     }
-    setGoogleConnectionStatus("testing");
-    testGoogleConnection.mutate({
-      refreshToken: googleRefreshToken,
-      customerId: googleCustomerId,
-    });
+  };
+
+  const handleDisconnect = (platform: 'meta' | 'google') => {
+    disconnectMutation.mutate({ platform });
   };
 
   const handleSyncData = () => {
@@ -92,8 +110,8 @@ export default function APIConnections() {
       return;
     }
 
-    if (metaConnectionStatus !== "success" && googleConnectionStatus !== "success") {
-      toast.error("Please test and verify at least one API connection first");
+    if (!connectionStatus?.meta.connected && !connectionStatus?.google.connected) {
+      toast.error("Please connect at least one API first");
       return;
     }
 
@@ -101,28 +119,20 @@ export default function APIConnections() {
     syncAdData.mutate({
       startDate: syncStartDate,
       endDate: syncEndDate,
-      metaConfig: metaConnectionStatus === "success" ? {
-        accessToken: metaAccessToken,
-        adAccountId: metaAdAccountId,
-      } : undefined,
-      googleConfig: googleConnectionStatus === "success" ? {
-        refreshToken: googleRefreshToken,
-        customerId: googleCustomerId,
-      } : undefined,
+      // Backend will use stored tokens from database
     });
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "success":
-        return <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"><CheckCircle2 className="h-3 w-3 mr-1" />Connected</Badge>;
-      case "error":
-        return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" />Failed</Badge>;
-      case "testing":
-        return <Badge variant="secondary"><Loader2 className="h-3 w-3 mr-1 animate-spin" />Testing...</Badge>;
-      default:
-        return <Badge variant="outline">Not Connected</Badge>;
+  const getStatusBadge = (connected: boolean, accountName?: string | null) => {
+    if (connected) {
+      return (
+        <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+          <CheckCircle2 className="h-3 w-3 mr-1" />
+          Connected {accountName && `- ${accountName}`}
+        </Badge>
+      );
     }
+    return <Badge variant="outline">Not Connected</Badge>;
   };
 
   return (
@@ -143,7 +153,7 @@ export default function APIConnections() {
             <h1 className="text-3xl font-bold tracking-tight">API Connections</h1>
           </div>
           <p className="text-muted-foreground">
-            Configure and test Meta and Google Ads API connections to sync campaign data
+            Connect Meta and Google Ads APIs using OAuth 2.0 to sync campaign data
           </p>
         </div>
 
@@ -158,53 +168,62 @@ export default function APIConnections() {
                     Connect to Facebook and Instagram Ads data
                   </CardDescription>
                 </div>
-                {getStatusBadge(metaConnectionStatus)}
+                {getStatusBadge(connectionStatus?.meta.connected || false, connectionStatus?.meta.accountName)}
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="metaAccessToken">Access Token</Label>
-                  <Input
-                    id="metaAccessToken"
-                    type="password"
-                    placeholder="EAAxxxxxxxxxx..."
-                    value={metaAccessToken}
-                    onChange={(e) => setMetaAccessToken(e.target.value)}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Get from Meta Business Suite → Settings → Business Settings → System Users
-                  </p>
+              {connectionStatus?.meta.connected ? (
+                <div className="space-y-4">
+                  <div className="bg-muted p-4 rounded-lg">
+                    <h4 className="font-medium mb-2">Connected Account</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Ad Account: {connectionStatus.meta.adAccountId}
+                    </p>
+                    {connectionStatus.meta.expiresAt && (
+                      <p className="text-sm text-muted-foreground">
+                        Expires: {new Date(connectionStatus.meta.expiresAt).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                  <Button
+                    variant="destructive"
+                    onClick={() => handleDisconnect('meta')}
+                    disabled={disconnectMutation.isPending}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Disconnect
+                  </Button>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="metaAdAccountId">Ad Account ID</Label>
-                  <Input
-                    id="metaAdAccountId"
-                    placeholder="act_123456789"
-                    value={metaAdAccountId}
-                    onChange={(e) => setMetaAdAccountId(e.target.value)}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Format: act_XXXXXXXXX (found in Ads Manager URL)
-                  </p>
+              ) : (
+                <div className="space-y-4">
+                  <div className="bg-muted p-4 rounded-lg">
+                    <h4 className="font-medium mb-2">How it works:</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li>• Click "Connect with Facebook" below</li>
+                      <li>• Authorize access to your Meta Ads account</li>
+                      <li>• We'll securely store your access token</li>
+                      <li>• Sync campaign data automatically</li>
+                    </ul>
+                  </div>
+                  <Button
+                    onClick={handleConnectMeta}
+                    disabled={!metaAuthUrl}
+                    className="w-full"
+                  >
+                    {handleMetaCallback.isPending ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Connecting...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="h-4 w-4 mr-2" />
+                        Connect with Facebook
+                      </>
+                    )}
+                  </Button>
                 </div>
-              </div>
-              <Button
-                onClick={handleTestMeta}
-                disabled={metaConnectionStatus === "testing"}
-              >
-                {metaConnectionStatus === "testing" ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Testing Connection...
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="h-4 w-4 mr-2" />
-                    Test Connection
-                  </>
-                )}
-              </Button>
+              )}
             </CardContent>
           </Card>
 
@@ -218,53 +237,59 @@ export default function APIConnections() {
                     Connect to Google Ads campaign data
                   </CardDescription>
                 </div>
-                {getStatusBadge(googleConnectionStatus)}
+                {getStatusBadge(connectionStatus?.google.connected || false)}
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="googleRefreshToken">Refresh Token</Label>
-                  <Input
-                    id="googleRefreshToken"
-                    type="password"
-                    placeholder="1//0xxxxxxxxxx..."
-                    value={googleRefreshToken}
-                    onChange={(e) => setGoogleRefreshToken(e.target.value)}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    OAuth 2.0 refresh token from Google Cloud Console
-                  </p>
+              {connectionStatus?.google.connected ? (
+                <div className="space-y-4">
+                  <div className="bg-muted p-4 rounded-lg">
+                    <h4 className="font-medium mb-2">Connected Account</h4>
+                    {connectionStatus.google.expiresAt && (
+                      <p className="text-sm text-muted-foreground">
+                        Expires: {new Date(connectionStatus.google.expiresAt).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                  <Button
+                    variant="destructive"
+                    onClick={() => handleDisconnect('google')}
+                    disabled={disconnectMutation.isPending}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Disconnect
+                  </Button>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="googleCustomerId">Customer ID</Label>
-                  <Input
-                    id="googleCustomerId"
-                    placeholder="123-456-7890"
-                    value={googleCustomerId}
-                    onChange={(e) => setGoogleCustomerId(e.target.value)}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    10-digit ID from Google Ads account (top right corner)
-                  </p>
+              ) : (
+                <div className="space-y-4">
+                  <div className="bg-muted p-4 rounded-lg">
+                    <h4 className="font-medium mb-2">How it works:</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li>• Click "Connect with Google" below</li>
+                      <li>• Authorize access to your Google Ads account</li>
+                      <li>• We'll securely store your access token</li>
+                      <li>• Sync campaign data automatically</li>
+                    </ul>
+                  </div>
+                  <Button
+                    onClick={handleConnectGoogle}
+                    disabled={!googleAuthUrl}
+                    className="w-full"
+                  >
+                    {handleGoogleCallback.isPending ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Connecting...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="h-4 w-4 mr-2" />
+                        Connect with Google
+                      </>
+                    )}
+                  </Button>
                 </div>
-              </div>
-              <Button
-                onClick={handleTestGoogle}
-                disabled={googleConnectionStatus === "testing"}
-              >
-                {googleConnectionStatus === "testing" ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Testing Connection...
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="h-4 w-4 mr-2" />
-                    Test Connection
-                  </>
-                )}
-              </Button>
+              )}
             </CardContent>
           </Card>
 
@@ -310,7 +335,7 @@ export default function APIConnections() {
 
               <Button
                 onClick={handleSyncData}
-                disabled={isSyncing || (metaConnectionStatus !== "success" && googleConnectionStatus !== "success")}
+                disabled={isSyncing || (!connectionStatus?.meta.connected && !connectionStatus?.google.connected)}
                 size="lg"
                 className="w-full"
               >

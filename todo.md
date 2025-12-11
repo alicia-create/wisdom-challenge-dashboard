@@ -783,3 +783,25 @@
 - [x] Add "Sync Data" functionality with date range picker
 - [x] Add API Connections card to Data Hub page
 - [ ] Test end-to-end: configure tokens → test connection → sync data → verify Performance by Channel works
+
+## OAuth 2.0 Flow for Meta and Google Ads (2025-12-10)
+- [x] Create database table for storing OAuth tokens (api_tokens with platform, access_token, refresh_token, expires_at)
+- [x] Add Meta OAuth callback handler at /api/oauth/facebook/callback
+- [x] Add Google OAuth callback handler at /api/oauth/google/callback
+- [x] Create tRPC procedure to initiate Meta OAuth flow (returns authorization URL)
+- [x] Create tRPC procedure to initiate Google OAuth flow (returns authorization URL)
+- [x] Update APIConnections page with "Connect with Facebook" and "Connect with Google" buttons
+- [x] Remove manual token input fields (replace with OAuth buttons)
+- [x] Add token status display (connected/disconnected with account info)
+- [ ] Test Meta OAuth flow: click button → authorize → callback → token saved
+- [ ] Test Google OAuth flow: click button → authorize → callback → token saved
+- [x] Update syncAdData to use stored tokens from database instead of manual input
+- [ ] Test end-to-end: OAuth → sync data → verify Performance by Channel works
+
+## Backend OAuth Callback Routes (2025-12-10)
+- [x] Create Express route handler at /api/oauth/facebook/callback
+- [x] Create Express route handler at /api/oauth/google/callback
+- [x] Update redirect URIs in ads-oauth.ts to use /api/oauth/* instead of frontend
+- [x] Handle OAuth callback in backend, save token, then redirect to /api-connections with success message
+- [ ] Test Meta OAuth flow with backend callback
+- [ ] Test Google OAuth flow with backend callback

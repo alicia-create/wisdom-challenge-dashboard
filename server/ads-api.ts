@@ -130,34 +130,31 @@ export const adsRouter = router({
     .input(z.object({
       startDate: z.string(),
       endDate: z.string(),
-      metaConfig: z.object({
-        accessToken: z.string(),
-        adAccountId: z.string(),
-      }).optional(),
-      googleConfig: z.object({
-        refreshToken: z.string(),
-        customerId: z.string(),
-      }).optional(),
     }))
     .mutation(async ({ input }) => {
       let metaRows = 0;
       let googleRows = 0;
       
-      // Sync Meta data if configured
-      if (input.metaConfig) {
+      // Get stored tokens from database
+      const { getStoredToken } = await import('./ads-oauth');
+      
+      // Sync Meta data if token exists
+      const metaToken = await getStoredToken('meta');
+      if (metaToken?.access_token && metaToken?.ad_account_id) {
         metaRows = await syncMetaAdsData(
-          input.metaConfig.accessToken,
-          input.metaConfig.adAccountId,
+          metaToken.access_token,
+          metaToken.ad_account_id,
           input.startDate,
           input.endDate
         );
       }
       
-      // Sync Google data if configured
-      if (input.googleConfig) {
+      // Sync Google data if token exists
+      const googleToken = await getStoredToken('google');
+      if (googleToken?.refresh_token && googleToken?.ad_account_id) {
         googleRows = await syncGoogleAdsData(
-          input.googleConfig.refreshToken,
-          input.googleConfig.customerId,
+          googleToken.refresh_token,
+          googleToken.ad_account_id,
           input.startDate,
           input.endDate
         );
