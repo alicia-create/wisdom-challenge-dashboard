@@ -6,7 +6,7 @@ import { supabase } from './supabase';
  * Funnel stages:
  * 1. Lead (contact created)
  * 2. Wisdom+ Purchase (product_id 1 or 7)
- * 3. Kingdom Seekers Trial (product_id 5)
+ * 3. Kingdom Seekers Trial (product_id 8)
  * 4. ManyChat Connected (manychat_id not null)
  * 5. Bot Alerts Subscribed (ntn_subscribe event)
  */
@@ -73,11 +73,11 @@ export async function getFunnelMetrics(startDate?: string, endDate?: string) {
   const { data: wisdomItems } = await wisdomQuery;
   const wisdomPurchases = wisdomItems ? new Set(wisdomItems.map(item => item.order_id)).size : 0;
 
-  // Stage 3: Kingdom Seekers Trial (product_id 5)
+  // Stage 3: Kingdom Seekers Trial (product_id 8)
   let kingdomQuery = supabase
     .from('order_items')
     .select('order_id')
-    .eq('product_id', 5);
+    .eq('product_id', 8);
   
   if (startDate || endDate) {
     let ordersSubquery = supabase

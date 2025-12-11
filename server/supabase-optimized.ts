@@ -66,11 +66,11 @@ export async function getOverviewMetricsOptimized(startDate?: string, endDate?: 
     const { getWisdomContactIds } = await import('./wisdom-filter');
     const wisdomContactIds = await getWisdomContactIds();
 
-    // Kingdom Seeker Trials (product_id = 5)
+    // Kingdom Seeker Trials (product_id = 8)
     const { data: kingdomSeekerData } = await supabase
       .from('order_items')
       .select('order_id')
-      .eq('product_id', 5);
+      .eq('product_id', 8);
     const kingdomSeekerTrials = kingdomSeekerData ? new Set(kingdomSeekerData.map((item: any) => item.order_id)).size : 0;
 
     // ManyChat bot users

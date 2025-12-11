@@ -754,3 +754,32 @@
 - [x] Add click handler to contact name cells
 - [x] Pass contact_id to modal to fetch activity history
 - [x] Test modal opens correctly with contact events
+
+## Kingdom Seekers Product ID Update (2025-12-10)
+- [x] Update product_id from 5 to 8 in getOverviewMetrics query
+- [x] Update product_id from 5 to 8 in funnel.ts getFunnelMetrics
+- [ ] Test Kingdom Seekers count displays correctly
+
+## Performance by Channel Investigation (2025-12-10)
+- [x] Check ad_performance table data in Supabase
+- [x] Investigate why Performance by Channel shows $0.00 spend (table is empty)
+- [x] Verify getChannelPerformance query is working correctly
+- [x] Check if campaign filter (31DWC2026) matches actual data
+
+## Meta/Google Ads Integration Decision (2025-12-10)
+- [x] Analyze pros/cons of direct API integration vs n8n
+- [x] Check current ad_performance table structure and data
+- [x] Provide recommendation to user (direct API is better)
+- [x] Implement chosen solution (API Connections interface created)
+
+## API Connections Interface (2025-12-10)
+- [x] Create APIConnections page component with Meta and Google sections
+- [x] Add token input forms (Meta Access Token, Ad Account ID, Google Refresh Token, Customer ID)
+- [x] Build backend tRPC procedures to test Meta API connection
+- [x] Build backend tRPC procedures to test Google Ads API connection
+- [x] Add "Test Connection" buttons with success/error feedback
+- [x] Create backend procedure to sync ad data from Meta API to ad_performance table
+- [x] Create backend procedure to sync ad data from Google Ads API to ad_performance table (placeholder for now)
+- [x] Add "Sync Data" functionality with date range picker
+- [x] Add API Connections card to Data Hub page
+- [ ] Test end-to-end: configure tokens → test connection → sync data → verify Performance by Channel works

@@ -159,11 +159,11 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
 
   const vipRevenue = ordersData?.reduce((sum: number, row: any) => sum + parseFloat(row.order_total || '0'), 0) || 0;
 
-  // Get Kingdom Seeker Trials count (product_id = 5)
+  // Get Kingdom Seeker Trials count (product_id = 8)
   let kingdomSeekerQuery = supabase
     .from('order_items')
     .select('order_id', { count: 'exact', head: false })
-    .eq('product_id', 5);
+    .eq('product_id', 8);
   
   const { data: kingdomSeekerData } = await kingdomSeekerQuery;
   const kingdomSeekerTrials = kingdomSeekerData ? new Set(kingdomSeekerData.map((item: any) => item.order_id)).size : 0;

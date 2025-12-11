@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { useLocation } from "wouter";
-import { Database, ShoppingCart, TrendingUp, AlertCircle, Users, Target, FileText, Mail, Activity, Package, UserPlus, BookOpen } from "lucide-react";
+import { Database, ShoppingCart, TrendingUp, AlertCircle, Users, Target, FileText, Mail, Activity, Package, UserPlus, BookOpen, Link as LinkIcon } from "lucide-react";
 
 export default function OtherData() {
   const [, setLocation] = useLocation();
@@ -79,8 +79,16 @@ export default function OtherData() {
     },
   ];
 
-  // Priority 3: System pages (small cards) - 4 cards
+  // Priority 3: System pages (small cards) - 5 cards
   const tertiaryPages = [
+    {
+      title: "API Connections",
+      description: "Configure Meta and Google Ads API connections",
+      icon: LinkIcon,
+      path: "/api-connections",
+      color: "text-blue-600",
+      bgColor: "bg-blue-50 dark:bg-blue-950",
+    },
     {
       title: "Error Logs",
       description: "System error logs and debugging information",
