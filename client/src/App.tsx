@@ -24,7 +24,7 @@ import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import Products from "./pages/Products";
 import Invites from "./pages/Invites";
 import AdsDiary from "./pages/AdsDiary";
-import APIConnections from "./pages/APIConnections";
+
 
 function Router() {
   return (
@@ -47,8 +47,7 @@ function Router() {
       <Route path={"/ads-diary"} component={AdsDiary} />
       <Route path={"/debug/google-campaigns"} component={DebugGoogleCampaigns} />
       <Route path={"/debug/meta-campaigns"} component={DebugMetaCampaigns} />
-      <Route path={"/debug/error-logs"} component={ErrorLogs} />
-      <Route path={"/api-connections"} component={APIConnections} />
+      <Route path="/debug/error-logs" component={ErrorLogs} />
       <Route path={"/404"} component={NotFound} />      {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>

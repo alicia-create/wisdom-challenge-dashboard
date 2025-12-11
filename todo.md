@@ -805,3 +805,22 @@
 - [x] Handle OAuth callback in backend, save token, then redirect to /api-connections with success message
 - [ ] Test Meta OAuth flow with backend callback
 - [ ] Test Google OAuth flow with backend callback
+
+## OAuth Redirect URI Debugging (2025-12-10)
+- [ ] Check if published URL is different from dev URL
+- [ ] Update Meta redirect URI to use published URL
+- [ ] Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to environment variables
+- [ ] Update Google redirect URI to use published URL
+- [ ] Test Meta OAuth flow with correct redirect URI
+- [ ] Test Google OAuth flow with correct credentials
+
+## Remove OAuth Implementation (2025-12-10)
+- [x] Delete server/ads-oauth.ts file
+- [x] Delete server/ads-oauth-routes.ts file
+- [x] Remove oauth router from server/routers.ts
+- [x] Remove ads OAuth routes from server/_core/index.ts
+- [x] Delete client/src/pages/APIConnections.tsx
+- [x] Remove API Connections route from client/src/App.tsx
+- [x] Remove API Connections card from client/src/pages/OtherData.tsx
+- [x] Rollback database migration (drop api_tokens table)
+- [x] Verify Performance by Channel still works with ad_performance data from n8n

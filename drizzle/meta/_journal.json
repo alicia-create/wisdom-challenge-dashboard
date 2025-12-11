@@ -64,6 +64,13 @@
       "when": 1765421195685,
       "tag": "0008_nasty_prowler",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1765423575772,
+      "tag": "0009_wealthy_marauders",
+      "breakpoints": true
     }
   ]
 }

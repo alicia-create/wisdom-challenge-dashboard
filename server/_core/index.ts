@@ -8,7 +8,6 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import keapRoutes from "../keap-routes";
 import testEnvRoutes from "../test-env-endpoint";
-import adsOAuthRoutes from "../ads-oauth-routes";
 import { serveStatic, setupVite } from "./vite";
 import { checkAllAlerts } from "../alert-service";
 
@@ -41,8 +40,6 @@ async function startServer() {
   registerOAuthRoutes(app);
   // Keap OAuth routes under /api/keap/*
   app.use("/api/keap", keapRoutes);
-  // Ads OAuth routes under /api/oauth/facebook/* and /api/oauth/google/*
-  app.use("/api", adsOAuthRoutes);
   // Test environment variables
   app.use("/api", testEnvRoutes);
   // tRPC API

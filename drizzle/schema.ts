@@ -238,20 +238,4 @@ export const diaryActions = mysqlTable("diary_actions", {
 export type DiaryAction = typeof diaryActions.$inferSelect;
 export type InsertDiaryAction = typeof diaryActions.$inferInsert;
 
-/**
- * API Tokens table - stores OAuth tokens for external APIs (Meta, Google Ads)
- * Singleton table per platform (only one row per platform)
- */
-export const apiTokens = mysqlTable("api_tokens", {
-  id: int("id").autoincrement().primaryKey(),
-  platform: mysqlEnum("platform", ["meta", "google"]).notNull().unique(),
-  accessToken: text("access_token").notNull(),
-  refreshToken: text("refresh_token"),
-  expiresAt: timestamp("expires_at"),
-  adAccountId: varchar("ad_account_id", { length: 255 }), // For Meta: act_XXXXX, For Google: customer ID
-  accountName: text("account_name"), // Display name of connected account
-  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
-});
 
-export type ApiToken = typeof apiTokens.$inferSelect;
-export type InsertApiToken = typeof apiTokens.$inferInsert;
