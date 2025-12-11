@@ -16,6 +16,7 @@ import { Link } from "wouter";
 import { toast } from "sonner";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { ContactActivityModal } from "@/components/ContactActivityModal";
 
 export default function DebugPurchases() {
   const [page, setPage] = useState(1);
@@ -24,6 +25,8 @@ export default function DebugPurchases() {
   const [endDate, setEndDate] = useState("");
   const [minAmount, setMinAmount] = useState("");
   const [maxAmount, setMaxAmount] = useState("");
+  const [selectedContactId, setSelectedContactId] = useState<number | null>(null);
+  const [selectedContactEmail, setSelectedContactEmail] = useState<string | undefined>();
 
   const { data, isLoading } = trpc.debug.purchases.useQuery({
     page,
@@ -241,7 +244,19 @@ export default function DebugPurchases() {
                             {purchase.id}
                           </TableCell>
                           <TableCell>
-                            {purchase.contacts?.full_name || '-'}
+                            {purchase.contact_id ? (
+                              <button
+                                onClick={() => {
+                                  setSelectedContactId(purchase.contact_id);
+                                  setSelectedContactEmail(purchase.contacts?.email);
+                                }}
+                                className="text-primary hover:underline cursor-pointer font-medium"
+                              >
+                                {purchase.contacts?.full_name || '-'}
+                              </button>
+                            ) : (
+                              <span className="text-muted-foreground">{purchase.contacts?.full_name || '-'}</span>
+                            )}
                           </TableCell>
                           <TableCell>{purchase.contacts?.email || '-'}</TableCell>
                           <TableCell className="font-semibold">
@@ -299,6 +314,16 @@ export default function DebugPurchases() {
         </Card>
       </div>
     </div>
+
+    {/* Contact Activity Modal */}
+    <ContactActivityModal
+      contactId={selectedContactId}
+      contactEmail={selectedContactEmail}
+      onClose={() => {
+        setSelectedContactId(null);
+        setSelectedContactEmail(undefined);
+      }}
+    />
     </>
   );
 }

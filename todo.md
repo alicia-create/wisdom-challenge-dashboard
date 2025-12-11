@@ -748,3 +748,9 @@
   * Tertiary (small, 4 cards): Error Logs, User Management, Documentation, Facebook Audiences
 - [x] Remove duplicate cards from previous structure
 - [x] Ensure all cards link to correct pages
+
+## Purchases Page - Clickable Contact Names (2025-12-10)
+- [x] Import ContactActivityModal component into DebugPurchases page
+- [x] Add click handler to contact name cells
+- [x] Pass contact_id to modal to fetch activity history
+- [x] Test modal opens correctly with contact events
