@@ -388,56 +388,29 @@ export default function Overview() {
           </CardContent>
         </Card>
 
-        {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Daily Ad Spend */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Daily Ad Spend</CardTitle>
-              <CardDescription>Ad spend over time</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {kpisLoading ? (
-                <Skeleton className="h-[300px] w-full" />
-              ) : (
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <RechartsTooltip />
-                    <Legend />
-                    <Bar dataKey="spend" fill="#560BAD" name="Spend ($)" />
-                  </BarChart>
-                </ResponsiveContainer>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Daily Leads */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Daily Leads</CardTitle>
-              <CardDescription>Lead generation over time</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {kpisLoading ? (
-                <Skeleton className="h-[300px] w-full" />
-              ) : (
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <RechartsTooltip />
-                    <Legend />
-                    <Bar dataKey="leads" fill="#4895EF" name="Leads" />
-                  </BarChart>
-                </ResponsiveContainer>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+        {/* Daily Leads Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Daily Leads</CardTitle>
+            <CardDescription>Lead generation over time</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {kpisLoading ? (
+              <Skeleton className="h-[300px] w-full" />
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <RechartsTooltip />
+                  <Legend />
+                  <Bar dataKey="leads" fill="#4895EF" name="Leads" />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Performance by Channel Table */}
         <Card className="mt-6">
@@ -454,6 +427,7 @@ export default function Overview() {
                   <thead>
                     <tr className="border-b">
                       <th className="text-left py-3 px-4 font-medium">Channel</th>
+                      <th className="text-left py-3 px-4 font-medium">Type</th>
                       <th className="text-right py-3 px-4 font-medium">Spend ($)</th>
                       <th className="text-right py-3 px-4 font-medium">Leads</th>
                       <th className="text-right py-3 px-4 font-medium">CPL ($)</th>
@@ -463,31 +437,67 @@ export default function Overview() {
                     </tr>
                   </thead>
                   <tbody>
+                    {/* Meta Total Row */}
                     {channelPerformance?.meta && (
-                      <tr className="border-b hover:bg-muted/50">
-                        <td className="py-3 px-4 font-medium">{channelPerformance.meta.channel}</td>
-                        <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.meta.spend)}</td>
-                        <td className="text-right py-3 px-4">{formatNumber(channelPerformance.meta.leads)}</td>
-                        <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.meta.cpl)}</td>
-                        <td className="text-right py-3 px-4">{formatNumber(channelPerformance.meta.vips)}</td>
-                        <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.meta.cpp)}</td>
-                        <td className="text-right py-3 px-4">{channelPerformance.meta.roas.toFixed(2)}x</td>
-                      </tr>
+                      <>
+                        <tr className="border-b bg-blue-50/50 dark:bg-blue-950/20 font-semibold">
+                          <td className="py-3 px-4" rowSpan={Object.keys(channelPerformance.meta.breakdown || {}).length + 1}>
+                            {channelPerformance.meta.channel}
+                          </td>
+                          <td className="py-3 px-4">Total</td>
+                          <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.meta.spend)}</td>
+                          <td className="text-right py-3 px-4">{formatNumber(channelPerformance.meta.leads)}</td>
+                          <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.meta.cpl)}</td>
+                          <td className="text-right py-3 px-4">{formatNumber(channelPerformance.meta.vips)}</td>
+                          <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.meta.cpp)}</td>
+                          <td className="text-right py-3 px-4">{channelPerformance.meta.roas.toFixed(2)}x</td>
+                        </tr>
+                        {/* Meta Breakdown Rows */}
+                        {Object.entries(channelPerformance.meta.breakdown || {}).map(([type, data]: [string, any]) => (
+                          <tr key={`meta-${type}`} className="border-b hover:bg-muted/50 text-sm">
+                            <td className="py-2 px-4 pl-8 text-muted-foreground">{type}</td>
+                            <td className="text-right py-2 px-4">{formatCurrency(data.spend)}</td>
+                            <td className="text-right py-2 px-4">{formatNumber(data.leads)}</td>
+                            <td className="text-right py-2 px-4">{data.leads > 0 ? formatCurrency(data.spend / data.leads) : '$0.00'}</td>
+                            <td className="text-right py-2 px-4">{formatNumber(data.vips)}</td>
+                            <td className="text-right py-2 px-4">{data.vips > 0 ? formatCurrency(data.spend / data.vips) : '$0.00'}</td>
+                            <td className="text-right py-2 px-4">-</td>
+                          </tr>
+                        ))}
+                      </>
                     )}
+                    {/* Google Total Row */}
                     {channelPerformance?.google && (
-                      <tr className="hover:bg-muted/50">
-                        <td className="py-3 px-4 font-medium">{channelPerformance.google.channel}</td>
-                        <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.google.spend)}</td>
-                        <td className="text-right py-3 px-4">{formatNumber(channelPerformance.google.leads)}</td>
-                        <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.google.cpl)}</td>
-                        <td className="text-right py-3 px-4">{formatNumber(channelPerformance.google.vips)}</td>
-                        <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.google.cpp)}</td>
-                        <td className="text-right py-3 px-4">{channelPerformance.google.roas.toFixed(2)}x</td>
-                      </tr>
+                      <>
+                        <tr className="border-b bg-green-50/50 dark:bg-green-950/20 font-semibold">
+                          <td className="py-3 px-4" rowSpan={Object.keys(channelPerformance.google.breakdown || {}).length + 1}>
+                            {channelPerformance.google.channel}
+                          </td>
+                          <td className="py-3 px-4">Total</td>
+                          <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.google.spend)}</td>
+                          <td className="text-right py-3 px-4">{formatNumber(channelPerformance.google.leads)}</td>
+                          <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.google.cpl)}</td>
+                          <td className="text-right py-3 px-4">{formatNumber(channelPerformance.google.vips)}</td>
+                          <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.google.cpp)}</td>
+                          <td className="text-right py-3 px-4">{channelPerformance.google.roas.toFixed(2)}x</td>
+                        </tr>
+                        {/* Google Breakdown Rows */}
+                        {Object.entries(channelPerformance.google.breakdown || {}).map(([type, data]: [string, any]) => (
+                          <tr key={`google-${type}`} className="border-b hover:bg-muted/50 text-sm">
+                            <td className="py-2 px-4 pl-8 text-muted-foreground">{type}</td>
+                            <td className="text-right py-2 px-4">{formatCurrency(data.spend)}</td>
+                            <td className="text-right py-2 px-4">{formatNumber(data.leads)}</td>
+                            <td className="text-right py-2 px-4">{data.leads > 0 ? formatCurrency(data.spend / data.leads) : '$0.00'}</td>
+                            <td className="text-right py-2 px-4">{formatNumber(data.vips)}</td>
+                            <td className="text-right py-2 px-4">{data.vips > 0 ? formatCurrency(data.spend / data.vips) : '$0.00'}</td>
+                            <td className="text-right py-2 px-4">-</td>
+                          </tr>
+                        ))}
+                      </>
                     )}
                     {(!channelPerformance?.meta && !channelPerformance?.google) && (
                       <tr>
-                        <td colSpan={7} className="text-center py-8 text-muted-foreground">
+                        <td colSpan={8} className="text-center py-8 text-muted-foreground">
                           No ad performance data available yet
                         </td>
                       </tr>

@@ -15,7 +15,7 @@ import { ChevronLeft, ChevronRight, Download, X, Search, ArrowLeft } from "lucid
 import { Link } from "wouter";
 import { toast } from "sonner";
 import { DashboardHeader } from "@/components/DashboardHeader";
-import { ContactActivityModal } from "@/components/ContactActivityModal";
+// ContactActivityModal removed - now using ContactDetails page
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 export default function DebugLeads() {
@@ -25,8 +25,7 @@ export default function DebugLeads() {
   const [utmCampaign, setUtmCampaign] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [selectedContactId, setSelectedContactId] = useState<number | null>(null);
-  const [selectedContactEmail, setSelectedContactEmail] = useState<string>("");
+  // Removed modal state - now using Link to ContactDetails page
 
   const { data, isLoading } = trpc.debug.leads.useQuery({
     page,
@@ -49,15 +48,7 @@ export default function DebugLeads() {
 
   const hasFilters = search || utmSource || utmCampaign || startDate || endDate;
 
-  // Keyboard shortcuts
-  useKeyboardShortcuts({
-    onEscape: () => {
-      if (selectedContactId) {
-        setSelectedContactId(null);
-        setSelectedContactEmail("");
-      }
-    },
-  });
+  // Keyboard shortcuts removed - no modal to close
 
   return (
     <>
@@ -235,17 +226,22 @@ export default function DebugLeads() {
                       </TableRow>
                     ) : (
                       data?.data.map((lead: any) => (
-                        <TableRow 
-                          key={lead.id}
-                          className="cursor-pointer hover:bg-accent/50 transition-colors"
-                          onClick={() => {
-                            setSelectedContactId(lead.id);
-                            setSelectedContactEmail(lead.email || `Contact #${lead.id}`);
-                          }}
-                        >
-                          <TableCell className="font-mono text-xs">{lead.id}</TableCell>
-                          <TableCell>{lead.email || '-'}</TableCell>
-                          <TableCell>{lead.full_name || '-'}</TableCell>
+                        <TableRow key={lead.id} className="cursor-pointer hover:bg-accent/50">
+                          <TableCell className="font-mono text-xs">
+                            <Link href={`/contact/${lead.id}`}>
+                              <a className="text-blue-600 hover:underline">{lead.id}</a>
+                            </Link>
+                          </TableCell>
+                          <TableCell>
+                            <Link href={`/contact/${lead.id}`}>
+                              <a className="text-blue-600 hover:underline">{lead.email || '-'}</a>
+                            </Link>
+                          </TableCell>
+                          <TableCell>
+                            <Link href={`/contact/${lead.id}`}>
+                              <a className="text-blue-600 hover:underline">{lead.full_name || '-'}</a>
+                            </Link>
+                          </TableCell>
                           <TableCell>{lead.phone || '-'}</TableCell>
                           <TableCell>
                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
@@ -305,15 +301,7 @@ export default function DebugLeads() {
         </Card>
       </div>
 
-      {/* Activity Modal */}
-      <ContactActivityModal
-        contactId={selectedContactId}
-        contactEmail={selectedContactEmail}
-        onClose={() => {
-          setSelectedContactId(null);
-          setSelectedContactEmail("");
-        }}
-      />
+      {/* Activity Modal removed - now using ContactDetails page */}
     </div>
     </>
   );

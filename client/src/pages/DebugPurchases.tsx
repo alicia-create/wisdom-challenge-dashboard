@@ -16,7 +16,7 @@ import { Link } from "wouter";
 import { toast } from "sonner";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
-import { ContactActivityModal } from "@/components/ContactActivityModal";
+// ContactActivityModal removed - now using ContactDetails page
 
 export default function DebugPurchases() {
   const [page, setPage] = useState(1);
@@ -25,8 +25,7 @@ export default function DebugPurchases() {
   const [endDate, setEndDate] = useState("");
   const [minAmount, setMinAmount] = useState("");
   const [maxAmount, setMaxAmount] = useState("");
-  const [selectedContactId, setSelectedContactId] = useState<number | null>(null);
-  const [selectedContactEmail, setSelectedContactEmail] = useState<string | undefined>();
+  // Removed modal state - now using Link to ContactDetails page
 
   const { data, isLoading } = trpc.debug.purchases.useQuery({
     page,
@@ -49,8 +48,7 @@ export default function DebugPurchases() {
 
   const hasFilters = search || startDate || endDate || minAmount || maxAmount;
 
-  // Keyboard shortcuts
-  useKeyboardShortcuts();
+  // Keyboard shortcuts removed - no modal to close
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -245,15 +243,11 @@ export default function DebugPurchases() {
                           </TableCell>
                           <TableCell>
                             {purchase.contact_id ? (
-                              <button
-                                onClick={() => {
-                                  setSelectedContactId(purchase.contact_id);
-                                  setSelectedContactEmail(purchase.contacts?.email);
-                                }}
-                                className="text-primary hover:underline cursor-pointer font-medium"
-                              >
-                                {purchase.contacts?.full_name || '-'}
-                              </button>
+                              <Link href={`/contact/${purchase.contact_id}`}>
+                                <a className="text-blue-600 hover:underline font-medium">
+                                  {purchase.contacts?.full_name || '-'}
+                                </a>
+                              </Link>
                             ) : (
                               <span className="text-muted-foreground">{purchase.contacts?.full_name || '-'}</span>
                             )}
@@ -315,15 +309,7 @@ export default function DebugPurchases() {
       </div>
     </div>
 
-    {/* Contact Activity Modal */}
-    <ContactActivityModal
-      contactId={selectedContactId}
-      contactEmail={selectedContactEmail}
-      onClose={() => {
-        setSelectedContactId(null);
-        setSelectedContactEmail(undefined);
-      }}
-    />
+    {/* Contact Activity Modal removed - now using ContactDetails page */}
     </>
   );
 }

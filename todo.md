@@ -841,3 +841,36 @@
 - [x] Remove campaign_name filter (show all campaigns)
 - [x] Test Meta Campaigns page displays real data from ad_performance (66 records)
 - [x] Verify pagination works correctly
+
+## Remove Daily Ad Spend Graph (2025-12-11)
+- [x] Remove Daily Ad Spend chart component from Overview page
+- [x] Keep Daily Leads chart (now full width)
+
+## Campaign Type Breakdown in Performance by Channel (2025-12-11)
+- [x] Add campaign type detection logic based on campaign_name prefixes
+  * Sales = [SALES]
+  * Leads = [LEADS]
+  * Retargeting = [RMKT]
+  * Content = [KLT]
+- [x] Update getChannelPerformance to aggregate by platform AND campaign type
+- [x] Update Performance by Channel UI to show breakdown table with nested rows
+- [ ] Test with real Meta campaigns data
+
+## Contact Details Page (2025-12-11)
+- [ ] Create ContactDetails page component at /contact/:id
+- [ ] Implement header section with avatar, name, email, phone, action buttons
+- [ ] Add stats cards row (Lead Score, Total Purchases, Last Activity, Days Since First Contact)
+- [ ] Implement tabs: Overview (timeline), Orders, Email Engagement, Journey
+- [ ] Add Messenger link button (if messenger_id available)
+- [ ] Add breadcrumb navigation
+- [ ] Make mobile-responsive
+- [ ] Update Leads page to link to /contact/:id instead of opening modal
+- [ ] Update Purchases page to link to /contact/:id instead of opening modal
+- [ ] Test Contact Details page with real contact data
+
+## Performance Alerts System (2025-12-11)
+- [ ] Create alerts configuration table in database (thresholds for CPL, ROAS)
+- [ ] Build backend procedure to check alerts daily
+- [ ] Implement notification system when thresholds exceeded
+- [ ] Add alerts configuration UI in settings
+- [ ] Test alerts trigger correctly

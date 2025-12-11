@@ -851,7 +851,7 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
   // Fetch Meta ad performance
   let metaQuery = supabase
     .from('ad_performance')
-    .select('spend, reported_leads, reported_purchases')
+    .select('spend, reported_leads, reported_purchases, campaign_name')
     .ilike('platform', 'meta');
   
   if (startDate) metaQuery = metaQuery.gte('date', startDate);
@@ -863,7 +863,7 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
   // Fetch Google ad performance
   let googleQuery = supabase
     .from('ad_performance')
-    .select('spend, reported_leads, reported_purchases')
+    .select('spend, reported_leads, reported_purchases, campaign_name')
     .ilike('platform', 'google');
   
   if (startDate) googleQuery = googleQuery.gte('date', startDate);
@@ -912,6 +912,36 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
   const googleLeads = (googleAds || []).reduce((sum, row) => sum + parseInt(row.reported_leads || '0', 10), 0);
   const googleVips = (googleAds || []).reduce((sum, row) => sum + parseInt(row.reported_purchases || '0', 10), 0);
 
+  // Helper function to detect campaign type from campaign_name
+  const getCampaignType = (campaignName: string): string => {
+    if (!campaignName) return 'Other';
+    if (campaignName.includes('[SALES]')) return 'Sales';
+    if (campaignName.includes('[LEADS]')) return 'Leads';
+    if (campaignName.includes('[RMKT]')) return 'Retargeting';
+    if (campaignName.includes('[KLT]')) return 'Content';
+    return 'Other';
+  };
+
+  // Calculate Meta breakdown by campaign type
+  const metaBreakdown = (metaAds || []).reduce((acc: Record<string, { spend: number; leads: number; vips: number }>, row) => {
+    const type = getCampaignType(row.campaign_name || '');
+    if (!acc[type]) acc[type] = { spend: 0, leads: 0, vips: 0 };
+    acc[type].spend += parseFloat(row.spend || '0');
+    acc[type].leads += parseInt(row.reported_leads || '0', 10);
+    acc[type].vips += parseInt(row.reported_purchases || '0', 10);
+    return acc;
+  }, {});
+
+  // Calculate Google breakdown by campaign type
+  const googleBreakdown = (googleAds || []).reduce((acc: Record<string, { spend: number; leads: number; vips: number }>, row) => {
+    const type = getCampaignType(row.campaign_name || '');
+    if (!acc[type]) acc[type] = { spend: 0, leads: 0, vips: 0 };
+    acc[type].spend += parseFloat(row.spend || '0');
+    acc[type].leads += parseInt(row.reported_leads || '0', 10);
+    acc[type].vips += parseInt(row.reported_purchases || '0', 10);
+    return acc;
+  }, {});
+
   return {
     meta: {
       channel: 'Meta',
@@ -921,6 +951,7 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
       vips: metaVips,
       cpp: metaVips > 0 ? metaSpend / metaVips : 0,
       roas: metaSpend > 0 ? metaRevenue / metaSpend : 0,
+      breakdown: metaBreakdown,
     },
     google: {
       channel: 'Google',
@@ -930,6 +961,7 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
       vips: googleVips,
       cpp: googleVips > 0 ? googleSpend / googleVips : 0,
       roas: googleSpend > 0 ? googleRevenue / googleSpend : 0,
+      breakdown: googleBreakdown,
     },
   };
 }

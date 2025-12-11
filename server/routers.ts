@@ -263,6 +263,27 @@ export const appRouter = router({
       }),
   }),
 
+  // Contacts queries
+  contacts: router({    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        const { data, error } = await supabase
+          .from('contacts')
+          .select('*')
+          .eq('id', input.id)
+          .single();
+        
+        if (error) throw new Error(error.message);
+        return data;
+      }),
+
+    getActivities: publicProcedure
+      .input(z.object({ contactId: z.number() }))
+      .query(async ({ input }) => {
+        return await getContactActivities(input.contactId);
+      }),
+  }),
+
   // Leads queries
   leads: router({
     list: publicProcedure
@@ -282,6 +303,19 @@ export const appRouter = router({
       }).optional())
       .query(async ({ input }) => {
         return await getOrdersWithAttribution(input?.limit);
+      }),
+
+    getByContactId: publicProcedure
+      .input(z.object({ contactId: z.number() }))
+      .query(async ({ input }) => {
+        const { data, error } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('lead_id', input.contactId)
+          .order('order_date', { ascending: false });
+        
+        if (error) throw new Error(error.message);
+        return data || [];
       }),
   }),
 

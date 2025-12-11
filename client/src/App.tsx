@@ -12,6 +12,7 @@ import EmailLeadQuality from "./pages/EmailLeadQuality";
 import RawData from "./pages/RawData";
 import OtherData from "./pages/OtherData";
 import DebugLeads from "./pages/DebugLeads";
+import ContactDetails from "./pages/ContactDetails";
 import DebugPurchases from "./pages/DebugPurchases";
 import DebugGoogleCampaigns from "./pages/DebugGoogleCampaigns";
 import DebugMetaCampaigns from "./pages/DebugMetaCampaigns";
@@ -41,6 +42,7 @@ function Router() {
       <Route path={"/documentation"} component={Documentation} />
       <Route path={"/optimization-agent"} component={OptimizationAgent} />
       <Route path={"/debug/leads"} component={DebugLeads} />
+      <Route path={"/contact/:id"} component={ContactDetails} />
       <Route path={"/debug/purchases"} component={DebugPurchases} />
       <Route path={"/products"} component={Products} />
       <Route path={"/invites"} component={Invites} />
