@@ -852,8 +852,7 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
   let metaQuery = supabase
     .from('ad_performance')
     .select('spend, reported_leads, reported_purchases')
-    .ilike('platform', 'meta')
-    .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`);
+    .ilike('platform', 'meta');
   
   if (startDate) metaQuery = metaQuery.gte('date', startDate);
   if (endDate) metaQuery = metaQuery.lte('date', endDate);
@@ -865,8 +864,7 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
   let googleQuery = supabase
     .from('ad_performance')
     .select('spend, reported_leads, reported_purchases')
-    .ilike('platform', 'google')
-    .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`);
+    .ilike('platform', 'google');
   
   if (startDate) googleQuery = googleQuery.gte('date', startDate);
   if (endDate) googleQuery = googleQuery.lte('date', endDate);
@@ -1130,9 +1128,8 @@ export async function getGoogleCampaignsPaginated(params: {
   let query = supabase
     .from('ad_performance')
     .select('*', { count: 'exact' })
-    .eq('platform', 'google')
-    .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`)
-    .order('date', { ascending: true });
+    .ilike('platform', 'google')
+    .order('date', { ascending: false });
 
   // Apply filters
   if (params.search) {
@@ -1184,9 +1181,8 @@ export async function getMetaCampaignsPaginated(params: {
   let query = supabase
     .from('ad_performance')
     .select('*', { count: 'exact' })
-    .eq('platform', 'meta')
-    .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`)
-    .order('date', { ascending: true });
+    .ilike('platform', 'meta')
+    .order('date', { ascending: false });
 
   // Apply filters
   if (params.search) {

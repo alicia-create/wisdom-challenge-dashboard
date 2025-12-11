@@ -829,3 +829,15 @@
 - [x] Change platform filter from .eq('platform', 'meta') to .ilike('platform', 'meta')
 - [x] Change platform filter from .eq('platform', 'google') to .ilike('platform', 'google')
 - [x] Test Performance by Channel shows real data from ad_performance table (Meta: $5,052.99)
+
+## Remove Campaign Filter from Performance by Channel (2025-12-10)
+- [x] Remove .ilike('campaign_name', '%31DWC2026%') from Meta query
+- [x] Remove .ilike('campaign_name', '%31DWC2026%') from Google query
+- [x] Test Performance by Channel shows all campaigns (not just 31DWC2026)
+
+## Fix Meta Campaigns Page (2025-12-10)
+- [x] Review getMetaCampaignsPaginated query in server/supabase.ts
+- [x] Fix platform filter to use .ilike('platform', 'meta')
+- [x] Remove campaign_name filter (show all campaigns)
+- [x] Test Meta Campaigns page displays real data from ad_performance (66 records)
+- [x] Verify pagination works correctly
