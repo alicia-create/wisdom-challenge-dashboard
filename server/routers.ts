@@ -313,8 +313,8 @@ export const appRouter = router({
         const { data, error } = await supabase
           .from('orders')
           .select('*')
-          .eq('lead_id', input.contactId)
-          .order('order_date', { ascending: false });
+          .eq('contact_id', input.contactId)
+          .order('created_at', { ascending: false });
         
         if (error) throw new Error(error.message);
         return data || [];

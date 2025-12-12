@@ -84,17 +84,17 @@ export default function ContactDetails() {
       <div className="border-b bg-muted/30">
         <div className="container mx-auto px-6 py-3">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link href="/">
-              <Button variant="ghost" size="sm" className="h-auto p-0 hover:text-foreground">
+            <Button asChild variant="ghost" size="sm" className="h-auto p-0 hover:text-foreground">
+              <Link href="/">
                 <Home className="h-4 w-4" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
             <ChevronRight className="h-4 w-4" />
-            <Link href="/debug/leads">
-              <Button variant="ghost" size="sm" className="h-auto p-0 hover:text-foreground">
+            <Button asChild variant="ghost" size="sm" className="h-auto p-0 hover:text-foreground">
+              <Link href="/debug/leads">
                 Leads
-              </Button>
-            </Link>
+              </Link>
+            </Button>
             <ChevronRight className="h-4 w-4" />
             <span className="font-medium text-foreground">{contact.name || contact.email}</span>
           </div>

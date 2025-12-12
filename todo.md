@@ -912,3 +912,12 @@
 - [x] Fix Bot Alerts Subscribed to use gold.ntn.request_accepted event
 - [x] Fix Conversion Funnel drops: (ManyChat / Leads) and (Bot Alerts / ManyChat)
 - [x] Update ManyChat Connected logic (available to all leads, not just purchasers)
+
+
+## Contact Page Error Fixes (2025-12-12)
+- [x] Fix orders.lead_id column reference error (should be contact_id)
+- [x] Fix nested anchor tag HTML validation error on contact page
+- [ ] Test contact page /contact/377 to ensure errors are resolved
+
+- [x] Fix Conversion Funnel leads count to match Total Leads (use wisdom-filter)
+- [ ] Restore contact activity timeline to previous card-based format with icons and badges

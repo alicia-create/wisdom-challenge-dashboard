@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { getWisdomContactIds } from './wisdom-filter';
 
 /**
  * Get conversion funnel metrics
@@ -11,19 +12,9 @@ import { supabase } from './supabase';
  * 5. Bot Alerts Subscribed (ntn_subscribe event)
  */
 export async function getFunnelMetrics(startDate?: string, endDate?: string) {
-  // Stage 1: Total Leads
-  let leadsQuery = supabase
-    .from('contacts')
-    .select('id', { count: 'exact', head: true });
-  
-  if (startDate) leadsQuery = leadsQuery.gte('created_at', startDate);
-  if (endDate) {
-    const endDateTime = new Date(endDate);
-    endDateTime.setDate(endDateTime.getDate() + 1);
-    leadsQuery = leadsQuery.lt('created_at', endDateTime.toISOString().split('T')[0]);
-  }
-  
-  const { count: totalLeads } = await leadsQuery;
+  // Stage 1: Total Leads (wisdom contacts only)
+  const wisdomContactIds = await getWisdomContactIds(startDate, endDate);
+  const totalLeads = wisdomContactIds.length;
 
   // Stage 2: Wisdom+ Purchases (product_id 1 = Backstage Pass, 7 = Wisdom+ Experience)
   let wisdomQuery = supabase
