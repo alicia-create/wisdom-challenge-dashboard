@@ -35,7 +35,7 @@
 - [ ] Test with sample data (pending n8n workflows to populate Supabase)
 - [x] Verify real-time updates work correctly
 - [x] Write vitest tests for critical procedures
-- [ ] Create project checkpoint
+- [x] Create project checkpoint
 
 ## Documentation
 - [ ] Document Supabase connection setup
@@ -92,11 +92,11 @@
 - [x] Add date range helper functions in constants
 
 ## UI Improvements
-- [ ] Reorganize KPIs into 2 rows: 4 large cards (Leads, Spend, Revenue, VIP Sales) + 6 small cards (CPL, CPP, AOV, ROAS, Take Rate, Email Click Rate)
-- [ ] Add Total Revenue KPI from Order table
-- [ ] Add AOV (Average Order Value) KPI
-- [ ] Fix Daily Spend & Leads chart - use different colors for bars (not both black)
-- [ ] Fix date range filter - queries not updating when filter changes
+- [x] Reorganize KPIs into 2 rows: 4 large cards (Leads, Spend, Revenue, VIP Sales) + 6 small cards (CPL, CPP, AOV, ROAS, Take Rate, Email Click Rate)
+- [x] Add Total Revenue KPI from Order table
+- [x] Add AOV (Average Order Value) KPI
+- [x] Fix Daily Spend & Leads chart - use different colors for bars (not both black)
+- [x] Fix date range filter - queries not updating when filter changes
 
 - [x] Implement global navigation header with tabs (Overview, Daily Analysis, Engagement & Sales)
 
@@ -173,13 +173,13 @@
 - [x] Remove outdated tests with old table names
 
 ## Ad Performance Integration (2025-12-06)
-- [ ] Explore ad_performance table structure and sample data
-- [ ] Verify CAMPAIGN_NAME_FILTER matches actual campaign names in database
-- [ ] Update getOverviewMetrics to fetch real ad spend data
-- [ ] Update getDailyAnalysisMetrics to include ad performance by date
-- [ ] Calculate ROAS correctly (revenue / spend)
-- [ ] Test with real ad performance data
-- [ ] Verify metrics display correctly in dashboard
+- [x] Explore ad_performance table structure and sample data
+- [x] Verify CAMPAIGN_NAME_FILTER matches actual campaign names in database
+- [x] Update getOverviewMetrics to fetch real ad spend data
+- [x] Update getDailyAnalysisMetrics to include ad performance by date
+- [x] Calculate ROAS correctly (revenue / spend)
+- [x] Test with real ad performance data
+- [x] Verify metrics display correctly in dashboard
 
 ## Error Logs Page (2025-12-06)
 - [x] Check if error_logs table exists in Supabase (found: workflow_errors)
@@ -189,7 +189,7 @@
 - [x] Add filtering by workflow_name, error_node, date range
 - [x] Add search functionality for error messages
 - [x] Add route to App.tsx and navigation link
-- [ ] Test error logs page functionality
+- [x] Test error logs page functionality
 
 ## Overview Page Improvements (2025-12-06)
 - [x] Fix Total Revenue to show sum of order_total from orders table
@@ -308,14 +308,14 @@
 - [ ] Test on different mobile screen sizes (320px, 375px, 414px)
 
 ## Facebook Audiences & Data Source Verification (2025-12-07)
-- [ ] Check current Meta Campaigns page data source (Supabase vs API)
-- [ ] Check current Google Campaigns page data source (Supabase vs API)
-- [ ] Create facebook_audiences table in database schema (id, name, audience_id, size, created_at, updated_at)
-- [ ] Create tRPC procedure to fetch Facebook Audiences
-- [ ] Create FacebookAudiences.tsx page component
-- [ ] Add Facebook Audiences card to Raw Data landing page
-- [ ] Add route for /raw-data/facebook-audiences
-- [ ] Test Facebook Audiences page displays correctly
+- [x] Check current Meta Campaigns page data source (Supabase vs API)
+- [x] Check current Google Campaigns page data source (Supabase vs API)
+- [x] Create facebook_audiences table in database schema (id, name, audience_id, size, created_at, updated_at)
+- [x] Create tRPC procedure to fetch Facebook Audiences
+- [x] Create FacebookAudiences.tsx page component
+- [x] Add Facebook Audiences card to Raw Data landing page
+- [x] Add route for /raw-data/facebook-audiences
+- [x] Test Facebook Audiences page displays correctly
 - [ ] Document data sources for Meta and Google campaigns
 
 ## Optimization Agent Features (2025-12-07)
@@ -328,12 +328,12 @@
 - [x] Research Google Analytics 4 API for landing page metrics
 - [x] Create comprehensive AI PRD for Campaign Optimization Agent
 - [ ] Research Keap Lead Score API and webhook capabilities (Backlog)
-- [ ] Design campaign interference detection logic (broad audience overlap)
-- [ ] Build optimization agent backend with LLM recommendations
-- [ ] Create daily optimization report UI
-- [ ] Integrate Google Analytics API (pending user GA4 Property ID)
-- [ ] Integrate VWO API (pending user VWO export setup)
-- [ ] Test agent with real campaign data
+- [ ] Design campaign interference detection logic (broad audience overlap) - Future enhancement
+- [x] Build optimization agent backend with LLM recommendations
+- [x] Create daily optimization report UI
+- [x] Integrate Google Analytics API (GA4 integrated and working)
+- [ ] Integrate VWO API (pending user VWO export setup) - Future enhancement
+- [x] Test agent with real campaign data
 
 ## PRD Download & Agent Implementation (2025-12-07)
 
@@ -346,11 +346,11 @@
 - [x] Create OptimizationAgent.tsx page with basic UI
 - [x] Add Optimization Agent tab to dashboard header
 - [x] Add route for /optimization-agent
-- [ ] Test ad-level analysis with real campaign data
-- [ ] Implement LLM-powered insights for recommendations
-- [ ] Add time-of-day performance analysis
-- [ ] Add budget redistribution suggestions
-- [ ] Add winner scaling recommendations
+- [x] Test ad-level analysis with real campaign data
+- [x] Implement LLM-powered insights for recommendations
+- [ ] Add time-of-day performance analysis - Future enhancement
+- [ ] Add budget redistribution suggestions - Future enhancement
+- [ ] Add winner scaling recommendations - Future enhancement
 
 ## LLM Integration for Optimization Agent (2025-12-07)
 
@@ -364,9 +364,9 @@
 - [x] Update OptimizationAgent UI to display LLM insights
 - [x] Add loading states and skeleton loaders for LLM generation
 - [x] Integrate Streamdown for markdown rendering of LLM narratives
-- [ ] Test LLM integration with real campaign data
-- [ ] Add error handling and retry logic for LLM failures
-- [ ] Implement caching for daily reports to reduce LLM costs
+- [x] Test LLM integration with real campaign data
+- [x] Add error handling and retry logic for LLM failures
+- [x] Implement caching for daily reports to reduce LLM costs
 
 ## Navigation Reorganization & GA4 Integration (2025-12-07)
 
@@ -609,10 +609,10 @@
 - [x] Add status update functionality - StatusUpdateButton component with pending → in_progress → completed → verified flow
 
 ### LLM Suggestions Integration
-- [ ] Modify Optimization Agent to create diary_actions from recommendations
-- [ ] Add "Add to Diary" button on each LLM recommendation
-- [ ] Auto-create pending tasks from Critical Actions
-- [ ] Add tRPC mutation diary.createFromLLM
+- [x] Modify Optimization Agent to create diary_actions from recommendations
+- [x] Add "Add to Diary" button on each LLM recommendation
+- [ ] Auto-create pending tasks from Critical Actions - Future enhancement
+- [x] Add tRPC mutation diary.createFromLLM
 
 ### Meta API Sync (Future)
 - [ ] Research Meta Marketing API for ad change history
@@ -648,15 +648,15 @@
 
 - [x] Add ad_name and campaign_name fields to diary_actions table schema - Added varchar(500) fields
 - [x] Run database migration to add new fields - Migration 0007_lucky_gabe_jones.sql applied
-- [ ] Update CreateActionDialog to include ad_name and campaign_name inputs
-- [ ] Update AddToDiaryButton to pass ad_name and campaign_name from recommendations
-- [ ] Update AdsDiary timeline to display ad_name and campaign_name instead of IDs
-- [ ] Add "View Ads Diary" link in Optimization Agent header
-- [ ] Add Edit button to each diary action
-- [ ] Create EditActionDialog component for editing existing actions
-- [ ] Add tRPC mutation diary.updateAction (description, category, status, ad_name, campaign_name)
-- [ ] Test editing existing diary actions
-- [ ] Test that names display correctly in diary entries
+- [x] Update CreateActionDialog to include ad_name and campaign_name inputs
+- [x] Update AddToDiaryButton to pass ad_name and campaign_name from recommendations
+- [x] Update AdsDiary timeline to display ad_name and campaign_name instead of IDs
+- [x] Add "View Ads Diary" link in Optimization Agent header
+- [x] Add Edit button to each diary action
+- [x] Create EditActionDialog component for editing existing actions
+- [x] Add tRPC mutation diary.updateAction (description, category, status, ad_name, campaign_name)
+- [x] Test editing existing diary actions
+- [x] Test that names display correctly in diary entries
 
 
 ## Ads Diary Enhancements (2025-12-09)
