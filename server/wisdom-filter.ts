@@ -13,19 +13,26 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
 /**
  * Get all contact IDs from the Wisdom funnel
  * Uses analytics_events to identify contacts with wisdom-related events
- * Filters to last 2 days for more normalized data
+ * @param startDate Optional start date filter (ISO string)
+ * @param endDate Optional end date filter (ISO string)
  */
-export async function getWisdomContactIds(): Promise<number[]> {
-  // Filter to last 2 days by default for more normalized data
-  const twoDaysAgo = new Date();
-  twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-  const twoDaysAgoISO = twoDaysAgo.toISOString();
-
-  const { data: wisdomEvents, error: eventsError } = await supabase
+export async function getWisdomContactIds(startDate?: string, endDate?: string): Promise<number[]> {
+  let query = supabase
     .from('analytics_events')
     .select('contact_id')
-    .or('comment.ilike.%wisdom%,comment.ilike.%31daywisdomchallenge%')
-    .gte('timestamp', twoDaysAgoISO);
+    .or('comment.ilike.%wisdom%,comment.ilike.%31daywisdomchallenge%');
+
+  if (startDate) {
+    query = query.gte('timestamp', startDate);
+  }
+  if (endDate) {
+    // Add one day to endDate to include the entire end date
+    const endDateTime = new Date(endDate);
+    endDateTime.setDate(endDateTime.getDate() + 1);
+    query = query.lt('timestamp', endDateTime.toISOString());
+  }
+
+  const { data: wisdomEvents, error: eventsError } = await query;
 
   if (eventsError) {
     console.error('[Wisdom Filter] Error fetching wisdom events:', eventsError);
@@ -37,7 +44,12 @@ export async function getWisdomContactIds(): Promise<number[]> {
     ? Array.from(new Set(wisdomEvents.map(e => e.contact_id)))
     : [];
 
-  console.log(`[Wisdom Filter] Found ${contactIds.length} contacts from Wisdom funnel (last 2 days)`);
+  const dateRange = startDate && endDate 
+    ? `${startDate} to ${endDate}`
+    : startDate 
+    ? `from ${startDate}`
+    : 'all time';
+  console.log(`[Wisdom Filter] Found ${contactIds.length} contacts from Wisdom funnel (${dateRange})`);
   
   return contactIds;
 }

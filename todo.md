@@ -901,3 +901,14 @@
 - [x] Move VSL Performance section below the charts
 - [x] Add Daily Wisdom+ Sales chart above Daily Leads chart
 - [x] Test new layout displays correctly on desktop and mobile
+
+
+## Data Accuracy Fixes (2025-12-12)
+- [x] Investigate why Total Leads shows 92 but Funnel shows 57 leads
+- [x] Fix Total Leads to count unique wisdom contacts instead of summing daily leads
+- [x] Fix VSL Performance to read vidalytics.view_video events from analytics_events table
+- [x] Parse VSL milestone values correctly (View 5%, View 25%, View 50%, View 95%)
+- [x] Correlate VSL views with Wisdom+ purchases correctly
+- [x] Fix Bot Alerts Subscribed to use gold.ntn.request_accepted event
+- [x] Fix Conversion Funnel drops: (ManyChat / Leads) and (Bot Alerts / ManyChat)
+- [x] Update ManyChat Connected logic (available to all leads, not just purchasers)

@@ -31,7 +31,10 @@ export async function getOverviewMetricsOptimized(startDate?: string, endDate?: 
   if (kpisData && kpisData.length > 0) {
     console.log(`[Overview Metrics] Using daily_kpis (${kpisData.length} days)`);
     
-    const totalLeads = kpisData.reduce((sum, row) => sum + (row.total_leads || 0), 0);
+    // Get wisdom contacts for the date range to count unique leads
+    const { getWisdomContactIds } = await import('./wisdom-filter');
+    const wisdomContactIds = await getWisdomContactIds(startDate, endDate);
+    const totalLeads = wisdomContactIds.length;
     const totalSpend = kpisData.reduce((sum, row) => {
       const metaSpend = parseFloat(row.total_spend_meta || '0');
       const googleSpend = parseFloat(row.total_spend_google || '0');
@@ -62,9 +65,7 @@ export async function getOverviewMetricsOptimized(startDate?: string, endDate?: 
     const roas = totalSpend > 0 ? vipRevenue / totalSpend : 0;
     const vipTakeRate = totalLeads > 0 ? (vipSales / totalLeads) * 100 : 0;
 
-    // Get additional metrics not in daily_kpis (these are still fast queries)
-    const { getWisdomContactIds } = await import('./wisdom-filter');
-    const wisdomContactIds = await getWisdomContactIds();
+    // wisdomContactIds already fetched above for totalLeads calculation
 
     // Kingdom Seeker Trials (product_id = 8)
     const { data: kingdomSeekerData } = await supabase

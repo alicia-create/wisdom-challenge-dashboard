@@ -50,7 +50,7 @@ export async function getDailyKpis(startDate?: string, endDate?: string) {
 export async function getOverviewMetrics(startDate?: string, endDate?: string) {
   // Import wisdom filter
   const { getWisdomContactIds } = await import('./wisdom-filter');
-  const wisdomContactIds = await getWisdomContactIds();
+  const wisdomContactIds = await getWisdomContactIds(startDate, endDate);
 
   if (wisdomContactIds.length === 0) {
     console.log('[Overview Metrics] No wisdom contacts found');
@@ -477,7 +477,7 @@ export async function getEmailEngagement() {
 export async function getDailyAnalysisMetrics(startDate?: string, endDate?: string) {
   // Import wisdom filter
   const { getWisdomContactIds } = await import('./wisdom-filter');
-  const wisdomContactIds = await getWisdomContactIds();
+  const wisdomContactIds = await getWisdomContactIds(startDate, endDate);
 
   if (wisdomContactIds.length === 0) {
     console.log('[Daily Analysis] No wisdom contacts found');
