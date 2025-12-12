@@ -921,3 +921,18 @@
 
 - [x] Fix Conversion Funnel leads count to match Total Leads (use wisdom-filter)
 - [ ] Restore contact activity timeline to previous card-based format with icons and badges
+
+
+## Urgent Fixes (2025-12-12)
+- [ ] Fix remaining nested anchor tag error on contact page /contact/377
+- [ ] Fix ManyChat conversion rate showing 100% (should be 12/44 = 27.3%)
+- [ ] Update funnel visualization to show Leads → ManyChat connection correctly
+
+## Date Filtering Fixes (2025-12-12)
+- [x] Fix getDailyAnalysisMetrics to filter contacts by created_at date range
+- [x] Fix getDailyAnalysisMetrics to filter orders by created_at date range
+- [x] Fix Kingdom Seeker Trials count to respect date range filters (JOIN with orders table)
+- [x] Fix Daily Leads chart to show only data within selected date range
+- [x] Fix Daily Wisdom+ Sales chart to show only data within selected date range
+- [x] Write 9 vitest tests validating date filtering functionality
+- [x] All tests passing (Daily Analysis, Kingdom Seekers, Overview Metrics)

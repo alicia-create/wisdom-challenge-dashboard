@@ -160,10 +160,19 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
   const vipRevenue = ordersData?.reduce((sum: number, row: any) => sum + parseFloat(row.order_total || '0'), 0) || 0;
 
   // Get Kingdom Seeker Trials count (product_id = 8)
+  // Need to join with orders table to filter by date
   let kingdomSeekerQuery = supabase
     .from('order_items')
-    .select('order_id', { count: 'exact', head: false })
+    .select('order_id, orders!inner(created_at)')
     .eq('product_id', 8);
+  
+  // Apply date filters to orders.created_at
+  if (startDate) {
+    kingdomSeekerQuery = kingdomSeekerQuery.gte('orders.created_at', startDate);
+  }
+  if (endDate) {
+    kingdomSeekerQuery = kingdomSeekerQuery.lte('orders.created_at', endDate);
+  }
   
   const { data: kingdomSeekerData } = await kingdomSeekerQuery;
   const kingdomSeekerTrials = kingdomSeekerData ? new Set(kingdomSeekerData.map((item: any) => item.order_id)).size : 0;
@@ -490,22 +499,42 @@ export async function getDailyAnalysisMetrics(startDate?: string, endDate?: stri
   if (endDate) dateFilter.lte = endDate;
 
   // Fetch daily leads grouped by date (wisdom funnel only)
-  const { data: dailyLeads, error: leadsError } = await supabase
+  let leadsQuery = supabase
     .from('contacts')
     .select('id, created_at')
     .in('id', wisdomContactIds)
     .order('created_at', { ascending: true});
+  
+  // Apply date filters to created_at
+  if (startDate) {
+    leadsQuery = leadsQuery.gte('created_at', startDate);
+  }
+  if (endDate) {
+    leadsQuery = leadsQuery.lte('created_at', endDate);
+  }
+  
+  const { data: dailyLeads, error: leadsError } = await leadsQuery;
 
   if (leadsError) {
     console.error('[Supabase] Error fetching daily leads:', leadsError);
   }
 
   // Fetch daily orders grouped by date (wisdom funnel contacts only)
-  const { data: dailyOrders, error: ordersError } = await supabase
+  let ordersQuery = supabase
     .from('orders')
     .select('contact_id, created_at, order_total')
     .in('contact_id', wisdomContactIds)
     .order('created_at', { ascending: true});
+  
+  // Apply date filters to created_at
+  if (startDate) {
+    ordersQuery = ordersQuery.gte('created_at', startDate);
+  }
+  if (endDate) {
+    ordersQuery = ordersQuery.lte('created_at', endDate);
+  }
+  
+  const { data: dailyOrders, error: ordersError } = await ordersQuery;
 
   if (ordersError) {
     console.error('[Supabase] Error fetching daily orders:', ordersError);
