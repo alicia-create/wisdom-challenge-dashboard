@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +25,16 @@ export default function DebugPurchases() {
   const [endDate, setEndDate] = useState("");
   const [minAmount, setMinAmount] = useState("");
   const [maxAmount, setMaxAmount] = useState("");
+  const [productId, setProductId] = useState<string>("");
   // Removed modal state - now using Link to ContactDetails page
+
+  // Fetch products list for filter dropdown
+  const { data: productsData } = trpc.products.list.useQuery();
+
+  // Debug: log when productId changes
+  useEffect(() => {
+    console.log('[DebugPurchases] productId changed to:', productId);
+  }, [productId]);
 
   const { data, isLoading } = trpc.debug.purchases.useQuery({
     page,
@@ -35,6 +44,7 @@ export default function DebugPurchases() {
     endDate: endDate || undefined,
     minAmount: minAmount ? parseFloat(minAmount) : undefined,
     maxAmount: maxAmount ? parseFloat(maxAmount) : undefined,
+    productId: productId && productId !== "" ? parseInt(productId) : undefined,
   });
 
   const clearFilters = () => {
@@ -43,10 +53,11 @@ export default function DebugPurchases() {
     setEndDate("");
     setMinAmount("");
     setMaxAmount("");
+    setProductId("");
     setPage(1);
   };
 
-  const hasFilters = search || startDate || endDate || minAmount || maxAmount;
+  const hasFilters = search || startDate || endDate || minAmount || maxAmount || productId;
 
   // Keyboard shortcuts removed - no modal to close
 
@@ -156,6 +167,25 @@ export default function DebugPurchases() {
                     setPage(1);
                   }}
                 />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Product</label>
+                <select
+                  value={productId}
+                  onChange={(e) => {
+                    setProductId(e.target.value);
+                    setPage(1);
+                  }}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="">All Products</option>
+                  {productsData?.map((product) => (
+                    <option key={product.id} value={product.id}>
+                      {product.product_name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 

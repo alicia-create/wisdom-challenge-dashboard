@@ -874,3 +874,30 @@
 - [ ] Implement notification system when thresholds exceeded
 - [ ] Add alerts configuration UI in settings
 - [ ] Test alerts trigger correctly
+
+## Product Filter for Purchases Page (2025-12-11)
+- [ ] Fetch list of products from database for dropdown
+- [ ] Add product dropdown filter to Purchases page UI
+- [ ] Update backend getPurchases query to support product_id filter
+- [ ] Test product filter shows correct purchases for selected product
+
+
+## Total Leads Calculation Fix (2025-12-11)
+- [ ] Investigate current Total Leads calculation logic
+- [ ] Investigate conversion funnel leads counting logic (analytics_events with "wisdom")
+- [ ] Update Total Leads query to match conversion funnel logic
+- [ ] Test Total Leads count matches funnel leads count
+- [ ] Verify Total Leads displays correctly on Overview page
+
+## Product Filter Bug Fix (2025-12-11)
+- [ ] Debug why product filter in Purchases page doesn't trigger query update
+- [ ] Fix React state management for productId filter
+- [ ] Test product filter applies correctly when selecting different products
+
+
+## Overview Page Layout Changes (2025-12-11)
+- [x] Create Daily Wisdom+ Sales chart component
+- [x] Create backend query to get daily Wisdom+ sales data (order_total >= $31)
+- [x] Move VSL Performance section below the charts
+- [x] Add Daily Wisdom+ Sales chart above Daily Leads chart
+- [x] Test new layout displays correctly on desktop and mobile

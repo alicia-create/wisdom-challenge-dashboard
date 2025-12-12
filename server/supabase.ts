@@ -1083,26 +1083,61 @@ export async function getPurchasesPaginated(params: {
   endDate?: string;
   minAmount?: number;
   maxAmount?: number;
+  productId?: number;
 }) {
   const page = params.page || 1;
   const pageSize = params.pageSize || 50;
   const offset = (page - 1) * pageSize;
 
+  // If filtering by product, first get order IDs that have that product
+  let orderIdsWithProduct: number[] | undefined;
+  if (params.productId !== undefined) {
+    const { data: orderItems, error: orderItemsError } = await supabase
+      .from('order_items')
+      .select('order_id')
+      .eq('product_id', params.productId);
+    
+    if (orderItemsError) {
+      console.error('[Supabase] Error fetching order items:', orderItemsError);
+      throw new Error(`Failed to fetch order items: ${orderItemsError.message}`);
+    }
+    
+    orderIdsWithProduct = orderItems?.map(item => item.order_id) || [];
+    
+    // If no orders have this product, return empty result
+    if (orderIdsWithProduct.length === 0) {
+      return {
+        data: [],
+        total: 0,
+        page,
+        pageSize,
+        totalPages: 0,
+      };
+    }
+  }
+  
   // Build query with contact join for name and email
   let query = supabase
     .from('orders')
-    .select(`
-      *,
+    .select(`*,
       contacts (
         full_name,
         email
-      )
-    `, { count: 'exact' })
-    .order('created_at', { ascending: false });
+      )`, { count: 'exact' })
+    .order('created_at', { ascending: false});
+  
+  // Filter by order IDs if product filter is active
+  if (orderIdsWithProduct !== undefined) {
+    query = query.in('id', orderIdsWithProduct);
+  }
 
   // Apply filters
   if (params.search) {
-    query = query.or(`clickfunnels_order_number.ilike.%${params.search}%,contact_id.ilike.%${params.search}%`);
+    // Search in order number, contact name, and email
+    // Note: We can't search contact fields directly in the orders table query
+    // So we only search in clickfunnels_order_number here
+    // For name/email search, we'll need to filter in-memory after the query
+    query = query.ilike('clickfunnels_order_number', `%${params.search}%`);
   }
 
   if (params.startDate) {
@@ -1122,6 +1157,8 @@ export async function getPurchasesPaginated(params: {
   if (params.maxAmount !== undefined) {
     query = query.lte('order_total', params.maxAmount);
   }
+
+  // Product filter is already applied via orderIdsWithProduct
 
   // Apply pagination
   query = query.range(offset, offset + pageSize - 1);

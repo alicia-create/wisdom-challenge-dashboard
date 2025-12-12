@@ -196,6 +196,7 @@ export const appRouter = router({
         return dailyData.map(day => ({
           date: day.date,
           total_leads: day.totalOptins,
+          vip_sales: day.totalVipSales,
           total_spend_meta: day.metaSpend,
           total_spend_google: day.googleSpend,
           roas: day.roas,
@@ -264,7 +265,8 @@ export const appRouter = router({
   }),
 
   // Contacts queries
-  contacts: router({    getById: publicProcedure
+  contacts: router({
+    getById: publicProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ input }) => {
         const { data, error } = await supabase
@@ -443,6 +445,7 @@ export const appRouter = router({
         endDate: z.string().optional(),
         minAmount: z.number().optional(),
         maxAmount: z.number().optional(),
+        productId: z.number().optional(),
       }).optional())
       .query(async ({ input }) => {
         return await getPurchasesPaginated(input || {});

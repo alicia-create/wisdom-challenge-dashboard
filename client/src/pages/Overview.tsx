@@ -77,6 +77,7 @@ export default function Overview() {
     dateObj: new Date(kpi.date),
     spend: parseFloat(kpi.total_spend_meta || '0') + parseFloat(kpi.total_spend_google || '0'),
     leads: kpi.total_leads || 0,
+    vipSales: kpi.vip_sales || 0,
     roas: parseFloat(kpi.roas || '0'),
   })) || []).sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
 
@@ -367,23 +368,26 @@ export default function Overview() {
           </CardContent>
         </Card>
 
-        {/* VSL Performance */}
+        {/* Daily Wisdom+ Sales Chart */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>VSL Performance</CardTitle>
-            <CardDescription>
-              Vidalytics watch milestones and Wisdom+ conversion
-            </CardDescription>
+            <CardTitle>Daily Wisdom+ Sales</CardTitle>
+            <CardDescription>VIP purchases over time (orders $31+)</CardDescription>
           </CardHeader>
           <CardContent>
-            {vslLoading ? (
+            {kpisLoading ? (
               <Skeleton className="h-[300px] w-full" />
-            ) : vslMetrics ? (
-              <VSLPerformance data={vslMetrics} />
             ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                No VSL data available
-              </div>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <RechartsTooltip />
+                  <Legend />
+                  <Bar dataKey="vipSales" fill="#10B981" name="Wisdom+ Sales" />
+                </BarChart>
+              </ResponsiveContainer>
             )}
           </CardContent>
         </Card>
@@ -504,6 +508,27 @@ export default function Overview() {
                     )}
                   </tbody>
                 </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* VSL Performance */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>VSL Performance</CardTitle>
+            <CardDescription>
+              Vidalytics watch milestones and Wisdom+ conversion
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {vslLoading ? (
+              <Skeleton className="h-[300px] w-full" />
+            ) : vslMetrics ? (
+              <VSLPerformance data={vslMetrics} />
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                No VSL data available
               </div>
             )}
           </CardContent>
