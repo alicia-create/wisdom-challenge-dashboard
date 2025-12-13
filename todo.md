@@ -1087,3 +1087,7 @@
 - [ ] Add "GA4 Landing Pages" card to Data Hub
 - [ ] Add "Real-Time Overview" link to GA4 Landing Pages page
 - [ ] Test navigation changes
+
+## Real-Time Overview Link Update (2025-12-13)
+- [ ] Update Real-Time Overview button to link to Google Analytics real-time dashboard
+- [ ] Test button opens correct GA4 real-time page

@@ -159,7 +159,7 @@ export default function GA4LandingPageMetrics() {
           <div className="flex items-center gap-4">
             <Button
               variant="outline"
-              onClick={() => window.open('https://wisdomdash-deft9arh.manus.space/raw-data/analytics-dashboard', '_blank')}
+              onClick={() => window.open('https://analytics.google.com/analytics/web/#/a282571182p418349926/realtime/overview', '_blank')}
             >
               Real-Time Overview
             </Button>
