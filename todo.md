@@ -1106,3 +1106,11 @@
 - [x] Create "Meta Performance" card with Meta metrics
 - [x] Create "Google Performance" card with Google metrics
 - [x] Test visual layout and data display
+
+## Meta Performance Conversion Rate Columns (2025-12-13)
+- [x] Add Connect Rate column (Landing Page Views / Clicks)
+- [x] Add Click to Lead Rate column (Leads / Clicks)
+- [x] Add Click to Purchase Rate column (Purchases / Clicks)
+- [x] Update backend channelPerformance query to include clicks and landing page views
+- [x] Update frontend Meta Performance card with new columns
+- [x] Test calculations and display

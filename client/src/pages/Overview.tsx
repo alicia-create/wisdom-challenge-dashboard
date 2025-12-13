@@ -477,10 +477,14 @@ export default function Overview() {
                     <tr className="border-b">
                       <th className="text-left py-3 px-4 font-medium">Type</th>
                       <th className="text-right py-3 px-4 font-medium">Spend ($)</th>
+                      <th className="text-right py-3 px-4 font-medium">Clicks</th>
                       <th className="text-right py-3 px-4 font-medium">Leads</th>
                       <th className="text-right py-3 px-4 font-medium">CPL ($)</th>
                       <th className="text-right py-3 px-4 font-medium">VIPs</th>
                       <th className="text-right py-3 px-4 font-medium">CPP ($)</th>
+                      <th className="text-right py-3 px-4 font-medium">Connect Rate</th>
+                      <th className="text-right py-3 px-4 font-medium">Click to Lead</th>
+                      <th className="text-right py-3 px-4 font-medium">Click to Purchase</th>
                       <th className="text-right py-3 px-4 font-medium">ROAS</th>
                     </tr>
                   </thead>
@@ -489,10 +493,14 @@ export default function Overview() {
                     <tr className="border-b bg-blue-50/50 dark:bg-blue-950/20 font-semibold">
                       <td className="py-3 px-4">Total</td>
                       <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.meta.spend)}</td>
+                      <td className="text-right py-3 px-4">{formatNumber(channelPerformance.meta.clicks)}</td>
                       <td className="text-right py-3 px-4">{formatNumber(channelPerformance.meta.leads)}</td>
                       <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.meta.cpl)}</td>
                       <td className="text-right py-3 px-4">{formatNumber(channelPerformance.meta.vips)}</td>
                       <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.meta.cpp)}</td>
+                      <td className="text-right py-3 px-4">{formatPercent(channelPerformance.meta.connectRate)}</td>
+                      <td className="text-right py-3 px-4">{formatPercent(channelPerformance.meta.clickToLeadRate)}</td>
+                      <td className="text-right py-3 px-4">{formatPercent(channelPerformance.meta.clickToPurchaseRate)}</td>
                       <td className="text-right py-3 px-4">{channelPerformance.meta.roas.toFixed(2)}x</td>
                     </tr>
                     {/* Meta Breakdown Rows */}
@@ -500,10 +508,14 @@ export default function Overview() {
                       <tr key={`meta-${type}`} className="border-b hover:bg-muted/50 text-sm">
                         <td className="py-2 px-4 pl-4 text-muted-foreground">{type}</td>
                         <td className="text-right py-2 px-4">{formatCurrency(data.spend)}</td>
+                        <td className="text-right py-2 px-4">{formatNumber(data.clicks)}</td>
                         <td className="text-right py-2 px-4">{formatNumber(data.leads)}</td>
                         <td className="text-right py-2 px-4">{data.leads > 0 ? formatCurrency(data.spend / data.leads) : '$0.00'}</td>
                         <td className="text-right py-2 px-4">{formatNumber(data.vips)}</td>
                         <td className="text-right py-2 px-4">{data.vips > 0 ? formatCurrency(data.spend / data.vips) : '$0.00'}</td>
+                        <td className="text-right py-2 px-4">{data.clicks > 0 ? formatPercent((data.landingPageViews / data.clicks) * 100) : '0.00%'}</td>
+                        <td className="text-right py-2 px-4">{data.clicks > 0 ? formatPercent((data.leads / data.clicks) * 100) : '0.00%'}</td>
+                        <td className="text-right py-2 px-4">{data.clicks > 0 ? formatPercent((data.vips / data.clicks) * 100) : '0.00%'}</td>
                         <td className="text-right py-2 px-4">-</td>
                       </tr>
                     ))}

@@ -938,7 +938,7 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
   // Fetch Meta ad performance
   let metaQuery = supabase
     .from('ad_performance')
-    .select('spend, reported_leads, reported_purchases, campaign_name')
+    .select('spend, reported_leads, reported_purchases, campaign_name, link_clicks, landing_page_view_per_link_click')
     .ilike('platform', 'meta');
   
   if (startDate) metaQuery = metaQuery.gte('date', startDate);
@@ -993,6 +993,14 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
   const metaSpend = (metaAds || []).reduce((sum, row) => sum + parseFloat(row.spend || '0'), 0);
   const metaLeads = (metaAds || []).reduce((sum, row) => sum + parseInt(row.reported_leads || '0', 10), 0);
   const metaVips = (metaAds || []).reduce((sum, row) => sum + parseInt(row.reported_purchases || '0', 10), 0);
+  const metaClicks = (metaAds || []).reduce((sum, row) => sum + parseInt(row.link_clicks || '0', 10), 0);
+  
+  // Calculate landing page views from clicks * landing_page_view_per_link_click rate
+  const metaLandingPageViews = (metaAds || []).reduce((sum, row) => {
+    const clicks = parseInt(row.link_clicks || '0', 10);
+    const lpRate = parseFloat(row.landing_page_view_per_link_click || '1');
+    return sum + (clicks * lpRate);
+  }, 0);
 
   // Calculate Google metrics
   const googleSpend = (googleAds || []).reduce((sum, row) => sum + parseFloat(row.spend || '0'), 0);
@@ -1010,12 +1018,16 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
   };
 
   // Calculate Meta breakdown by campaign type
-  const metaBreakdown = (metaAds || []).reduce((acc: Record<string, { spend: number; leads: number; vips: number }>, row) => {
+  const metaBreakdown = (metaAds || []).reduce((acc: Record<string, { spend: number; leads: number; vips: number; clicks: number; landingPageViews: number }>, row) => {
     const type = getCampaignType(row.campaign_name || '');
-    if (!acc[type]) acc[type] = { spend: 0, leads: 0, vips: 0 };
+    if (!acc[type]) acc[type] = { spend: 0, leads: 0, vips: 0, clicks: 0, landingPageViews: 0 };
     acc[type].spend += parseFloat(row.spend || '0');
     acc[type].leads += parseInt(row.reported_leads || '0', 10);
     acc[type].vips += parseInt(row.reported_purchases || '0', 10);
+    acc[type].clicks += parseInt(row.link_clicks || '0', 10);
+    const clicks = parseInt(row.link_clicks || '0', 10);
+    const lpRate = parseFloat(row.landing_page_view_per_link_click || '1');
+    acc[type].landingPageViews += (clicks * lpRate);
     return acc;
   }, {});
 
@@ -1038,6 +1050,11 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
       vips: metaVips,
       cpp: metaVips > 0 ? metaSpend / metaVips : 0,
       roas: metaSpend > 0 ? metaRevenue / metaSpend : 0,
+      clicks: metaClicks,
+      landingPageViews: metaLandingPageViews,
+      connectRate: metaClicks > 0 ? (metaLandingPageViews / metaClicks) * 100 : 0,
+      clickToLeadRate: metaClicks > 0 ? (metaLeads / metaClicks) * 100 : 0,
+      clickToPurchaseRate: metaClicks > 0 ? (metaVips / metaClicks) * 100 : 0,
       breakdown: metaBreakdown,
     },
     google: {
