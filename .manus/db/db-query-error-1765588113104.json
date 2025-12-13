@@ -1,0 +1,8 @@
+{
+  "query": "SELECT COUNT(*) as total_rows, \n       SUM(CAST(spend AS DECIMAL(10,2))) as total_spend,\n       COUNT(DISTINCT campaign_name) as unique_campaigns\nFROM ad_performance \nWHERE date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2j9rVuZuRurkhgi.64ac36f98b86 --database DEFt9ARHDVCZprKAKnwLBw --execute SELECT COUNT(*) as total_rows, \n       SUM(CAST(spend AS DECIMAL(10,2))) as total_spend,\n       COUNT(DISTINCT campaign_name) as unique_campaigns\nFROM ad_performance \nWHERE date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'campaign_name' in 'where clause'"
+  ]
+}

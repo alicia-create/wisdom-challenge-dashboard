@@ -936,3 +936,10 @@
 - [x] Fix Daily Wisdom+ Sales chart to show only data within selected date range
 - [x] Write 9 vitest tests validating date filtering functionality
 - [x] All tests passing (Daily Analysis, Kingdom Seekers, Overview Metrics)
+
+## Ad Spend Calculation Bug (2025-12-12)
+- [x] Investigate why Total Ad Spend shows $0.00
+- [x] Check ad_performance table query in getOverviewMetrics
+- [x] Verify spend field aggregation logic
+- [x] Test with real ad_performance data
+- [x] Fix and verify Total Ad Spend displays correctly - Now showing $5,986.90 ✅

@@ -1,0 +1,98 @@
+{
+  "query": "DESCRIBE daily_kpis",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2j9rVuZuRurkhgi.64ac36f98b86 --database DEFt9ARHDVCZprKAKnwLBw --execute DESCRIBE daily_kpis",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "date",
+      "Type": "datetime",
+      "Null": "NO",
+      "Key": "UNI",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "total_leads",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "total_spend",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "cpl",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "vip_sales",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "vip_revenue",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "cpp",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "roas",
+      "Type": "decimal(10,4)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "vip_take_rate",
+      "Type": "decimal(5,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "welcome_email_clicks",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint(11)\tNO\tPRI\tNULL\tauto_increment\ndate\tdatetime\tNO\tUNI\tNULL\t\ntotal_leads\tint(11)\tYES\t\t0\t\ntotal_spend\tdecimal(10,2)\tYES\t\t0\t\ncpl\tdecimal(10,2)\tYES\t\tNULL\t\nvip_sales\tint(11)\tYES\t\t0\t\nvip_revenue\tdecimal(10,2)\tYES\t\t0\t\ncpp\tdecimal(10,2)\tYES\t\tNULL\t\nroas\tdecimal(10,4)\tYES\t\tNULL\t\nvip_take_rate\tdecimal(5,2)\tYES\t\tNULL\t\nwelcome_email_clicks\tint(11)\tYES\t\t0\t\n",
+  "stderr": "",
+  "execution_time_ms": 49
+}

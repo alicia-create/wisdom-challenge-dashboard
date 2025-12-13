@@ -1,0 +1,106 @@
+{
+  "query": "SHOW COLUMNS FROM ad_performance",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2j9rVuZuRurkhgi.64ac36f98b86 --database DEFt9ARHDVCZprKAKnwLBw --execute SHOW COLUMNS FROM ad_performance",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "date",
+      "Type": "datetime",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "platform",
+      "Type": "varchar(50)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "spend",
+      "Type": "decimal(10,2)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "clicks",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "impressions",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "link_clicks",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "reported_leads",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "reported_purchases",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "utm_campaign",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "utm_source",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "utm_medium",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint(11)\tNO\tPRI\tNULL\tauto_increment\ndate\tdatetime\tNO\t\tNULL\t\nplatform\tvarchar(50)\tNO\t\tNULL\t\nspend\tdecimal(10,2)\tNO\t\tNULL\t\nclicks\tint(11)\tYES\t\t0\t\nimpressions\tint(11)\tYES\t\t0\t\nlink_clicks\tint(11)\tYES\t\t0\t\nreported_leads\tint(11)\tYES\t\t0\t\nreported_purchases\tint(11)\tYES\t\t0\t\nutm_campaign\tvarchar(255)\tYES\t\tNULL\t\nutm_source\tvarchar(255)\tYES\t\tNULL\t\nutm_medium\tvarchar(255)\tYES\t\tNULL\t\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

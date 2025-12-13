@@ -92,26 +92,44 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
     console.error('[Supabase] Error counting leads:', leadsError);
   }
 
-  // Get total spend from ad_performance (filtered by campaign)
-  let adQuery = supabase
+   // Get total ad spend from ad_performance table (Meta + Google)
+  let metaAdQuery = supabase
     .from('ad_performance')
     .select('spend')
-    .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`);
+    .ilike('platform', 'meta');
   
   if (startDate) {
-    adQuery = adQuery.gte('date', startDate);
+    metaAdQuery = metaAdQuery.gte('date', startDate);
   }
   if (endDate) {
-    adQuery = adQuery.lte('date', endDate);
+    metaAdQuery = metaAdQuery.lte('date', endDate);
   }
   
-  const { data: adData, error: adError } = await adQuery;
+  let googleAdQuery = supabase
+    .from('ad_performance')
+    .select('spend')
+    .ilike('platform', 'google');
+  
+  if (startDate) {
+    googleAdQuery = googleAdQuery.gte('date', startDate);
+  }
+  if (endDate) {
+    googleAdQuery = googleAdQuery.lte('date', endDate);
+  }
+  
+  const { data: metaAdData, error: metaAdError } = await metaAdQuery;
+  const { data: googleAdData, error: googleAdError } = await googleAdQuery;
 
-  if (adError) {
-    console.error('[Supabase] Error fetching ad spend:', adError);
+  if (metaAdError) {
+    console.error('[Supabase] Error fetching Meta ad spend:', metaAdError);
+  }
+  if (googleAdError) {
+    console.error('[Supabase] Error fetching Google ad spend:', googleAdError);
   }
 
-  const totalSpend = adData?.reduce((sum: number, row: any) => sum + parseFloat(row.spend || '0'), 0) || 0;
+  const metaSpend = metaAdData?.reduce((sum: number, row: any) => sum + parseFloat(row.spend || '0'), 0) || 0;
+  const googleSpend = googleAdData?.reduce((sum: number, row: any) => sum + parseFloat(row.spend || '0'), 0) || 0;
+  const totalSpend = metaSpend + googleSpend;
 
   // Get VIP sales count (orders with total >= $31, wisdom funnel contacts only)
   let ordersCountQuery = supabase

@@ -28,7 +28,9 @@ export async function getOverviewMetricsOptimized(startDate?: string, endDate?: 
   }
 
   // If we have daily_kpis data, aggregate it
-  if (kpisData && kpisData.length > 0) {
+  // NOTE: Currently forcing fallback to real-time calculation because daily_kpis table is empty
+  // Once n8n workflows populate daily_kpis, change 'false' back to 'kpisData && kpisData.length > 0'
+  if (false && kpisData && kpisData.length > 0) {
     console.log(`[Overview Metrics] Using daily_kpis (${kpisData.length} days)`);
     
     // Get wisdom contacts for the date range to count unique leads
