@@ -34,6 +34,16 @@ export default function Overview() {
     dateRange,
   });
 
+  // Fetch Paid Ads funnel (31daywisdom.com)
+  const { data: paidAdsFunnel, isLoading: paidAdsLoading } = trpc.overview.paidAdsFunnel.useQuery({
+    dateRange,
+  });
+
+  // Fetch Organic/Affiliate funnel (NOT 31daywisdom.com)
+  const { data: organicFunnel, isLoading: organicLoading } = trpc.overview.organicFunnel.useQuery({
+    dateRange,
+  });
+
   // Fetch VSL performance metrics
   const { data: vslMetrics, isLoading: vslLoading } = trpc.overview.vslMetrics.useQuery({
     dateRange,
@@ -347,26 +357,56 @@ export default function Overview() {
           </Card>
         </div>
 
-        {/* Conversion Funnel */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Conversion Funnel</CardTitle>
-            <CardDescription>
-              User journey from lead to bot alerts subscriber
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {funnelLoading ? (
-              <Skeleton className="h-[400px] w-full" />
-            ) : funnelMetrics ? (
-              <ConversionFunnel data={funnelMetrics} />
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                No funnel data available
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* Conversion Funnels - Split by Source */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Paid Ads Funnel (31daywisdom.com) */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <span className="text-blue-600">💰</span>
+                Paid Ads Funnel
+              </CardTitle>
+              <CardDescription>
+                Traffic from 31daywisdom.com (Meta & Google Ads)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {paidAdsLoading ? (
+                <Skeleton className="h-[400px] w-full" />
+              ) : paidAdsFunnel ? (
+                <ConversionFunnel data={paidAdsFunnel} />
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  No paid ads funnel data available
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Organic/Affiliate Funnel (NOT 31daywisdom.com) */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <span className="text-green-600">🌱</span>
+                Organic & Affiliate Funnel
+              </CardTitle>
+              <CardDescription>
+                Traffic from 31daywisdomchallenge.com and other sources
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {organicLoading ? (
+                <Skeleton className="h-[400px] w-full" />
+              ) : organicFunnel ? (
+                <ConversionFunnel data={organicFunnel} />
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  No organic funnel data available
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Daily Wisdom+ Sales Chart */}
         <Card className="mb-6">

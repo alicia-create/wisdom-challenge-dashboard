@@ -11,16 +11,43 @@ import { getWisdomContactIds } from './wisdom-filter';
  * 4. ManyChat Connected (manychat_id not null)
  * 5. Bot Alerts Subscribed (ntn_subscribe event)
  */
-export async function getFunnelMetrics(startDate?: string, endDate?: string) {
+export async function getFunnelMetrics(
+  startDate?: string, 
+  endDate?: string,
+  contactIdsFilter?: number[] // Optional: pre-filtered contact IDs
+) {
   // Stage 1: Total Leads (wisdom contacts only)
-  const wisdomContactIds = await getWisdomContactIds(startDate, endDate);
+  const wisdomContactIds = contactIdsFilter || await getWisdomContactIds(startDate, endDate);
   const totalLeads = wisdomContactIds.length;
 
   // Stage 2: Wisdom+ Purchases (product_id 1 = Backstage Pass, 7 = Wisdom+ Experience)
+  // First get orders from the filtered contacts
+  const { data: contactOrders } = await supabase
+    .from('orders')
+    .select('id')
+    .in('contact_id', wisdomContactIds);
+  
+  const contactOrderIds = contactOrders?.map(o => o.id) || [];
+  
+  if (contactOrderIds.length === 0) {
+    return {
+      totalLeads: totalLeads || 0,
+      wisdomPurchases: 0,
+      kingdomSeekerTrials: 0,
+      manychatConnected: 0,
+      botAlertsSubscribed: 0,
+      leadToWisdomRate: 0,
+      wisdomToKingdomRate: 0,
+      kingdomToManychatRate: 0,
+      manychatToBotAlertsRate: 0,
+    };
+  }
+  
   let wisdomQuery = supabase
     .from('order_items')
     .select('order_id')
-    .or('product_id.eq.1,product_id.eq.7');
+    .or('product_id.eq.1,product_id.eq.7')
+    .in('order_id', contactOrderIds);
   
   if (startDate || endDate) {
     // Join with orders to filter by date
@@ -68,7 +95,8 @@ export async function getFunnelMetrics(startDate?: string, endDate?: string) {
   let kingdomQuery = supabase
     .from('order_items')
     .select('order_id')
-    .eq('product_id', 8);
+    .eq('product_id', 8)
+    .in('order_id', contactOrderIds);
   
   if (startDate || endDate) {
     let ordersSubquery = supabase
@@ -97,7 +125,8 @@ export async function getFunnelMetrics(startDate?: string, endDate?: string) {
   let manychatQuery = supabase
     .from('contacts')
     .select('id', { count: 'exact', head: true })
-    .not('manychat_id', 'is', null);
+    .not('manychat_id', 'is', null)
+    .in('id', wisdomContactIds);
   
   if (startDate) manychatQuery = manychatQuery.gte('created_at', startDate);
   if (endDate) {
@@ -113,7 +142,8 @@ export async function getFunnelMetrics(startDate?: string, endDate?: string) {
     .from('analytics_events')
     .select('contact_id', { count: 'exact', head: false })
     .eq('name', 'manychat.add_tag')
-    .eq('value', 'gold.ntn.request_accepted');
+    .eq('value', 'gold.ntn.request_accepted')
+    .in('contact_id', wisdomContactIds);
   
   if (startDate) botAlertsQuery = botAlertsQuery.gte('timestamp', startDate);
   if (endDate) {

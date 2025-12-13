@@ -53,3 +53,67 @@ export async function getWisdomContactIds(startDate?: string, endDate?: string):
   
   return contactIds;
 }
+
+/**
+ * Get contact IDs from Paid Ads funnel (31daywisdom.com)
+ * Filters analytics_events where comment or value contains '31daywisdom.com'
+ */
+export async function getPaidAdsContactIds(startDate?: string, endDate?: string): Promise<number[]> {
+  let query = supabase
+    .from('analytics_events')
+    .select('contact_id')
+    .or('comment.ilike.%31daywisdom.com%,value.ilike.%31daywisdom.com%');
+
+  if (startDate) {
+    query = query.gte('timestamp', startDate);
+  }
+  if (endDate) {
+    const endDateTime = new Date(endDate);
+    endDateTime.setDate(endDateTime.getDate() + 1);
+    query = query.lt('timestamp', endDateTime.toISOString());
+  }
+
+  const { data: paidEvents, error } = await query;
+
+  if (error) {
+    console.error('[Paid Ads Filter] Error fetching paid ads events:', error);
+    return [];
+  }
+
+  const contactIds = paidEvents 
+    ? Array.from(new Set(paidEvents.map(e => e.contact_id)))
+    : [];
+
+  const dateRange = startDate && endDate 
+    ? `${startDate} to ${endDate}`
+    : startDate 
+    ? `from ${startDate}`
+    : 'all time';
+  console.log(`[Paid Ads Filter] Found ${contactIds.length} contacts from 31daywisdom.com (${dateRange})`);
+  
+  return contactIds;
+}
+
+/**
+ * Get contact IDs from Organic/Affiliate funnel (NOT 31daywisdom.com)
+ * Filters analytics_events where comment or value does NOT contain '31daywisdom.com'
+ */
+export async function getOrganicContactIds(startDate?: string, endDate?: string): Promise<number[]> {
+  // Get all wisdom contacts
+  const allWisdomIds = await getWisdomContactIds(startDate, endDate);
+  
+  // Get paid ads contacts
+  const paidAdsIds = await getPaidAdsContactIds(startDate, endDate);
+  
+  // Subtract paid ads from all wisdom = organic/affiliate
+  const organicIds = allWisdomIds.filter(id => !paidAdsIds.includes(id));
+  
+  const dateRange = startDate && endDate 
+    ? `${startDate} to ${endDate}`
+    : startDate 
+    ? `from ${startDate}`
+    : 'all time';
+  console.log(`[Organic Filter] Found ${organicIds.length} contacts from organic/affiliate sources (${dateRange})`);
+  
+  return organicIds;
+}

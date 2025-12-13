@@ -80,6 +80,7 @@ import {
 } from "./diary";
 import { invokeLLM } from "./_core/llm";
 import { getFunnelMetrics, getVSLMetrics } from "./funnel";
+import { getPaidAdsContactIds, getOrganicContactIds } from "./wisdom-filter";
 
 
 export const appRouter = router({
@@ -277,6 +278,34 @@ export const appRouter = router({
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
         
         return await getFunnelMetrics(startDate, endDate);
+      }),
+
+    // Get Paid Ads funnel metrics (31daywisdom.com)
+    paidAdsFunnel: publicProcedure
+      .input(z.object({
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        const { startDate, endDate } = input?.dateRange 
+          ? getDateRangeValues(input.dateRange)
+          : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
+        
+        const paidAdsContactIds = await getPaidAdsContactIds(startDate, endDate);
+        return await getFunnelMetrics(startDate, endDate, paidAdsContactIds);
+      }),
+
+    // Get Organic/Affiliate funnel metrics (NOT 31daywisdom.com)
+    organicFunnel: publicProcedure
+      .input(z.object({
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        const { startDate, endDate } = input?.dateRange 
+          ? getDateRangeValues(input.dateRange)
+          : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
+        
+        const organicContactIds = await getOrganicContactIds(startDate, endDate);
+        return await getFunnelMetrics(startDate, endDate, organicContactIds);
       }),
 
     // Get VSL performance metrics from Vidalytics

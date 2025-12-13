@@ -982,3 +982,25 @@
 - [x] Optimize chart sizing for mobile screens - Charts now responsive with proper spacing
 - [ ] Add hamburger menu for navigation on small screens - Not needed, horizontal scroll works well
 - [x] Test on 375px width (iPhone SE) and 390px (iPhone 12/13/14) - Tested and working
+
+## Split Conversion Funnel by Source (2025-12-12)
+- [ ] Investigate analytics_events table structure (value/comments fields)
+- [ ] Create backend query to filter leads by 31daywisdom.com (Paid Ads)
+- [ ] Create backend query to filter leads NOT containing 31daywisdom.com (Organic/Affiliate)
+- [ ] Duplicate ConversionFunnel component into two separate cards
+- [ ] Add "Paid Ads Funnel" card with 31daywisdom.com filter
+- [ ] Add "Organic & Affiliate Funnel" card with exclusion filter
+- [ ] Test both funnels show correct data
+- [ ] Verify totals add up to original combined funnel
+
+## Split Conversion Funnel by Source (2025-12-12)
+- [x] Investigate analytics_events table structure (comment and value fields)
+- [x] Create getPaidAdsContactIds() filter function (31daywisdom.com)
+- [x] Create getOrganicContactIds() filter function (NOT 31daywisdom.com)
+- [x] Modify getFunnelMetrics to accept contactIds filter parameter
+- [x] Add contactIds filtering to all funnel stages (Wisdom+, Kingdom, ManyChat, Bot Alerts)
+- [x] Create tRPC procedures: paidAdsFunnel and organicFunnel
+- [x] Duplicate ConversionFunnel card in Overview page
+- [x] Add queries for both funnels in Overview.tsx
+- [x] Test that both funnels show different data - Paid: 4→2→1→0→0, Organic: 54→21→11→11→3
+- [x] Write vitest tests for split funnel functionality - All 6 tests passing

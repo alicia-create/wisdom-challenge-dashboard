@@ -1,0 +1,55 @@
+{
+  "query": "SHOW TABLES",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2j9rVuZuRurkhgi.64ac36f98b86 --database DEFt9ARHDVCZprKAKnwLBw --execute SHOW TABLES",
+  "rows": [
+    {
+      "Tables_in_DEFt9ARHDVCZprKAKnwLBw": "Lead"
+    },
+    {
+      "Tables_in_DEFt9ARHDVCZprKAKnwLBw": "Order"
+    },
+    {
+      "Tables_in_DEFt9ARHDVCZprKAKnwLBw": "__drizzle_migrations"
+    },
+    {
+      "Tables_in_DEFt9ARHDVCZprKAKnwLBw": "ad_performance"
+    },
+    {
+      "Tables_in_DEFt9ARHDVCZprKAKnwLBw": "alerts"
+    },
+    {
+      "Tables_in_DEFt9ARHDVCZprKAKnwLBw": "daily_attendance"
+    },
+    {
+      "Tables_in_DEFt9ARHDVCZprKAKnwLBw": "daily_kpis"
+    },
+    {
+      "Tables_in_DEFt9ARHDVCZprKAKnwLBw": "diary_actions"
+    },
+    {
+      "Tables_in_DEFt9ARHDVCZprKAKnwLBw": "diary_entries"
+    },
+    {
+      "Tables_in_DEFt9ARHDVCZprKAKnwLBw": "facebook_audiences"
+    },
+    {
+      "Tables_in_DEFt9ARHDVCZprKAKnwLBw": "ga4_landing_page_metrics"
+    },
+    {
+      "Tables_in_DEFt9ARHDVCZprKAKnwLBw": "invites"
+    },
+    {
+      "Tables_in_DEFt9ARHDVCZprKAKnwLBw": "keap_tokens"
+    },
+    {
+      "Tables_in_DEFt9ARHDVCZprKAKnwLBw": "optimization_recommendations"
+    },
+    {
+      "Tables_in_DEFt9ARHDVCZprKAKnwLBw": "users"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_DEFt9ARHDVCZprKAKnwLBw\nLead\nOrder\n__drizzle_migrations\nad_performance\nalerts\ndaily_attendance\ndaily_kpis\ndiary_actions\ndiary_entries\nfacebook_audiences\nga4_landing_page_metrics\ninvites\nkeap_tokens\noptimization_recommendations\nusers\n",
+  "stderr": "",
+  "execution_time_ms": 867
+}
