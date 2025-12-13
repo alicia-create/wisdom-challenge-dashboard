@@ -1114,3 +1114,11 @@
 - [x] Update backend channelPerformance query to include clicks and landing page views
 - [x] Update frontend Meta Performance card with new columns
 - [x] Test calculations and display
+
+## Daily Page Date Range Filter Fix (2025-12-13)
+- [x] Investigate why date range filter is not working
+- [x] Fix filter logic to correctly apply selected date range
+- [x] Ensure "TODAY" shows only today's data
+- [x] Ensure "YESTERDAY" shows only yesterday's data
+- [x] Ensure "7 DAYS", "14 DAYS", "30 DAYS" show aggregated data
+- [x] Test all filter options and verify data changes

@@ -723,14 +723,18 @@ export async function getDailyAnalysisMetrics(startDate?: string, endDate?: stri
 
   // Filter dateMap to only include dates within the requested range
   console.log(`[Daily Analysis] Before filter: dateMap has ${dateMap.size} days:`, Array.from(dateMap.keys()).sort().join(', '));
-  console.log(`[Daily Analysis] Filtering for range: ${startDate} to ${nextDayStr} (exclusive)`);
+  console.log(`[Daily Analysis] Filtering for range: ${startDate} to ${endDate}`);
   
   const filteredDates = Array.from(dateMap.values()).filter(day => {
-    if (!startDate || !endDate || !nextDayStr) return true; // No filter if dates not specified
-    return day.date >= startDate && day.date < nextDayStr; // Use same nextDay logic
+    // Always apply filter if startDate or endDate is provided
+    let include = true;
+    if (startDate && day.date < startDate) include = false;
+    if (endDate && nextDayStr && day.date >= nextDayStr) include = false;
+    return include;
   });
   
   console.log(`[Daily Analysis] Filtered to ${filteredDates.length} days within range ${startDate} to ${endDate}`);
+  console.log(`[Daily Analysis] Filtered dates:`, filteredDates.map(d => d.date).sort().join(', '));
   
   // Convert map to array and calculate derived metrics
   const dailyData = filteredDates.map(day => {
