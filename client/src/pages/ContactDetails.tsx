@@ -53,9 +53,12 @@ export default function ContactDetails() {
           <CardContent className="pt-6">
             <p className="text-center text-muted-foreground">Contact not found</p>
             <div className="flex justify-center mt-4">
-              <Button asChild>
-                <Link href="/debug/leads">Back to Leads</Link>
-              </Button>
+              <Link 
+                href="/debug/leads"
+                className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+              >
+                Back to Leads
+              </Link>
             </div>
           </CardContent>
         </Card>
@@ -135,32 +138,33 @@ export default function ContactDetails() {
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-2">
                 {contact.messenger_id && (
-                  <Button asChild size="sm">
-                    <a 
-                      href={`https://m.me/${contact.messenger_id}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                    >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Message on Messenger
-                    </a>
-                  </Button>
+                  <a 
+                    href={`https://m.me/${contact.messenger_id}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3"
+                  >
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Message on Messenger
+                  </a>
                 )}
                 {contact.email && (
-                  <Button asChild variant="outline" size="sm">
-                    <a href={`mailto:${contact.email}`}>
-                      <Mail className="h-4 w-4 mr-2" />
-                      Send Email
-                    </a>
-                  </Button>
+                  <a 
+                    href={`mailto:${contact.email}`}
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-transparent hover:bg-accent hover:text-accent-foreground h-9 px-3"
+                  >
+                    <Mail className="h-4 w-4 mr-2" />
+                    Send Email
+                  </a>
                 )}
                 {contact.phone && (
-                  <Button asChild variant="outline" size="sm">
-                    <a href={`tel:${contact.phone}`}>
-                      <Phone className="h-4 w-4 mr-2" />
-                      Call
-                    </a>
-                  </Button>
+                  <a 
+                    href={`tel:${contact.phone}`}
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-transparent hover:bg-accent hover:text-accent-foreground h-9 px-3"
+                  >
+                    <Phone className="h-4 w-4 mr-2" />
+                    Call
+                  </a>
                 )}
 
               </div>
