@@ -732,6 +732,11 @@ export async function getDailyAnalysisMetrics(startDate?: string, endDate?: stri
       trueCPP,
       roas,
       profitLoss,
+      // Frontend-compatible field names for charts
+      total_leads: day.totalOptins,
+      vip_sales: day.totalVipSales,
+      total_spend_meta: day.metaSpend,
+      total_spend_google: day.googleSpend,
       // Meta Ads
       metaSpend: day.metaSpend,
       metaCPL,

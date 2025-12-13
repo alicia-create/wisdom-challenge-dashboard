@@ -1004,3 +1004,10 @@
 - [x] Add queries for both funnels in Overview.tsx
 - [x] Test that both funnels show different data - Paid: 4→2→1→0→0, Organic: 54→21→11→11→3
 - [x] Write vitest tests for split funnel functionality - All 6 tests passing
+
+## Fix Daily Charts to Show Combined Funnel Data (2025-12-12)
+- [x] Investigate why Daily Wisdom+ Sales and Daily Leads charts are empty with date filter - Field name mismatch
+- [x] Fix getDailyAnalysisMetrics to return combined data from both Paid Ads and Organic funnels - Added frontend-compatible fields
+- [x] Ensure charts aggregate data from all wisdom contacts (not split by source) - Using getWisdomContactIds
+- [x] Test charts display correct totals for TODAY, YESTERDAY, 7 DAYS filters - All 4 tests passing
+- [x] Verify chart data matches sum of both funnels - Last 7 days: 43 leads, 19 vip sales
