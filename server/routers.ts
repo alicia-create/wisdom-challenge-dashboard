@@ -177,7 +177,22 @@ export const appRouter = router({
           ? getDateRangeValues(input.dateRange)
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS); // Default to 30 days
         
-        return await getOverviewMetricsOptimized(startDate, endDate);
+        // Cache key includes date range for proper invalidation
+        const cacheKey = `overview:metrics:${input?.dateRange || DATE_RANGES.LAST_30_DAYS}`;
+        const cached = cache.get<any>(cacheKey);
+        
+        if (cached) {
+          console.log('[Overview Metrics] Returning cached result');
+          return cached;
+        }
+        
+        console.log('[Overview Metrics] Cache miss, fetching fresh data');
+        const result = await getOverviewMetricsOptimized(startDate, endDate);
+        
+        // Cache for 5 minutes
+        cache.set(cacheKey, result, 5 * 60 * 1000);
+        
+        return result;
       }),
 
     // Get daily KPIs for charts (spend & leads trend, ROAS trend)
@@ -190,10 +205,20 @@ export const appRouter = router({
           ? getDateRangeValues(input.dateRange)
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
         
+        // Cache key includes date range
+        const cacheKey = `overview:dailyKpis:${input?.dateRange || DATE_RANGES.LAST_30_DAYS}`;
+        const cached = cache.get<any>(cacheKey);
+        
+        if (cached) {
+          console.log('[Daily KPIs] Returning cached result');
+          return cached;
+        }
+        
+        console.log('[Daily KPIs] Cache miss, fetching fresh data');
         const dailyData = await getDailyAnalysisMetrics(startDate, endDate);
         
         // Map to expected format for charts
-        return dailyData.map(day => ({
+        const result = dailyData.map(day => ({
           date: day.date,
           total_leads: day.totalOptins,
           vip_sales: day.totalVipSales,
@@ -201,6 +226,11 @@ export const appRouter = router({
           total_spend_google: day.googleSpend,
           roas: day.roas,
         }));
+        
+        // Cache for 5 minutes
+        cache.set(cacheKey, result, 5 * 60 * 1000);
+        
+        return result;
       }),
 
     // Get email engagement metrics
@@ -218,7 +248,22 @@ export const appRouter = router({
           ? getDateRangeValues(input.dateRange)
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
         
-        return await getChannelPerformance(startDate, endDate);
+        // Cache key includes date range
+        const cacheKey = `overview:channelPerformance:${input?.dateRange || DATE_RANGES.LAST_30_DAYS}`;
+        const cached = cache.get<any>(cacheKey);
+        
+        if (cached) {
+          console.log('[Channel Performance] Returning cached result');
+          return cached;
+        }
+        
+        console.log('[Channel Performance] Cache miss, fetching fresh data');
+        const result = await getChannelPerformance(startDate, endDate);
+        
+        // Cache for 10 minutes (less frequently changing data)
+        cache.set(cacheKey, result, 10 * 60 * 1000);
+        
+        return result;
       }),
 
     // Get conversion funnel metrics (Lead → Wisdom+ → Kingdom Seekers → ManyChat → Bot Alerts)

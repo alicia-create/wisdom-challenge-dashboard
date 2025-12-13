@@ -79,7 +79,7 @@ export default function Overview() {
     leads: kpi.total_leads || 0,
     vipSales: kpi.vip_sales || 0,
     roas: parseFloat(kpi.roas || '0'),
-  })) || []).sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
+  })) || []).sort((a: any, b: any) => a.dateObj.getTime() - b.dateObj.getTime());
 
   return (
     <div className="min-h-screen bg-background">

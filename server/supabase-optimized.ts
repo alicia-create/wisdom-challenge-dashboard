@@ -30,14 +30,14 @@ export async function getOverviewMetricsOptimized(startDate?: string, endDate?: 
   // If we have daily_kpis data, aggregate it
   // NOTE: Currently forcing fallback to real-time calculation because daily_kpis table is empty
   // Once n8n workflows populate daily_kpis, change 'false' back to 'kpisData && kpisData.length > 0'
-  if (false && kpisData && kpisData.length > 0) {
-    console.log(`[Overview Metrics] Using daily_kpis (${kpisData.length} days)`);
+  if (false && kpisData && (kpisData || []).length > 0) {
+    console.log(`[Overview Metrics] Using daily_kpis (${kpisData?.length || 0} days)`);
     
     // Get wisdom contacts for the date range to count unique leads
     const { getWisdomContactIds } = await import('./wisdom-filter');
     const wisdomContactIds = await getWisdomContactIds(startDate, endDate);
     const totalLeads = wisdomContactIds.length;
-    const totalSpend = kpisData.reduce((sum, row) => {
+    const totalSpend = (kpisData || []).reduce((sum, row) => {
       const metaSpend = parseFloat(row.total_spend_meta || '0');
       const googleSpend = parseFloat(row.total_spend_google || '0');
       return sum + metaSpend + googleSpend;
@@ -49,7 +49,7 @@ export async function getOverviewMetricsOptimized(startDate?: string, endDate?: 
       .select('order_id, products!inner(product_name)')
       .or('product_id.eq.1,product_id.eq.7'); // Backstage Pass or Wisdom+ Experience
     
-    const vipSales = wisdomPlusItems ? new Set(wisdomPlusItems.map((item: any) => item.order_id)).size : 0;
+    const vipSales = (wisdomPlusItems || []).length > 0 ? new Set((wisdomPlusItems || []).map((item: any) => item.order_id)).size : 0;
     
     // Calculate Wisdom+ revenue from order_items
     const { data: wisdomPlusRevenue } = await supabase
@@ -57,8 +57,8 @@ export async function getOverviewMetricsOptimized(startDate?: string, endDate?: 
       .select('amount')
       .or('product_id.eq.1,product_id.eq.7');
     
-    const vipRevenue = wisdomPlusRevenue ? wisdomPlusRevenue.reduce((sum, item) => sum + (item.amount || 0), 0) : 0;
-    const welcomeEmailClicks = kpisData.reduce((sum, row) => sum + (row.welcome_email_clicks || 0), 0);
+    const vipRevenue = (wisdomPlusRevenue || []).reduce((sum, item) => sum + (item.amount || 0), 0);
+    const welcomeEmailClicks = (kpisData || []).reduce((sum, row) => sum + (row.welcome_email_clicks || 0), 0);
 
     // Calculate derived metrics
     const costPerLead = totalLeads > 0 ? totalSpend / totalLeads : 0;
@@ -74,7 +74,7 @@ export async function getOverviewMetricsOptimized(startDate?: string, endDate?: 
       .from('order_items')
       .select('order_id')
       .eq('product_id', 8);
-    const kingdomSeekerTrials = kingdomSeekerData ? new Set(kingdomSeekerData.map((item: any) => item.order_id)).size : 0;
+    const kingdomSeekerTrials = (kingdomSeekerData || []).length > 0 ? new Set((kingdomSeekerData || []).map((item: any) => item.order_id)).size : 0;
 
     // ManyChat bot users
     let manychatQuery = supabase
@@ -87,7 +87,7 @@ export async function getOverviewMetricsOptimized(startDate?: string, endDate?: 
       manychatQuery = manychatQuery.gte('created_at', startDate);
     }
     if (endDate) {
-      const endDateTime = new Date(endDate);
+      const endDateTime = new Date(endDate || new Date());
       endDateTime.setDate(endDateTime.getDate() + 1);
       manychatQuery = manychatQuery.lt('created_at', endDateTime.toISOString().split('T')[0]);
     }
@@ -105,13 +105,13 @@ export async function getOverviewMetricsOptimized(startDate?: string, endDate?: 
       broadcastQuery = broadcastQuery.gte('created_at', startDate);
     }
     if (endDate) {
-      const endDateTime = new Date(endDate);
+      const endDateTime = new Date(endDate || new Date());
       endDateTime.setDate(endDateTime.getDate() + 1);
       broadcastQuery = broadcastQuery.lt('created_at', endDateTime.toISOString().split('T')[0]);
     }
     
     const { data: broadcastData } = await broadcastQuery;
-    const broadcastSubscribers = broadcastData ? new Set(broadcastData.map((item: any) => item.user_id)).size : 0;
+    const broadcastSubscribers = (broadcastData || []).length > 0 ? new Set((broadcastData || []).map((item: any) => item.user_id)).size : 0;
 
     // Total revenue (all orders, not just wisdom contacts)
     let allOrdersQuery = supabase
@@ -122,7 +122,7 @@ export async function getOverviewMetricsOptimized(startDate?: string, endDate?: 
       allOrdersQuery = allOrdersQuery.gte('created_at', startDate);
     }
     if (endDate) {
-      const endDateTime = new Date(endDate);
+      const endDateTime = new Date(endDate || new Date());
       endDateTime.setDate(endDateTime.getDate() + 1);
       allOrdersQuery = allOrdersQuery.lt('created_at', endDateTime.toISOString().split('T')[0]);
     }
