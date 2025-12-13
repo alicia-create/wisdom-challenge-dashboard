@@ -32,17 +32,17 @@ export function DashboardHeader() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 py-4">
           {/* Logo/Title */}
           <div className="flex-shrink-0">
-            <h1 className="text-lg md:text-xl font-bold text-foreground">
-              {APP_TITLE}
+            <h1 className="text-base sm:text-lg md:text-xl font-bold text-foreground leading-tight">
+              31-Day Wisdom Challenge
             </h1>
-            <p className="text-xs text-muted-foreground hidden sm:block">
-              Real-time analytics and performance metrics
+            <p className="text-xs text-muted-foreground hidden md:block">
+              Analytics Dashboard
             </p>
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex items-center gap-2 w-full sm:w-auto sm:flex-1 sm:justify-end overflow-x-auto">
-            <nav className="flex gap-1 bg-muted p-1 rounded-lg overflow-x-auto scrollbar-hide min-w-0 flex-1 sm:flex-initial">
+          <div className="flex items-center gap-2 w-full sm:w-auto sm:flex-1 sm:justify-end">
+            <nav className="flex gap-1 bg-muted p-1 rounded-lg overflow-x-auto scrollbar-hide w-full sm:w-auto">
             {tabs.map((tab) => {
               const isActive = location === tab.path;
               return (

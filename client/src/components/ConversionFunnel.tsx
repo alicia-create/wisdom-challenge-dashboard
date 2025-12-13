@@ -76,15 +76,15 @@ export function ConversionFunnel({ data }: ConversionFunnelProps) {
             {/* Conversion arrow between stages */}
             {index > 0 && (
               <div className="flex items-center justify-center py-2">
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <ArrowDown className="h-4 w-4 text-green-600" />
-                    <span className="text-green-600 font-semibold">
+                <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm flex-wrap justify-center">
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <ArrowDown className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
+                    <span className="text-green-600 font-semibold whitespace-nowrap">
                       {conversionRate?.toFixed(1)}% converted
                     </span>
                   </div>
                   {dropOffRate > 0 && (
-                    <span className="text-red-600">
+                    <span className="text-red-600 whitespace-nowrap">
                       {dropOffRate.toFixed(1)}% dropped off
                     </span>
                   )}
@@ -95,22 +95,22 @@ export function ConversionFunnel({ data }: ConversionFunnelProps) {
             {/* Funnel stage */}
             <div className="relative">
               <div
-                className={`${stage.color} rounded-lg p-4 transition-all duration-500 ease-out`}
-                style={{ width: `${Math.max(widthPercent, 20)}%`, marginLeft: 'auto', marginRight: 'auto' }}
+                className={`${stage.color} rounded-lg p-3 sm:p-4 transition-all duration-500 ease-out`}
+                style={{ width: `${Math.max(widthPercent, 30)}%`, marginLeft: 'auto', marginRight: 'auto' }}
               >
-                <div className="flex items-center justify-between text-white">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-white/20 p-2 rounded-lg">
+                <div className="flex items-center justify-between text-white gap-2">
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    <div className="bg-white/20 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
                       {stage.icon}
                     </div>
-                    <div>
-                      <div className="font-semibold">{stage.name}</div>
-                      <div className="text-sm opacity-90">
+                    <div className="min-w-0">
+                      <div className="font-semibold text-sm sm:text-base truncate">{stage.name}</div>
+                      <div className="text-xs sm:text-sm opacity-90">
                         {stage.count.toLocaleString()} users
                       </div>
                     </div>
                   </div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-xl sm:text-2xl font-bold flex-shrink-0">
                     {stage.count.toLocaleString()}
                   </div>
                 </div>

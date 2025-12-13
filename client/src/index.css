@@ -180,10 +180,20 @@
 @layer utilities {
   /* Hide scrollbar but keep functionality */
   .scrollbar-hide {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
   .scrollbar-hide::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
+    display: none;
+  }
+  
+  /* Mobile-optimized card padding */
+  @media (max-width: 640px) {
+    .card-mobile-compact [data-slot="card-header"] {
+      @apply px-4 pt-4 pb-2;
+    }
+    .card-mobile-compact [data-slot="card-content"] {
+      @apply px-4 pb-4;
+    }
   }
 }

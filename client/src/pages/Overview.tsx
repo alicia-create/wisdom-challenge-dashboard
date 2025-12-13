@@ -85,15 +85,15 @@ export default function Overview() {
     <div className="min-h-screen bg-background">
       <DashboardHeader />
       
-      <div className="container py-6">
+      <div className="container py-4 sm:py-6">
         <Breadcrumb items={[{ label: "Overview" }]} />
         {/* Date Filter */}
-        <div className="flex justify-end mb-6">
+        <div className="flex justify-end mb-4 sm:mb-6">
           <DateRangeFilter value={dateRange} onChange={setDateRange} />
         </div>
 
         {/* Primary KPIs - Large Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-6 mb-4 sm:mb-6">
           {/* Total Leads */}
           <Card className="border-l-4 border-l-[#560BAD]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -249,7 +249,7 @@ export default function Overview() {
         </div>
 
         {/* Secondary KPIs - Smaller Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-6 sm:mb-8">
           {/* Cost Per Lead */}
           <Card className="border-l-2 border-l-[#560BAD]">
             <CardHeader className="pb-2">

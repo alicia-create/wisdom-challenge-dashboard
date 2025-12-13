@@ -973,3 +973,12 @@
 - [x] Add development guidelines document - Created DEVELOPMENT.md with best practices
 - [ ] Set up automated testing in CI/CD - Future: requires CI/CD setup
 - [x] Create troubleshooting guide for common issues - Included in DEVELOPMENT.md
+
+## Mobile Layout Improvements (2025-12-12)
+- [x] Reduce header title size on mobile - Changed to text-base (16px) on mobile
+- [x] Fix horizontal tab navigation overflow - Added scrollbar-hide and proper flex wrapping
+- [x] Make KPI cards visible above the fold on mobile - Changed to 2-column grid with reduced gaps
+- [x] Fix Conversion Funnel card text truncation - Added responsive font sizes and truncate classes
+- [x] Optimize chart sizing for mobile screens - Charts now responsive with proper spacing
+- [ ] Add hamburger menu for navigation on small screens - Not needed, horizontal scroll works well
+- [x] Test on 375px width (iPhone SE) and 390px (iPhone 12/13/14) - Tested and working
