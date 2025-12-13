@@ -44,13 +44,20 @@ export type DateRange = typeof DATE_RANGES[keyof typeof DATE_RANGES];
  */
 export function getDateRangeValues(range: DateRange): { startDate: string; endDate: string } {
   // Get current date in Los Angeles timezone (PST/PDT)
-  // PST is UTC-8, PDT is UTC-7 (daylight saving)
+  // Use Intl.DateTimeFormat to extract date parts directly without timezone conversion issues
   const now = new Date();
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Los_Angeles',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  const parts = formatter.formatToParts(now);
+  const year = parseInt(parts.find(p => p.type === 'year')!.value);
+  const month = parseInt(parts.find(p => p.type === 'month')!.value) - 1; // JS months are 0-indexed
+  const day = parseInt(parts.find(p => p.type === 'day')!.value);
   
-  // Use Intl API to get LA time
-  const laTimeStr = now.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' });
-  const laDate = new Date(laTimeStr);
-  const today = new Date(laDate.getFullYear(), laDate.getMonth(), laDate.getDate());
+  const today = new Date(year, month, day);
   
   let startDate: Date;
   let endDate: Date = new Date(today);

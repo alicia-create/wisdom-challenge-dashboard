@@ -1130,3 +1130,6 @@
 - [x] Test with different timezones
 - [x] Change timezone from Brazil (GMT-3) to Los Angeles (PST/PDT)
 - [x] Test with Los Angeles timezone
+- [x] Review Overview page timezone solution
+- [x] Debug why Daily page still shows Dec 12
+- [x] Apply correct timezone fix using formatToParts
