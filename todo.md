@@ -1122,3 +1122,9 @@
 - [x] Ensure "YESTERDAY" shows only yesterday's data
 - [x] Ensure "7 DAYS", "14 DAYS", "30 DAYS" show aggregated data
 - [x] Test all filter options and verify data changes
+
+## Daily Page Timezone Fix (2025-12-13)
+- [x] Investigate getDateRangeValues timezone calculation
+- [x] Fix TODAY filter to show correct current date (Dec 13 not Dec 12)
+- [x] Ensure timezone consistency across all date filters
+- [x] Test with different timezones

@@ -40,10 +40,18 @@ export type DateRange = typeof DATE_RANGES[keyof typeof DATE_RANGES];
 /**
  * Get start and end dates for a given date range preset
  * Returns dates in YYYY-MM-DD format
+ * Uses Brazil timezone (America/Sao_Paulo, GMT-3) for "today" calculation
  */
 export function getDateRangeValues(range: DateRange): { startDate: string; endDate: string } {
+  // Get current date in Brazil timezone (GMT-3)
   const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const brazilOffset = -3 * 60; // GMT-3 in minutes
+  const localOffset = now.getTimezoneOffset(); // Server timezone offset
+  const offsetDiff = localOffset - brazilOffset; // Difference in minutes
+  
+  // Adjust to Brazil timezone
+  const brazilTime = new Date(now.getTime() + offsetDiff * 60 * 1000);
+  const today = new Date(brazilTime.getFullYear(), brazilTime.getMonth(), brazilTime.getDate());
   
   let startDate: Date;
   let endDate: Date = new Date(today);
