@@ -43,7 +43,7 @@ export default function OtherData() {
     },
   ];
 
-  // Priority 2: Secondary data (medium cards) - 4 cards
+  // Priority 2: Secondary data (medium cards) - 5 cards
   const secondaryPages = [
     {
       title: "Google Campaigns",
@@ -76,6 +76,14 @@ export default function OtherData() {
       path: "/engagement-sales",
       color: "text-green-600",
       bgColor: "bg-green-50 dark:bg-green-950",
+    },
+    {
+      title: "GA4 Landing Pages",
+      description: "Google Analytics landing page performance and traffic sources",
+      icon: Target,
+      path: "/raw-data/ga4-landing-pages",
+      color: "text-orange-600",
+      bgColor: "bg-orange-50 dark:bg-orange-950",
     },
   ];
 

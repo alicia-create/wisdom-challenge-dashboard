@@ -1081,3 +1081,9 @@
 - [ ] Check email/phone links in contact info section
 - [ ] Fix nested anchor pattern
 - [ ] Test page loads without errors
+
+## Navigation Updates (2025-12-13)
+- [ ] Remove "Analytics" tab from main navigation
+- [ ] Add "GA4 Landing Pages" card to Data Hub
+- [ ] Add "Real-Time Overview" link to GA4 Landing Pages page
+- [ ] Test navigation changes
