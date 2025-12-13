@@ -16,6 +16,7 @@ import { Link } from "wouter";
 import { toast } from "sonner";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { TableSkeleton } from "@/components/TableSkeleton";
 // ContactActivityModal removed - now using ContactDetails page
 
 export default function DebugPurchases() {
@@ -241,6 +242,9 @@ export default function DebugPurchases() {
             {/* Table */}
             <div className="border rounded-lg overflow-hidden">
               <div className="overflow-x-auto">
+                {isLoading ? (
+                  <TableSkeleton rows={10} columns={6} />
+                ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -253,13 +257,7 @@ export default function DebugPurchases() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {isLoading ? (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                          Loading...
-                        </TableCell>
-                      </TableRow>
-                    ) : data?.data.length === 0 ? (
+                    {data?.data.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                           No purchases found
@@ -303,6 +301,7 @@ export default function DebugPurchases() {
                     )}
                   </TableBody>
                 </Table>
+                )}
               </div>
             </div>
 

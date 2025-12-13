@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { DashboardHeader } from "@/components/DashboardHeader";
 // ContactActivityModal removed - now using ContactDetails page
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { TableSkeleton } from "@/components/TableSkeleton";
 
 export default function DebugLeads() {
   const [page, setPage] = useState(1);
@@ -200,6 +201,9 @@ export default function DebugLeads() {
             {/* Table */}
             <div className="border rounded-lg overflow-hidden">
               <div className="overflow-x-auto">
+                {isLoading ? (
+                  <TableSkeleton rows={10} columns={6} />
+                ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -212,13 +216,7 @@ export default function DebugLeads() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {isLoading ? (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                          Loading...
-                        </TableCell>
-                      </TableRow>
-                    ) : data?.data.length === 0 ? (
+                    {data?.data.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                           No contacts found from Wisdom funnel
@@ -266,6 +264,7 @@ export default function DebugLeads() {
                     )}
                   </TableBody>
                 </Table>
+                )}
               </div>
             </div>
 

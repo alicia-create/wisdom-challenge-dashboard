@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { toast } from "sonner";
 import { DashboardHeader } from "@/components/DashboardHeader";
+import { TableSkeleton } from "@/components/TableSkeleton";
 
 export default function DebugMetaCampaigns() {
   const [page, setPage] = useState(1);
@@ -140,6 +141,9 @@ export default function DebugMetaCampaigns() {
             {/* Table */}
             <div className="border rounded-lg">
               <div className="overflow-x-auto">
+                {isLoading ? (
+                  <TableSkeleton rows={10} columns={9} />
+                ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -155,13 +159,7 @@ export default function DebugMetaCampaigns() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {isLoading ? (
-                      <TableRow>
-                        <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
-                          Loading...
-                        </TableCell>
-                      </TableRow>
-                    ) : data?.data.length === 0 ? (
+                    {data?.data.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                           No Meta campaigns found
@@ -206,6 +204,7 @@ export default function DebugMetaCampaigns() {
                     )}
                   </TableBody>
                 </Table>
+                )}
               </div>
             </div>
 
