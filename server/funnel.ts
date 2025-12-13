@@ -248,14 +248,43 @@ export async function getVSLMetrics(startDate?: string, endDate?: string) {
   
   const { count: totalWisdomPurchases } = await allWisdomQuery;
 
+  // Get total leads for drop-off calculation (wisdom funnel only)
+  const { getWisdomContactIds } = await import('./wisdom-filter');
+  const wisdomContactIds = await getWisdomContactIds();
+  
+  let leadsQuery = supabase
+    .from('contacts')
+    .select('id', { count: 'exact', head: true })
+    .in('id', wisdomContactIds);
+  
+  if (startDate) leadsQuery = leadsQuery.gte('created_at', startDate);
+  if (endDate) {
+    const endDateTime = new Date(endDate);
+    endDateTime.setDate(endDateTime.getDate() + 1);
+    leadsQuery = leadsQuery.lt('created_at', endDateTime.toISOString().split('T')[0]);
+  }
+  
+  const { count: totalLeads } = await leadsQuery;
+
   // Calculate conversion rate from VSL view to purchase (only counting VSL viewers who purchased)
   const vslToPurchaseRate = vsl5Percent > 0 ? (wisdomPurchasesFromVSL / vsl5Percent) * 100 : 0;
 
+  // Calculate drop-off percentages (leads who didn't watch to each milestone)
+  const dropOff5Percent = totalLeads && totalLeads > 0 ? ((totalLeads - vsl5Percent) / totalLeads) * 100 : 0;
+  const dropOff25Percent = totalLeads && totalLeads > 0 ? ((totalLeads - vsl25Percent) / totalLeads) * 100 : 0;
+  const dropOff75Percent = totalLeads && totalLeads > 0 ? ((totalLeads - vsl75Percent) / totalLeads) * 100 : 0;
+  const dropOff95Percent = totalLeads && totalLeads > 0 ? ((totalLeads - vsl95Percent) / totalLeads) * 100 : 0;
+
   return {
+    totalLeads: totalLeads || 0,
     vsl5Percent,
     vsl25Percent,
     vsl75Percent,
     vsl95Percent,
+    dropOff5Percent,
+    dropOff25Percent,
+    dropOff75Percent,
+    dropOff95Percent,
     wisdomPurchases: wisdomPurchasesFromVSL, // Purchases from VSL viewers only
     totalWisdomPurchases: totalWisdomPurchases || 0, // Total Wisdom+ purchases for context
     vslToPurchaseRate,

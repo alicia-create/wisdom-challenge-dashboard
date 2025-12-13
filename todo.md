@@ -1042,3 +1042,9 @@
 - [x] Write vitest tests for cache functionality - Created server/cache.test.ts with 17 tests (all passing)
 - [x] Test cache hit/miss rates and performance improvement - 87.5% faster, 8x speedup
 - [x] Document cache strategy and TTL values - Created docs/CACHE.md
+
+## VSL Drop-off Metrics (2025-12-13)
+- [x] Calculate drop-off percentage for each VSL milestone (leads who didn't watch) - Added to getVSLMetrics
+- [x] Update VSL metrics backend to include drop-off data - Returns totalLeads and dropOff percentages
+- [x] Update frontend to display drop-off alongside watch count - Shows "X% dropped off" for each milestone
+- [x] Test drop-off calculation accuracy - Verified: 9 leads, 44.44% dropped off at 5%, 55.56% at 25%, etc.
