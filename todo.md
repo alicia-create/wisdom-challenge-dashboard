@@ -1057,3 +1057,7 @@
 - [x] Remove "View in Keap" button - Removed from action buttons
 - [x] Add "Open in Messenger" button (conditional on livechat_url presence) - Already exists with messenger_id
 - [x] Test all contact detail page functionality - Server rebuilt and running successfully
+
+## Nested Anchor Tag Error (2025-12-13)
+- [x] Fix nested <a> tags in contact detail page breadcrumb - Removed Button wrapper from Link
+- [x] Test fix in browser - Server rebuilt and running successfully
