@@ -180,7 +180,7 @@ export const appRouter = router({
         
         // Cache key includes date range for proper invalidation
         const cacheKey = `overview:metrics:${input?.dateRange || DATE_RANGES.LAST_30_DAYS}`;
-        const cached = cache.get<any>(cacheKey);
+        const cached = await cache.get<any>(cacheKey);
         
         if (cached) {
           console.log('[Overview Metrics] Returning cached result');
@@ -191,7 +191,7 @@ export const appRouter = router({
         const result = await getOverviewMetricsOptimized(startDate, endDate);
         
         // Cache for 5 minutes
-        cache.set(cacheKey, result, 5 * 60 * 1000);
+        await cache.set(cacheKey, result, 5 * 60 * 1000);
         
         return result;
       }),
@@ -202,10 +202,20 @@ export const appRouter = router({
         dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
       }).optional())
       .query(async ({ input }) => {
-        const { startDate, endDate } = input?.dateRange 
+        const { startDate, endDate} = input?.dateRange 
           ? getDateRangeValues(input.dateRange)
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
         
+        // Cache key includes date range
+        const cacheKey = `overview:dailyKpis:${input?.dateRange || DATE_RANGES.LAST_30_DAYS}`;
+        const cached = await cache.get<any>(cacheKey);
+        
+        if (cached) {
+          console.log('[Daily KPIs] Returning cached result');
+          return cached;
+        }
+        
+        console.log('[Daily KPIs] Cache miss, fetching fresh data');
         const dailyData = await getDailyAnalysisMetrics(startDate, endDate);
         
         // Map to expected format for charts
@@ -218,8 +228,8 @@ export const appRouter = router({
           roas: day.roas,
         }));
         
-        // Cache disabled for debugging
-        // cache.set(cacheKey, result, 5 * 60 * 1000);
+        // Cache for 10 minutes
+        await cache.set(cacheKey, result, 10 * 60 * 1000);
         
         console.log(`[Daily KPIs] Returning ${result.length} days of data`);
         return result;
@@ -242,7 +252,7 @@ export const appRouter = router({
         
         // Cache key includes date range
         const cacheKey = `overview:channelPerformance:${input?.dateRange || DATE_RANGES.LAST_30_DAYS}`;
-        const cached = cache.get<any>(cacheKey);
+        const cached = await cache.get<any>(cacheKey);
         
         if (cached) {
           console.log('[Channel Performance] Returning cached result');
@@ -252,8 +262,8 @@ export const appRouter = router({
         console.log('[Channel Performance] Cache miss, fetching fresh data');
         const result = await getChannelPerformance(startDate, endDate);
         
-        // Cache for 10 minutes (less frequently changing data)
-        cache.set(cacheKey, result, 10 * 60 * 1000);
+        // Cache for 15 minutes (less frequently changing data)
+        await cache.set(cacheKey, result, 15 * 60 * 1000);
         
         return result;
       }),
@@ -268,7 +278,22 @@ export const appRouter = router({
           ? getDateRangeValues(input.dateRange)
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
         
-        return await getFunnelMetrics(startDate, endDate);
+        // Cache key includes date range
+        const cacheKey = `overview:funnelMetrics:${input?.dateRange || DATE_RANGES.LAST_30_DAYS}`;
+        const cached = await cache.get<any>(cacheKey);
+        
+        if (cached) {
+          console.log('[Funnel Metrics] Returning cached result');
+          return cached;
+        }
+        
+        console.log('[Funnel Metrics] Cache miss, fetching fresh data');
+        const result = await getFunnelMetrics(startDate, endDate);
+        
+        // Cache for 15 minutes
+        await cache.set(cacheKey, result, 15 * 60 * 1000);
+        
+        return result;
       }),
 
     // Get Paid Ads funnel metrics (31daywisdom.com)
@@ -281,8 +306,23 @@ export const appRouter = router({
           ? getDateRangeValues(input.dateRange)
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
         
+        // Cache key includes date range
+        const cacheKey = `overview:paidAdsFunnel:${input?.dateRange || DATE_RANGES.LAST_30_DAYS}`;
+        const cached = await cache.get<any>(cacheKey);
+        
+        if (cached) {
+          console.log('[Paid Ads Funnel] Returning cached result');
+          return cached;
+        }
+        
+        console.log('[Paid Ads Funnel] Cache miss, fetching fresh data');
         const paidAdsContactIds = await getPaidAdsContactIds(startDate, endDate);
-        return await getFunnelMetrics(startDate, endDate, paidAdsContactIds);
+        const result = await getFunnelMetrics(startDate, endDate, paidAdsContactIds);
+        
+        // Cache for 15 minutes
+        await cache.set(cacheKey, result, 15 * 60 * 1000);
+        
+        return result;
       }),
 
     // Get Organic/Affiliate funnel metrics (NOT 31daywisdom.com)
@@ -295,8 +335,23 @@ export const appRouter = router({
           ? getDateRangeValues(input.dateRange)
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
         
+        // Cache key includes date range
+        const cacheKey = `overview:organicFunnel:${input?.dateRange || DATE_RANGES.LAST_30_DAYS}`;
+        const cached = await cache.get<any>(cacheKey);
+        
+        if (cached) {
+          console.log('[Organic Funnel] Returning cached result');
+          return cached;
+        }
+        
+        console.log('[Organic Funnel] Cache miss, fetching fresh data');
         const organicContactIds = await getOrganicContactIds(startDate, endDate);
-        return await getFunnelMetrics(startDate, endDate, organicContactIds);
+        const result = await getFunnelMetrics(startDate, endDate, organicContactIds);
+        
+        // Cache for 15 minutes
+        await cache.set(cacheKey, result, 15 * 60 * 1000);
+        
+        return result;
       }),
 
     // Get VSL performance metrics from Vidalytics
@@ -309,7 +364,22 @@ export const appRouter = router({
           ? getDateRangeValues(input.dateRange)
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
         
-        return await getVSLMetrics(startDate, endDate);
+        // Cache key includes date range
+        const cacheKey = `overview:vslMetrics:${input?.dateRange || DATE_RANGES.LAST_30_DAYS}`;
+        const cached = await cache.get<any>(cacheKey);
+        
+        if (cached) {
+          console.log('[VSL Metrics] Returning cached result');
+          return cached;
+        }
+        
+        console.log('[VSL Metrics] Cache miss, fetching fresh data');
+        const result = await getVSLMetrics(startDate, endDate);
+        
+        // Cache for 30 minutes (video analytics change less frequently)
+        await cache.set(cacheKey, result, 30 * 60 * 1000);
+        
+        return result;
       }),
   }),
 
