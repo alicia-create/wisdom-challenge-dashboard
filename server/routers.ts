@@ -412,12 +412,12 @@ export const appRouter = router({
         
         if (error) throw new Error(error.message);
         
-        // Check if contact has Wisdom+ purchase (product_id 1 or 7, or order_total >= $31)
+        // Check if contact has Wisdom+ purchase (order_total >= $31)
         const { data: wisdomOrders } = await supabase
           .from('orders')
           .select('id, order_total')
           .eq('contact_id', input.id)
-          .or('product_id.eq.1,product_id.eq.7,order_total.gte.31');
+          .gte('order_total', 31);
         
         // Check if contact has Kingdom Seekers purchase (product_id 8)
         const { data: ksOrders } = await supabase
@@ -426,10 +426,23 @@ export const appRouter = router({
           .eq('contact_id', input.id)
           .eq('product_id', 8);
         
+        // Check if contact has ManyChat connected (manychat_id exists)
+        const manychat_connected = !!contact.manychat_id;
+        
+        // Check if contact subscribed to bot alerts (gold.ntn.request_accepted event)
+        const { data: botAlertEvents } = await supabase
+          .from('analytics_events')
+          .select('id')
+          .eq('contact_id', input.id)
+          .eq('name', 'manychat.add_tag')
+          .contains('value', { tag: 'gold.ntn.request_accepted' });
+        
         return {
           ...contact,
           wisdom_plus_purchased: (wisdomOrders && wisdomOrders.length > 0) || false,
           kingdom_seekers_purchased: (ksOrders && ksOrders.length > 0) || false,
+          manychat_connected,
+          bot_alerts_subscribed: (botAlertEvents && botAlertEvents.length > 0) || false,
         };
       }),
 

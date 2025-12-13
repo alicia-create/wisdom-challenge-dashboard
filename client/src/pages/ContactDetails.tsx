@@ -385,6 +385,22 @@ export default function ContactDetails() {
                         </div>
                         <span>Kingdom Seekers Purchase</span>
                       </div>
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          contact.manychat_connected ? "bg-green-500 text-white" : "bg-gray-200"
+                        }`}>
+                          {contact.manychat_connected ? "✓" : "○"}
+                        </div>
+                        <span>ManyChat Connected</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          contact.bot_alerts_subscribed ? "bg-green-500 text-white" : "bg-gray-200"
+                        }`}>
+                          {contact.bot_alerts_subscribed ? "✓" : "○"}
+                        </div>
+                        <span>Bot Alerts Subscribed</span>
+                      </div>
                     </div>
                   </div>
 

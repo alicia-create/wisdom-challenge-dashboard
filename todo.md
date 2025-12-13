@@ -1068,3 +1068,10 @@
 - [ ] Remove "Last Activity" card from Overview tab
 - [ ] Remove "Days Since First Contact" card from Overview tab
 - [ ] Test Journey tab shows correct purchase status
+
+## Journey Tab Purchase Detection & ManyChat Stages (2025-12-13)
+- [ ] Debug why Wisdom+ Purchase not showing green for contact with $31 order
+- [ ] Fix purchase detection query (check product_id field exists in orders table)
+- [ ] Add "ManyChat Connected" stage to Journey funnel (check manychat_id in contact)
+- [ ] Add "Bot Alerts Subscribed" stage to Journey funnel (check gold.ntn.request_accepted in analytics_events)
+- [ ] Test with real contact data (KP - contact with $31 purchase)
