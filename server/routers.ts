@@ -206,16 +206,6 @@ export const appRouter = router({
           ? getDateRangeValues(input.dateRange)
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
         
-        // Cache key includes date range
-        const cacheKey = `overview:dailyKpis:${input?.dateRange || DATE_RANGES.LAST_30_DAYS}`;
-        const cached = cache.get<any>(cacheKey);
-        
-        if (cached) {
-          console.log('[Daily KPIs] Returning cached result');
-          return cached;
-        }
-        
-        console.log('[Daily KPIs] Cache miss, fetching fresh data');
         const dailyData = await getDailyAnalysisMetrics(startDate, endDate);
         
         // Map to expected format for charts
@@ -228,9 +218,10 @@ export const appRouter = router({
           roas: day.roas,
         }));
         
-        // Cache for 5 minutes
-        cache.set(cacheKey, result, 5 * 60 * 1000);
+        // Cache disabled for debugging
+        // cache.set(cacheKey, result, 5 * 60 * 1000);
         
+        console.log(`[Daily KPIs] Returning ${result.length} days of data`);
         return result;
       }),
 

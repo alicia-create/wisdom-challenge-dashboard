@@ -502,12 +502,23 @@ export async function getEmailEngagement() {
  * Returns data grouped by date with separate metrics for Meta and Google
  */
 export async function getDailyAnalysisMetrics(startDate?: string, endDate?: string) {
+
+  
+  // Calculate nextDayStr for filtering (used in multiple places)
+  const nextDayStr = endDate ? (() => {
+    const nextDay = new Date(endDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    return nextDay.toISOString().split('T')[0];
+  })() : undefined;
+  
   // Import wisdom filter
+  // Note: We don't pass date filter to getWisdomContactIds because we want ALL wisdom contacts,
+  // then filter their leads/orders by created_at date
   const { getWisdomContactIds } = await import('./wisdom-filter');
-  const wisdomContactIds = await getWisdomContactIds(startDate, endDate);
+  const wisdomContactIds = await getWisdomContactIds();
+  
 
   if (wisdomContactIds.length === 0) {
-    console.log('[Daily Analysis] No wisdom contacts found');
     return [];
   }
 
@@ -528,7 +539,11 @@ export async function getDailyAnalysisMetrics(startDate?: string, endDate?: stri
     leadsQuery = leadsQuery.gte('created_at', startDate);
   }
   if (endDate) {
-    leadsQuery = leadsQuery.lte('created_at', endDate);
+    // Use next day with < instead of <= to include entire end date
+    const nextDay = new Date(endDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const nextDayStr = nextDay.toISOString().split('T')[0];
+    leadsQuery = leadsQuery.lt('created_at', nextDayStr);
   }
   
   const { data: dailyLeads, error: leadsError } = await leadsQuery;
@@ -536,7 +551,7 @@ export async function getDailyAnalysisMetrics(startDate?: string, endDate?: stri
   if (leadsError) {
     console.error('[Supabase] Error fetching daily leads:', leadsError);
   }
-
+  
   // Fetch daily orders grouped by date (wisdom funnel contacts only)
   let ordersQuery = supabase
     .from('orders')
@@ -549,7 +564,11 @@ export async function getDailyAnalysisMetrics(startDate?: string, endDate?: stri
     ordersQuery = ordersQuery.gte('created_at', startDate);
   }
   if (endDate) {
-    ordersQuery = ordersQuery.lte('created_at', endDate);
+    // Use next day with < instead of <= to include entire end date
+    const nextDay = new Date(endDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const nextDayStr = nextDay.toISOString().split('T')[0];
+    ordersQuery = ordersQuery.lt('created_at', nextDayStr);
   }
   
   const { data: dailyOrders, error: ordersError } = await ordersQuery;
@@ -564,12 +583,17 @@ export async function getDailyAnalysisMetrics(startDate?: string, endDate?: stri
     .select('*')
     .ilike('campaign_name', `%${CAMPAIGN_NAME_FILTER}%`)
     .order('date', { ascending: true });
-
+  
+  // Apply date filters
   if (startDate) {
     adQuery = adQuery.gte('date', startDate);
   }
   if (endDate) {
-    adQuery = adQuery.lte('date', endDate);
+    // Use next day with < instead of <= to include entire end date
+    const nextDay = new Date(endDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const nextDayStr = nextDay.toISOString().split('T')[0];
+    adQuery = adQuery.lt('date', nextDayStr);
   }
 
   const { data: adPerformance, error: adError } = await adQuery;
@@ -697,8 +721,19 @@ export async function getDailyAnalysisMetrics(startDate?: string, endDate?: stri
     }
   });
 
+  // Filter dateMap to only include dates within the requested range
+  console.log(`[Daily Analysis] Before filter: dateMap has ${dateMap.size} days:`, Array.from(dateMap.keys()).sort().join(', '));
+  console.log(`[Daily Analysis] Filtering for range: ${startDate} to ${nextDayStr} (exclusive)`);
+  
+  const filteredDates = Array.from(dateMap.values()).filter(day => {
+    if (!startDate || !endDate || !nextDayStr) return true; // No filter if dates not specified
+    return day.date >= startDate && day.date < nextDayStr; // Use same nextDay logic
+  });
+  
+  console.log(`[Daily Analysis] Filtered to ${filteredDates.length} days within range ${startDate} to ${endDate}`);
+  
   // Convert map to array and calculate derived metrics
-  const dailyData = Array.from(dateMap.values()).map(day => {
+  const dailyData = filteredDates.map(day => {
     const totalSpend = day.metaSpend + day.googleSpend;
     const vipTakeRate = day.totalOptins > 0 ? (day.totalVipSales / day.totalOptins) * 100 : 0;
     const trueCPL = day.totalOptins > 0 ? totalSpend / day.totalOptins : 0;

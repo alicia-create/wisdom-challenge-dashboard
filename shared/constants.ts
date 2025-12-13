@@ -46,18 +46,21 @@ export function getDateRangeValues(range: DateRange): { startDate: string; endDa
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   
   let startDate: Date;
-  let endDate: Date = today;
+  let endDate: Date = new Date(today);
+  endDate.setHours(23, 59, 59, 999); // Set to end of day
   
   switch (range) {
     case DATE_RANGES.TODAY:
       startDate = today;
-      endDate = today;
+      endDate = new Date(today);
+      endDate.setHours(23, 59, 59, 999);
       break;
     case DATE_RANGES.YESTERDAY:
       startDate = new Date(today);
       startDate.setDate(startDate.getDate() - 1);
       endDate = new Date(today);
       endDate.setDate(endDate.getDate() - 1);
+      endDate.setHours(23, 59, 59, 999);
       break;
     case DATE_RANGES.LAST_7_DAYS:
       startDate = new Date(today);

@@ -82,14 +82,19 @@ export default function Overview() {
   };
 
   // Prepare chart data and sort by date (oldest to newest, left to right)
-  const chartData = (dailyKpis?.map((kpi: any) => ({
-    date: new Date(kpi.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-    dateObj: new Date(kpi.date),
-    spend: parseFloat(kpi.total_spend_meta || '0') + parseFloat(kpi.total_spend_google || '0'),
-    leads: kpi.total_leads || 0,
-    vipSales: kpi.vip_sales || 0,
-    roas: parseFloat(kpi.roas || '0'),
-  })) || []).sort((a: any, b: any) => a.dateObj.getTime() - b.dateObj.getTime());
+  const chartData = (dailyKpis?.map((kpi: any) => {
+    // Parse date as YYYY-MM-DD and treat as local date to avoid timezone shifts
+    const [year, month, day] = kpi.date.split('-').map(Number);
+    const dateObj = new Date(year, month - 1, day);
+    return {
+      date: dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      dateObj,
+      spend: parseFloat(kpi.total_spend_meta || '0') + parseFloat(kpi.total_spend_google || '0'),
+      leads: kpi.total_leads || 0,
+      vipSales: kpi.vip_sales || 0,
+      roas: parseFloat(kpi.roas || '0'),
+    };
+  }) || []).sort((a: any, b: any) => a.dateObj.getTime() - b.dateObj.getTime());
 
   return (
     <div className="min-h-screen bg-background">

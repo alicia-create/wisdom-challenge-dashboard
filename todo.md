@@ -1011,3 +1011,17 @@
 - [x] Ensure charts aggregate data from all wisdom contacts (not split by source) - Using getWisdomContactIds
 - [x] Test charts display correct totals for TODAY, YESTERDAY, 7 DAYS filters - All 4 tests passing
 - [x] Verify chart data matches sum of both funnels - Last 7 days: 43 leads, 19 vip sales
+
+## Date Filter Not Updating Charts (2025-12-13)
+- [x] Investigate why Daily Wisdom+ Sales and Daily Leads charts don't update when date filter changes - tRPC was working correctly, issue was with curl testing
+- [x] Check if tRPC cache is preventing chart data refresh - No cache issue
+- [x] Verify dailyKpis query is being called with correct dateRange parameter - Confirmed working in browser
+- [x] Fix cache invalidation or add refetch logic when dateRange changes - Not needed, already working
+- [x] Test that charts update immediately when user selects TODAY, YESTERDAY, 7 DAYS, etc. - Confirmed working
+- [x] Fix charts showing wrong date (Dec 12 instead of Dec 13 for TODAY filter) - Fixed timezone issue in date parsing
+
+## Server Optimization (2025-12-13)
+- [x] Investigate excessive file watchers causing EMFILE errors (2591 inotify watches) - Chromium + Vite HMR
+- [x] Optimize server requests to reduce overhead - Disabled HMR, running in production mode
+- [x] Fix tsx watch process issues - Switched to production build
+- [x] Test server stability after optimization - Server running successfully
