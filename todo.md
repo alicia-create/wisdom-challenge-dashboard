@@ -1100,3 +1100,9 @@
 - [x] Implement skeleton loaders for all Data Hub pages
 - [x] Add loading states and error handling
 - [x] Test performance improvements
+
+## Performance by Channel Cards Separation (2025-12-13)
+- [x] Split "Performance by Channel" table into two separate cards
+- [x] Create "Meta Performance" card with Meta metrics
+- [x] Create "Google Performance" card with Google metrics
+- [x] Test visual layout and data display
