@@ -41,10 +41,10 @@ export type DateRange = typeof DATE_RANGES[keyof typeof DATE_RANGES];
  * Get start and end dates for a given date range preset
  * Returns dates in YYYY-MM-DD format
  * Uses Los Angeles timezone (America/Los_Angeles, PST/PDT) for "today" calculation
+ * Since DB is in PST, we work with YYYY-MM-DD strings directly to avoid timezone conversion issues
  */
 export function getDateRangeValues(range: DateRange): { startDate: string; endDate: string } {
   // Get current date in Los Angeles timezone (PST/PDT)
-  // Use Intl.DateTimeFormat to extract date parts directly without timezone conversion issues
   const now = new Date();
   const formatter = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/Los_Angeles',
@@ -53,49 +53,56 @@ export function getDateRangeValues(range: DateRange): { startDate: string; endDa
     day: '2-digit'
   });
   const parts = formatter.formatToParts(now);
-  const year = parseInt(parts.find(p => p.type === 'year')!.value);
-  const month = parseInt(parts.find(p => p.type === 'month')!.value) - 1; // JS months are 0-indexed
-  const day = parseInt(parts.find(p => p.type === 'day')!.value);
+  const yearStr = parts.find(p => p.type === 'year')!.value;
+  const monthStr = parts.find(p => p.type === 'month')!.value;
+  const dayStr = parts.find(p => p.type === 'day')!.value;
   
-  const today = new Date(year, month, day);
+  // Today in PST as YYYY-MM-DD string
+  const todayStr = `${yearStr}-${monthStr}-${dayStr}`;
   
-  let startDate: Date;
-  let endDate: Date = new Date(today);
-  endDate.setHours(23, 59, 59, 999); // Set to end of day
+  // Helper to subtract days from a YYYY-MM-DD string
+  const subtractDays = (dateStr: string, days: number): string => {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    date.setDate(date.getDate() - days);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  
+  let startDateStr: string;
+  let endDateStr: string;
   
   switch (range) {
     case DATE_RANGES.TODAY:
-      startDate = today;
-      endDate = new Date(today);
-      endDate.setHours(23, 59, 59, 999);
+      startDateStr = todayStr;
+      endDateStr = todayStr;
       break;
     case DATE_RANGES.YESTERDAY:
-      startDate = new Date(today);
-      startDate.setDate(startDate.getDate() - 1);
-      endDate = new Date(today);
-      endDate.setDate(endDate.getDate() - 1);
-      endDate.setHours(23, 59, 59, 999);
+      startDateStr = subtractDays(todayStr, 1);
+      endDateStr = subtractDays(todayStr, 1);
       break;
     case DATE_RANGES.LAST_7_DAYS:
-      startDate = new Date(today);
-      startDate.setDate(startDate.getDate() - 6); // Last 7 days including today
+      startDateStr = subtractDays(todayStr, 6); // Last 7 days including today
+      endDateStr = todayStr;
       break;
     case DATE_RANGES.LAST_14_DAYS:
-      startDate = new Date(today);
-      startDate.setDate(startDate.getDate() - 13); // Last 14 days including today
+      startDateStr = subtractDays(todayStr, 13); // Last 14 days including today
+      endDateStr = todayStr;
       break;
     case DATE_RANGES.LAST_30_DAYS:
-      startDate = new Date(today);
-      startDate.setDate(startDate.getDate() - 29); // Last 30 days including today
+      startDateStr = subtractDays(todayStr, 29); // Last 30 days including today
+      endDateStr = todayStr;
       break;
     default:
-      startDate = new Date(today);
-      startDate.setDate(startDate.getDate() - 29);
+      startDateStr = subtractDays(todayStr, 29);
+      endDateStr = todayStr;
   }
   
   return {
-    startDate: formatDate(startDate),
-    endDate: formatDate(endDate),
+    startDate: startDateStr,
+    endDate: endDateStr,
   };
 }
 

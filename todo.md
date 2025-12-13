@@ -1133,3 +1133,6 @@
 - [x] Review Overview page timezone solution
 - [x] Debug why Daily page still shows Dec 12
 - [x] Apply correct timezone fix using formatToParts
+- [x] Review getDailyAnalysisMetrics backend filtering (DB is already PST)
+- [x] Debug why Dec 12 data returns for TODAY filter
+- [x] Fix backend date filtering logic - return YYYY-MM-DD strings directly
