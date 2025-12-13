@@ -112,17 +112,13 @@ export default function ContactDetails() {
                   {contact.email && (
                     <div className="flex items-center gap-1">
                       <Mail className="h-4 w-4" />
-                      <a href={`mailto:${contact.email}`} className="hover:text-foreground">
-                        {contact.email}
-                      </a>
+                      <span>{contact.email}</span>
                     </div>
                   )}
                   {contact.phone && (
                     <div className="flex items-center gap-1">
                       <Phone className="h-4 w-4" />
-                      <a href={`tel:${contact.phone}`} className="hover:text-foreground">
-                        {contact.phone}
-                      </a>
+                      <span>{contact.phone}</span>
                     </div>
                   )}
                 </div>

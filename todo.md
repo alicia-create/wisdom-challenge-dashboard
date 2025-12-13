@@ -1075,3 +1075,9 @@
 - [ ] Add "ManyChat Connected" stage to Journey funnel (check manychat_id in contact)
 - [ ] Add "Bot Alerts Subscribed" stage to Journey funnel (check gold.ntn.request_accepted in analytics_events)
 - [ ] Test with real contact data (KP - contact with $31 purchase)
+
+## Nested Anchor Error - Contact Page (2025-12-13 - Second Instance)
+- [ ] Find remaining nested <a> tag in ContactDetails.tsx
+- [ ] Check email/phone links in contact info section
+- [ ] Fix nested anchor pattern
+- [ ] Test page loads without errors
