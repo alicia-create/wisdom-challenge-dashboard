@@ -48,6 +48,14 @@ export async function getDailyKpis(startDate?: string, endDate?: string) {
  * Helper to fetch overview metrics (aggregated totals)
  */
 export async function getOverviewMetrics(startDate?: string, endDate?: string) {
+  // Calculate nextDayStr for filtering (avoid timezone issues)
+  const nextDayStr = endDate ? (() => {
+    const parts = endDate.split('-').map(Number);
+    const d = new Date(parts[0], parts[1] - 1, parts[2]);
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().split('T')[0];
+  })() : undefined;
+  
   // Import wisdom filter
   const { getWisdomContactIds } = await import('./wisdom-filter');
   const wisdomContactIds = await getWisdomContactIds(startDate, endDate);
@@ -79,11 +87,9 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
   if (startDate) {
     leadsQuery = leadsQuery.gte('created_at', startDate);
   }
-  if (endDate) {
+  if (nextDayStr) {
     // Add one day to endDate to include the entire end date
-    const endDateTime = new Date(endDate);
-    endDateTime.setDate(endDateTime.getDate() + 1);
-    leadsQuery = leadsQuery.lt('created_at', endDateTime.toISOString().split('T')[0]);
+    leadsQuery = leadsQuery.lt('created_at', nextDayStr);
   }
   
   const { count: totalLeads, error: leadsError } = await leadsQuery;
@@ -141,10 +147,8 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
   if (startDate) {
     ordersCountQuery = ordersCountQuery.gte('created_at', startDate);
   }
-  if (endDate) {
-    const endDateTime = new Date(endDate);
-    endDateTime.setDate(endDateTime.getDate() + 1);
-    ordersCountQuery = ordersCountQuery.lt('created_at', endDateTime.toISOString().split('T')[0]);
+  if (nextDayStr) {
+    ordersCountQuery = ordersCountQuery.lt('created_at', nextDayStr);
   }
   
   const { count: vipSales, error: ordersCountError } = await ordersCountQuery;
@@ -163,10 +167,8 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
   if (startDate) {
     ordersQuery = ordersQuery.gte('created_at', startDate);
   }
-  if (endDate) {
-    const endDateTime = new Date(endDate);
-    endDateTime.setDate(endDateTime.getDate() + 1);
-    ordersQuery = ordersQuery.lt('created_at', endDateTime.toISOString().split('T')[0]);
+  if (nextDayStr) {
+    ordersQuery = ordersQuery.lt('created_at', nextDayStr);
   }
   
   const { data: ordersData, error: ordersError } = await ordersQuery;
@@ -203,10 +205,8 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
   if (startDate) {
     allOrdersQuery = allOrdersQuery.gte('created_at', startDate);
   }
-  if (endDate) {
-    const endDateTime = new Date(endDate);
-    endDateTime.setDate(endDateTime.getDate() + 1);
-    allOrdersQuery = allOrdersQuery.lt('created_at', endDateTime.toISOString().split('T')[0]);
+  if (nextDayStr) {
+    allOrdersQuery = allOrdersQuery.lt('created_at', nextDayStr);
   }
   
   const { data: allOrdersData } = await allOrdersQuery;
@@ -222,10 +222,8 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
   if (startDate) {
     manychatQuery = manychatQuery.gte('created_at', startDate);
   }
-  if (endDate) {
-    const endDateTime = new Date(endDate);
-    endDateTime.setDate(endDateTime.getDate() + 1);
-    manychatQuery = manychatQuery.lt('created_at', endDateTime.toISOString().split('T')[0]);
+  if (nextDayStr) {
+    manychatQuery = manychatQuery.lt('created_at', nextDayStr);
   }
   
   const { count: manychatBotUsers } = await manychatQuery;
@@ -538,11 +536,8 @@ export async function getDailyAnalysisMetrics(startDate?: string, endDate?: stri
   if (startDate) {
     leadsQuery = leadsQuery.gte('created_at', startDate);
   }
-  if (endDate) {
+  if (nextDayStr) {
     // Use next day with < instead of <= to include entire end date
-    const nextDay = new Date(endDate);
-    nextDay.setDate(nextDay.getDate() + 1);
-    const nextDayStr = nextDay.toISOString().split('T')[0];
     leadsQuery = leadsQuery.lt('created_at', nextDayStr);
   }
   
@@ -563,11 +558,8 @@ export async function getDailyAnalysisMetrics(startDate?: string, endDate?: stri
   if (startDate) {
     ordersQuery = ordersQuery.gte('created_at', startDate);
   }
-  if (endDate) {
+  if (nextDayStr) {
     // Use next day with < instead of <= to include entire end date
-    const nextDay = new Date(endDate);
-    nextDay.setDate(nextDay.getDate() + 1);
-    const nextDayStr = nextDay.toISOString().split('T')[0];
     ordersQuery = ordersQuery.lt('created_at', nextDayStr);
   }
   
@@ -588,11 +580,8 @@ export async function getDailyAnalysisMetrics(startDate?: string, endDate?: stri
   if (startDate) {
     adQuery = adQuery.gte('date', startDate);
   }
-  if (endDate) {
+  if (nextDayStr) {
     // Use next day with < instead of <= to include entire end date
-    const nextDay = new Date(endDate);
-    nextDay.setDate(nextDay.getDate() + 1);
-    const nextDayStr = nextDay.toISOString().split('T')[0];
     adQuery = adQuery.lt('date', nextDayStr);
   }
 
@@ -871,6 +860,14 @@ export async function getHighTicketSales(startDate?: string, endDate?: string) {
 }
 
 export async function getFullFunnelMetrics(startDate?: string, endDate?: string) {
+  // Calculate nextDayStr for filtering (avoid timezone issues)
+  const nextDayStr = endDate ? (() => {
+    const parts = endDate.split('-').map(Number);
+    const d = new Date(parts[0], parts[1] - 1, parts[2]);
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().split('T')[0];
+  })() : undefined;
+  
   // Get VIP revenue from Order table
   let ordersQuery = supabase
     .from('orders')
@@ -879,10 +876,8 @@ export async function getFullFunnelMetrics(startDate?: string, endDate?: string)
   if (startDate) {
     ordersQuery = ordersQuery.gte('created_at', startDate);
   }
-  if (endDate) {
-    const endDateTime = new Date(endDate);
-    endDateTime.setDate(endDateTime.getDate() + 1);
-    ordersQuery = ordersQuery.lt('created_at', endDateTime.toISOString().split('T')[0]);
+  if (nextDayStr) {
+    ordersQuery = ordersQuery.lt('created_at', nextDayStr);
   }
   
   const { data: orders, error: ordersError } = await ordersQuery;
