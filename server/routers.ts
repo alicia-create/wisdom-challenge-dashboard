@@ -404,14 +404,33 @@ export const appRouter = router({
     getById: publicProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ input }) => {
-        const { data, error } = await supabase
+        const { data: contact, error } = await supabase
           .from('contacts')
           .select('*')
           .eq('id', input.id)
           .single();
         
         if (error) throw new Error(error.message);
-        return data;
+        
+        // Check if contact has Wisdom+ purchase (product_id 1 or 7, or order_total >= $31)
+        const { data: wisdomOrders } = await supabase
+          .from('orders')
+          .select('id, order_total')
+          .eq('contact_id', input.id)
+          .or('product_id.eq.1,product_id.eq.7,order_total.gte.31');
+        
+        // Check if contact has Kingdom Seekers purchase (product_id 8)
+        const { data: ksOrders } = await supabase
+          .from('orders')
+          .select('id')
+          .eq('contact_id', input.id)
+          .eq('product_id', 8);
+        
+        return {
+          ...contact,
+          wisdom_plus_purchased: (wisdomOrders && wisdomOrders.length > 0) || false,
+          kingdom_seekers_purchased: (ksOrders && ksOrders.length > 0) || false,
+        };
       }),
 
     getActivities: publicProcedure

@@ -1061,3 +1061,10 @@
 ## Nested Anchor Tag Error (2025-12-13)
 - [x] Fix nested <a> tags in contact detail page breadcrumb - Removed Button wrapper from Link
 - [x] Test fix in browser - Server rebuilt and running successfully
+
+## Journey Tab Fixes (2025-12-13)
+- [ ] Fix Wisdom+ Purchase detection in Journey tab (not showing when contact has purchases)
+- [ ] Fix Kingdom Seekers Purchase detection in Journey tab
+- [ ] Remove "Last Activity" card from Overview tab
+- [ ] Remove "Days Since First Contact" card from Overview tab
+- [ ] Test Journey tab shows correct purchase status

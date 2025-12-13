@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Mail, Phone, MessageCircle, ExternalLink, 
-  TrendingUp, ShoppingCart, Clock, Calendar,
+  TrendingUp, ShoppingCart,
   ChevronRight, Home
 } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -73,13 +73,6 @@ export default function ContactDetails() {
   };
 
   const totalRevenue = (orders || []).reduce((sum, o) => sum + parseFloat(o.order_total || "0"), 0);
-  const daysSinceCreated = contact.created_at 
-    ? Math.floor((Date.now() - new Date(contact.created_at).getTime()) / (1000 * 60 * 60 * 24))
-    : 0;
-
-  const lastActivity = activities && activities.length > 0 
-    ? activities[0].timestamp 
-    : contact.created_at;
 
   return (
     <div className="min-h-screen bg-background">
@@ -203,34 +196,7 @@ export default function ContactDetails() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Last Activity</p>
-                  <p className="text-sm font-medium mt-1">
-                    {lastActivity ? formatDate(lastActivity) : "Never"}
-                  </p>
-                </div>
-                <Clock className="h-8 w-8 text-muted-foreground" />
-              </div>
-            </CardContent>
-          </Card>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Days Since First Contact</p>
-                  <p className="text-2xl font-bold mt-1">{daysSinceCreated}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {contact.created_at ? formatDate(contact.created_at) : "Unknown"}
-                  </p>
-                </div>
-                <Calendar className="h-8 w-8 text-muted-foreground" />
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Tabs Section */}
