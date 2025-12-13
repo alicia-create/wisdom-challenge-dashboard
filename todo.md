@@ -1128,3 +1128,5 @@
 - [x] Fix TODAY filter to show correct current date (Dec 13 not Dec 12)
 - [x] Ensure timezone consistency across all date filters
 - [x] Test with different timezones
+- [x] Change timezone from Brazil (GMT-3) to Los Angeles (PST/PDT)
+- [x] Test with Los Angeles timezone
