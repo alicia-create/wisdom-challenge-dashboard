@@ -1048,3 +1048,12 @@
 - [x] Update VSL metrics backend to include drop-off data - Returns totalLeads and dropOff percentages
 - [x] Update frontend to display drop-off alongside watch count - Shows "X% dropped off" for each milestone
 - [x] Test drop-off calculation accuracy - Verified: 9 leads, 44.44% dropped off at 5%, 55.56% at 25%, etc.
+
+## Contact Detail Page Fixes (2025-12-13)
+- [x] Fix contact name display (showing "Unknown" instead of actual name) - Changed to use full_name field
+- [x] Populate activity timeline with event descriptions (currently showing only generic icons) - Fixed field mapping to use name, value, comment
+- [x] Remove "Email" tab from contact detail page - Removed from tabs list
+- [x] Fix Total Purchases to calculate from orders table in Supabase (not Keap) - Already implemented correctly
+- [x] Remove "View in Keap" button - Removed from action buttons
+- [x] Add "Open in Messenger" button (conditional on livechat_url presence) - Already exists with messenger_id
+- [x] Test all contact detail page functionality - Server rebuilt and running successfully

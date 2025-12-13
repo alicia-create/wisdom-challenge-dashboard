@@ -96,7 +96,7 @@ export default function ContactDetails() {
               </Link>
             </Button>
             <ChevronRight className="h-4 w-4" />
-            <span className="font-medium text-foreground">{contact.name || contact.email}</span>
+            <span className="font-medium text-foreground">{contact.full_name || contact.email}</span>
           </div>
         </div>
       </div>
@@ -108,14 +108,14 @@ export default function ContactDetails() {
             {/* Avatar */}
             <div className="flex-shrink-0">
               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-3xl font-bold">
-                {(contact.name || contact.email || "?").charAt(0).toUpperCase()}
+                {(contact.full_name || contact.first_name || contact.email || "?").charAt(0).toUpperCase()}
               </div>
             </div>
 
             {/* Info */}
             <div className="flex-1 space-y-3">
               <div>
-                <h1 className="text-3xl font-bold">{contact.name || "Unknown"}</h1>
+                <h1 className="text-3xl font-bold">{contact.full_name || "Unknown"}</h1>
                 <div className="flex flex-wrap gap-3 mt-2 text-muted-foreground">
                   {contact.email && (
                     <div className="flex items-center gap-1">
@@ -166,18 +166,7 @@ export default function ContactDetails() {
                     </a>
                   </Button>
                 )}
-                {contact.keap_id && (
-                  <Button asChild variant="outline" size="sm">
-                    <a 
-                      href={`https://app.keap.com/contacts/${contact.keap_id}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                    >
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      View in Keap
-                    </a>
-                  </Button>
-                )}
+
               </div>
             </div>
           </div>
@@ -246,10 +235,9 @@ export default function ContactDetails() {
 
         {/* Tabs Section */}
         <Tabs defaultValue="overview" className="mt-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">📊 Overview</TabsTrigger>
             <TabsTrigger value="orders">🛒 Orders</TabsTrigger>
-            <TabsTrigger value="email">📧 Email</TabsTrigger>
             <TabsTrigger value="journey">📈 Journey</TabsTrigger>
           </TabsList>
 
@@ -271,28 +259,31 @@ export default function ContactDetails() {
                       <div key={idx} className="flex gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                         <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
                           <span className="text-white text-xs font-bold">
-                            {activity.event_type === "action" ? "📝" : 
-                             activity.event_type === "purchase" ? "💰" : 
-                             activity.event_type === "page_view" ? "👁️" : "🔔"}
+                            {activity.type === "action" ? "📝" : 
+                             activity.type === "purchase" ? "💰" : 
+                             activity.type === "page_view" ? "👁️" : "🔔"}
                           </span>
                         </div>
                         <div className="flex-1">
                           <div className="flex items-start justify-between">
                             <div>
-                              <p className="font-medium">{activity.event_name}</p>
-                              {activity.event_data && (
+                              <p className="font-medium">{activity.name}</p>
+                              {activity.value && (
+                                <p className="text-sm font-semibold text-foreground mt-1">
+                                  {activity.value}
+                                </p>
+                              )}
+                              {activity.comment && (
                                 <p className="text-sm text-muted-foreground mt-1">
-                                  {typeof activity.event_data === 'string' 
-                                    ? activity.event_data 
-                                    : JSON.stringify(activity.event_data)}
+                                  {activity.comment}
                                 </p>
                               )}
                             </div>
                             <Badge variant={
-                              activity.event_type === "purchase" ? "default" : 
-                              activity.event_type === "action" ? "secondary" : "outline"
+                              activity.type === "purchase" ? "default" : 
+                              activity.type === "action" ? "secondary" : "outline"
                             }>
-                              {activity.event_type}
+                              {activity.type}
                             </Badge>
                           </div>
                           <p className="text-xs text-muted-foreground mt-2">
