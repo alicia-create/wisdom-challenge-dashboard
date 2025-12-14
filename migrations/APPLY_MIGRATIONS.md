@@ -4,6 +4,13 @@
 
 Supabase does not allow DDL commands (CREATE INDEX, CREATE TABLE, etc.) via the REST API for security reasons. You **must** use the SQL Editor in the Supabase Dashboard to apply these migrations.
 
+## ✅ Schema Verified (2025-12-13)
+
+The migration scripts have been verified against the actual Supabase table structure:
+- ✅ Fixed `analytics_events` index (changed from non-existent `funnel` column to `type`)
+- ✅ Fixed `products` index (changed from `name` to `product_name`)
+- ✅ All other column names match the actual schema
+
 ## 📋 Step-by-Step Instructions
 
 ### Step 1: Open Supabase Dashboard

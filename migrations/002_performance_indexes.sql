@@ -89,9 +89,9 @@ ON analytics_events(contact_id);
 CREATE INDEX IF NOT EXISTS idx_analytics_events_name 
 ON analytics_events(name);
 
--- Index for funnel filtering (wisdom challenge events)
-CREATE INDEX IF NOT EXISTS idx_analytics_events_funnel 
-ON analytics_events(funnel);
+-- Index for event type filtering
+CREATE INDEX IF NOT EXISTS idx_analytics_events_type 
+ON analytics_events(type);
 
 -- Composite index for contact activity queries
 CREATE INDEX IF NOT EXISTS idx_analytics_events_contact_timestamp 
@@ -125,8 +125,8 @@ ON order_items(product_id, order_id);
 -- ============================================
 
 -- Index for product name search
-CREATE INDEX IF NOT EXISTS idx_products_name 
-ON products(name);
+CREATE INDEX IF NOT EXISTS idx_products_product_name 
+ON products(product_name);
 
 -- ============================================
 -- WORKFLOW_ERRORS TABLE INDEXES
