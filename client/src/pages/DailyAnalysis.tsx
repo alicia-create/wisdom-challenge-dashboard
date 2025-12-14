@@ -20,9 +20,12 @@ export default function DailyAnalysis() {
     }
 
     // Build CSV header
-    const headers = ["Metric", "Total", ...dailyData.map(day => 
-      new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-    )];
+    const headers = ["Metric", "Total", ...dailyData.map(day => {
+      // Parse date without timezone conversion (YYYY-MM-DD format)
+      const [year, month, dayNum] = day.date.split('-').map(Number);
+      const date = new Date(year, month - 1, dayNum);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    })];
 
     // Build CSV rows
     const rows: string[][] = [];
@@ -258,11 +261,16 @@ export default function DailyAnalysis() {
                       <th className="text-right p-3 font-semibold min-w-[120px] bg-muted">
                         Total
                       </th>
-                      {dailyData?.map((day) => (
-                        <th key={day.date} className="text-right p-3 font-semibold min-w-[120px] bg-background">
-                          {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </th>
-                      ))}
+                      {dailyData?.map((day) => {
+                        // Parse date without timezone conversion (YYYY-MM-DD format)
+                        const [year, month, dayNum] = day.date.split('-').map(Number);
+                        const date = new Date(year, month - 1, dayNum);
+                        return (
+                          <th key={day.date} className="text-right p-3 font-semibold min-w-[120px] bg-background">
+                            {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </th>
+                        );
+                      })}
                     </tr>
                   </thead>
                   <tbody>
