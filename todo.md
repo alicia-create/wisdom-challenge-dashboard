@@ -1183,3 +1183,11 @@
 - [ ] Test Daily Analysis page load time (target: < 2s) - requires user testing
 - [ ] Test date filter changes (target: < 500ms) - requires user testing
 - [x] Document actual performance improvements (PERFORMANCE_RESULTS.md created)
+
+## Wisdom Filter Verification (2025-12-13)
+- [x] Check wisdom filter logic in server/wisdom-filter.ts
+- [x] Query Supabase to see actual funnel names in analytics_events
+- [x] Verify contacts are only from funnels containing "wisdom"
+- [x] Found 5 orphaned contacts in materialized view (393, 362, 360, 383, 384)
+- [x] Created refresh script (004_refresh_wisdom_contacts.sql)
+- [ ] User needs to execute REFRESH MATERIALIZED VIEW in Supabase
