@@ -1191,3 +1191,18 @@
 - [x] Found 5 orphaned contacts in materialized view (393, 362, 360, 383, 384)
 - [x] Created refresh script (004_refresh_wisdom_contacts.sql)
 - [ ] User needs to execute REFRESH MATERIALIZED VIEW in Supabase
+
+## Meta Performance Table Bug (2025-12-13)
+- [x] Investigate why Leads = 0 despite having $11k spend and 22k clicks
+- [x] Confirmed: reported_leads column is empty (integration not populating yet)
+- [x] Campaign type grouping logic is correct ([SALES]=Sales, [LEADS]=Leads, [KLT]=Content, [RMKT]=Retargeting)
+- [ ] Debug why Sales campaigns are not showing in Overview breakdown (only Content and Other visible)
+- [ ] Check if date range filter is excluding Sales campaigns
+
+## Cache UX Improvements (2025-12-14)
+- [x] Reduce cache TTL from 15min to 2min for fresher data
+- [x] Add "Refresh Data" button to force cache invalidation
+- [x] Add "Last updated: X minutes ago" timestamp display (in English)
+- [x] Created useTimeAgo hook for relative timestamps
+- [ ] Test refresh button functionality
+- [ ] Verify timestamp updates correctly

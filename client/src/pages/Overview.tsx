@@ -1,20 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { DATE_RANGES, type DateRange } from "@shared/constants";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
-import { Users, DollarSign, ShoppingCart, TrendingUp, Info, AlertTriangle, AlertCircle, TrendingDown } from "lucide-react";
+import { Users, DollarSign, ShoppingCart, TrendingUp, Info, AlertTriangle, AlertCircle, TrendingDown, RefreshCw } from "lucide-react";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { useTimeAgo } from "@/hooks/useTimeAgo";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 import { ConversionFunnel } from "@/components/ConversionFunnel";
 import { VSLPerformance } from "@/components/VSLPerformance";
 
 export default function Overview() {
   const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.LAST_30_DAYS);
+  const [lastFetchTime, setLastFetchTime] = useState<Date>(new Date());
 
   // Keyboard shortcuts
   useKeyboardShortcuts();
@@ -52,10 +55,19 @@ export default function Overview() {
   // Fetch email engagement
   const { data: emailEngagement } = trpc.overview.emailEngagement.useQuery();
 
-  // Fetch channel performance (Meta vs Google)
+   // Fetch channel performance with date range
   const { data: channelPerformance, isLoading: channelLoading } = trpc.overview.channelPerformance.useQuery({
     dateRange,
   });
+
+  // Track last fetch time
+  useEffect(() => {
+    if (channelPerformance && !channelLoading) {
+      setLastFetchTime(new Date());
+    }
+  }, [channelPerformance, channelLoading]);
+
+  const timeAgo = useTimeAgo(lastFetchTime);
 
   // Fetch recent alerts
   const { data: recentAlerts, isLoading: alertsLoading } = trpc.alerts.getRecent.useQuery({ limit: 3 });
@@ -102,8 +114,23 @@ export default function Overview() {
       
       <div className="container py-4 sm:py-6">
         <Breadcrumb items={[{ label: "Overview" }]} />
-        {/* Date Filter */}
-        <div className="flex justify-end mb-4 sm:mb-6">
+        {/* Date Filter and Refresh Button */}
+        <div className="flex justify-end items-center gap-3 mb-4 sm:mb-6">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              trpc.useUtils().overview.metrics.invalidate();
+              trpc.useUtils().overview.channelPerformance.invalidate();
+              trpc.useUtils().overview.funnelMetrics.invalidate();
+              trpc.useUtils().overview.paidAdsFunnel.invalidate();
+              trpc.useUtils().overview.organicFunnel.invalidate();
+            }}
+            className="gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Refresh Data
+          </Button>
           <DateRangeFilter value={dateRange} onChange={setDateRange} />
         </div>
 
@@ -464,8 +491,17 @@ export default function Overview() {
         {/* Meta Performance Card */}
         <Card className="mt-6">
           <CardHeader>
-            <CardTitle>Meta Performance</CardTitle>
-            <CardDescription>Facebook & Instagram advertising metrics</CardDescription>
+            <div className="flex items-start justify-between">
+              <div>
+                <CardTitle>Meta Performance</CardTitle>
+                <CardDescription>Facebook & Instagram advertising metrics</CardDescription>
+              </div>
+              {channelPerformance?.meta && timeAgo && (
+                <div className="text-xs text-muted-foreground">
+                  Last updated: {timeAgo}
+                </div>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             {channelLoading ? (

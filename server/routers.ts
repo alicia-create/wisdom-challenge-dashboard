@@ -262,8 +262,8 @@ export const appRouter = router({
         console.log('[Channel Performance] Cache miss, fetching fresh data');
         const result = await getChannelPerformance(startDate, endDate);
         
-        // Cache for 15 minutes (less frequently changing data)
-        await cache.set(cacheKey, result, 15 * 60 * 1000);
+        // Cache for 2 minutes (fresher data for better UX)
+        await cache.set(cacheKey, result, 2 * 60 * 1000);
         
         return result;
       }),
@@ -290,8 +290,8 @@ export const appRouter = router({
         console.log('[Funnel Metrics] Cache miss, fetching fresh data');
         const result = await getFunnelMetrics(startDate, endDate);
         
-        // Cache for 15 minutes
-        await cache.set(cacheKey, result, 15 * 60 * 1000);
+        // Cache for 2 minutes (fresher data for better UX)
+        await cache.set(cacheKey, result, 2 * 60 * 1000);
         
         return result;
       }),
@@ -319,8 +319,8 @@ export const appRouter = router({
         const paidAdsContactIds = await getPaidAdsContactIds(startDate, endDate);
         const result = await getFunnelMetrics(startDate, endDate, paidAdsContactIds);
         
-        // Cache for 15 minutes
-        await cache.set(cacheKey, result, 15 * 60 * 1000);
+        // Cache for 2 minutes (fresher data for better UX)
+        await cache.set(cacheKey, result, 2 * 60 * 1000);
         
         return result;
       }),
@@ -348,8 +348,8 @@ export const appRouter = router({
         const organicContactIds = await getOrganicContactIds(startDate, endDate);
         const result = await getFunnelMetrics(startDate, endDate, organicContactIds);
         
-        // Cache for 15 minutes
-        await cache.set(cacheKey, result, 15 * 60 * 1000);
+        // Cache for 2 minutes (fresher data for better UX)
+        await cache.set(cacheKey, result, 2 * 60 * 1000);
         
         return result;
       }),
