@@ -1143,3 +1143,23 @@
 - [x] Review getDailyAnalysisMetrics backend filtering (DB is already PST)
 - [x] Debug why Dec 12 data returns for TODAY filter
 - [x] Fix backend date filtering logic - return YYYY-MM-DD strings directly
+
+## Database Performance Optimization (Dec 13, 2025)
+- [ ] Analyze frequently queried columns and create indexes
+- [ ] Add index on contacts.created_at for date range queries
+- [ ] Add index on orders.created_at for date range queries
+- [ ] Add index on orders.contact_id for JOIN operations
+- [ ] Add index on ad_performance.date for date range queries
+- [ ] Add index on ad_performance.platform for filtering
+- [ ] Add index on analytics_events.contact_id for contact activity queries
+- [ ] Add index on analytics_events.name for event type filtering
+- [ ] Consider materialized view for daily_kpis aggregation
+- [ ] Test query performance before/after optimization
+- [ ] Document all indexes in migration file
+
+## GitHub Repository Update (Dec 13, 2025)
+- [ ] Review and update README.md with latest features
+- [ ] Commit all recent changes with descriptive messages
+- [ ] Push to GitHub repository (alicia-create/wisdom-challenge-dashboard)
+- [ ] Verify GitHub Actions CI/CD pipeline (if configured)
+- [ ] Update repository description and tags
