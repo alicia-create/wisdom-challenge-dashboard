@@ -11,10 +11,11 @@ DROP MATERIALIZED VIEW IF EXISTS wisdom_contacts CASCADE;
 
 -- Create materialized view for wisdom funnel contacts
 -- This view is used in almost every dashboard query
+-- Matches the logic in server/wisdom-filter.ts
 CREATE MATERIALIZED VIEW wisdom_contacts AS
 SELECT DISTINCT contact_id
 FROM analytics_events
-WHERE funnel = 'wisdom'
+WHERE (comment ILIKE '%wisdom%' OR comment ILIKE '%31daywisdomchallenge%')
   AND contact_id IS NOT NULL;
 
 -- Create index on the materialized view
@@ -123,7 +124,7 @@ ON daily_wisdom_metrics(date DESC);
 -- const { data } = await supabase
 --   .from('analytics_events')
 --   .select('contact_id')
---   .eq('funnel', 'wisdom');
+--   .or('comment.ilike.%wisdom%,comment.ilike.%31daywisdomchallenge%');
 -- const wisdomContactIds = data.map(e => e.contact_id);
 
 -- With this pattern:

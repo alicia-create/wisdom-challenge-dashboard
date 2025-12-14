@@ -1169,3 +1169,9 @@
 - [x] Fix migration scripts to match real schema (column names, table names)
 - [x] Test SQL scripts with actual data
 - [x] Update documentation with correct schema
+
+## Materialized View Schema Verification (2025-12-13)
+- [x] Read 003_materialized_views.sql script
+- [x] Verify column names match actual analytics_events table
+- [x] Fix any schema mismatches (changed funnel='wisdom' to comment ILIKE pattern)
+- [x] Test materialized view creation (test_materialized_view.sql created)
