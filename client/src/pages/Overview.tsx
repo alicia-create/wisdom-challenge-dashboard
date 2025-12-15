@@ -108,12 +108,12 @@ export default function Overview() {
     totalLeads: vsl?.totalLeads || 0,
     vsl5Percent: vsl?.vsl5PercentViews || 0,
     vsl25Percent: vsl?.vsl25PercentViews || 0,
-    vsl75Percent: vsl?.vsl75PercentViews || 0,
+    vsl50Percent: vsl?.vsl50PercentViews || 0,
     vsl95Percent: vsl?.vsl95PercentViews || 0,
     dropOff5Percent: vsl?.dropOffLeadsTo5 || 0,
     dropOff25Percent: vsl?.dropOff5To25 || 0,
-    dropOff75Percent: vsl?.dropOff25To75 || 0,
-    dropOff95Percent: vsl?.dropOff75To95 || 0,
+    dropOff50Percent: vsl?.dropOff25To50 || 0,
+    dropOff95Percent: vsl?.dropOff50To95 || 0,
     wisdomPurchases: vsl?.wisdomPurchases || 0,
     vslToPurchaseRate: vsl?.vsl95ToPurchaseRate || 0,
   });
@@ -440,6 +440,30 @@ export default function Overview() {
                 <Skeleton className="h-6 w-16" />
               ) : (
                 <div className="text-xl font-bold">{kpis?.manychatConnected || 0}</div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Welcome Email Clicks */}
+          <Card className="border-l-2 border-l-[#F72585]">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-1">
+                <CardTitle className="text-xs font-medium text-muted-foreground">Welcome Email Clicks</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-3 w-3 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Leads who clicked the NTN link in welcome email</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {unifiedLoading ? (
+                <Skeleton className="h-6 w-16" />
+              ) : (
+                <div className="text-xl font-bold">{kpis?.welcomeEmailClicks || 0}</div>
               )}
             </CardContent>
           </Card>

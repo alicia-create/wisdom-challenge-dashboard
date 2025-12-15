@@ -6,11 +6,11 @@ interface VSLPerformanceProps {
     totalLeads: number;
     vsl5Percent: number;
     vsl25Percent: number;
-    vsl75Percent: number;
+    vsl50Percent: number;
     vsl95Percent: number;
     dropOff5Percent: number;
     dropOff25Percent: number;
-    dropOff75Percent: number;
+    dropOff50Percent: number;
     dropOff95Percent: number;
     wisdomPurchases: number;
     vslToPurchaseRate: number;
@@ -32,9 +32,9 @@ export function VSLPerformance({ data }: VSLPerformanceProps) {
       color: "bg-blue-500" 
     },
     { 
-      label: "75% watched", 
-      count: data.vsl75Percent, 
-      dropOff: data.dropOff75Percent,
+      label: "50% watched", 
+      count: data.vsl50Percent, 
+      dropOff: data.dropOff50Percent,
       color: "bg-indigo-500" 
     },
     { 
