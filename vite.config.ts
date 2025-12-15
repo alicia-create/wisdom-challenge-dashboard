@@ -36,6 +36,10 @@ export default defineConfig({
       "localhost",
       "127.0.0.1",
     ],
+    hmr: {
+      // Disable HMR overlay to prevent WebSocket errors in proxied environments
+      overlay: false,
+    },
     fs: {
       strict: true,
       deny: ["**/.*"],

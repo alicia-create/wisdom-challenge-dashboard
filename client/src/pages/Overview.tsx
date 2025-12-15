@@ -19,6 +19,9 @@ export default function Overview() {
   const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.LAST_30_DAYS);
   const [lastFetchTime, setLastFetchTime] = useState<Date>(new Date());
 
+  // Get tRPC utils for cache invalidation (must be called at component level, not in handlers)
+  const utils = trpc.useUtils();
+
   // Keyboard shortcuts
   useKeyboardShortcuts();
 
@@ -120,11 +123,12 @@ export default function Overview() {
             variant="outline"
             size="sm"
             onClick={() => {
-              trpc.useUtils().overview.metrics.invalidate();
-              trpc.useUtils().overview.channelPerformance.invalidate();
-              trpc.useUtils().overview.funnelMetrics.invalidate();
-              trpc.useUtils().overview.paidAdsFunnel.invalidate();
-              trpc.useUtils().overview.organicFunnel.invalidate();
+              utils.overview.metrics.invalidate();
+              utils.overview.channelPerformance.invalidate();
+              utils.overview.funnelMetrics.invalidate();
+              utils.overview.paidAdsFunnel.invalidate();
+              utils.overview.organicFunnel.invalidate();
+              setLastFetchTime(new Date());
             }}
             className="gap-2"
           >
