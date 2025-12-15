@@ -274,7 +274,10 @@ export default function Overview() {
               {unifiedLoading ? (
                 <Skeleton className="h-8 w-32" />
               ) : (
-                <div className="text-3xl font-bold">{formatCurrency(kpis?.totalSpend || 0)}</div>
+                <>
+                  <div className="text-3xl font-bold">{formatCurrency(kpis?.totalSpend || 0)}</div>
+                  <p className="text-xs text-muted-foreground mt-1">Lead + Sales Campaigns</p>
+                </>
               )}
             </CardContent>
           </Card>
@@ -375,30 +378,6 @@ export default function Overview() {
                 <Skeleton className="h-6 w-16" />
               ) : (
                 <div className="text-xl font-bold">{formatCurrency(kpis?.aov || 0)}</div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* ROAS */}
-          <Card className="border-l-2 border-l-[#3A0CA3]">
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-1">
-                <CardTitle className="text-xs font-medium text-muted-foreground">ROAS</CardTitle>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-3 w-3 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Revenue ÷ LEADS/SALES Spend</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {unifiedLoading ? (
-                <Skeleton className="h-6 w-16" />
-              ) : (
-                <div className="text-xl font-bold">{(kpis?.roas || 0).toFixed(2)}x</div>
               )}
             </CardContent>
           </Card>
