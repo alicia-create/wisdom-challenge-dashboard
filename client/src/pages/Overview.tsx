@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
-import { DATE_RANGES, type DateRange } from "@shared/constants";
+import { DATE_RANGES, type DateRange, getDateRangeValues } from "@shared/constants";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
-import { Users, DollarSign, ShoppingCart, TrendingUp, Info, AlertTriangle, AlertCircle, TrendingDown, RefreshCw } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
+import { Users, DollarSign, ShoppingCart, TrendingUp, Info, RefreshCw } from "lucide-react";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { Breadcrumb } from "@/components/Breadcrumb";
@@ -19,63 +19,34 @@ export default function Overview() {
   const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.LAST_30_DAYS);
   const [lastFetchTime, setLastFetchTime] = useState<Date>(new Date());
 
-  // Get tRPC utils for cache invalidation (must be called at component level, not in handlers)
+  // Get tRPC utils for cache invalidation
   const utils = trpc.useUtils();
 
   // Keyboard shortcuts
   useKeyboardShortcuts();
 
-  // Fetch overview metrics with date range
-  const { data: metrics, isLoading: metricsLoading } = trpc.overview.metrics.useQuery({
-    dateRange,
+  // Get date range values
+  const { startDate, endDate } = getDateRangeValues(dateRange);
+
+  // Fetch unified metrics from SQL function (single optimized query)
+  const { data: unifiedData, isLoading: unifiedLoading } = trpc.overview.unifiedMetrics.useQuery({
+    startDate,
+    endDate,
   });
 
-  // Fetch daily KPIs for charts with date range
+  // Fetch daily KPIs for charts (still needed for time series)
   const { data: dailyKpis, isLoading: kpisLoading } = trpc.overview.dailyKpis.useQuery({
-    dateRange,
-  });
-
-  // Fetch funnel metrics
-  const { data: funnelMetrics, isLoading: funnelLoading } = trpc.overview.funnelMetrics.useQuery({
-    dateRange,
-  });
-
-  // Fetch Paid Ads funnel (31daywisdom.com)
-  const { data: paidAdsFunnel, isLoading: paidAdsLoading } = trpc.overview.paidAdsFunnel.useQuery({
-    dateRange,
-  });
-
-  // Fetch Organic/Affiliate funnel (NOT 31daywisdom.com)
-  const { data: organicFunnel, isLoading: organicLoading } = trpc.overview.organicFunnel.useQuery({
-    dateRange,
-  });
-
-  // Fetch VSL performance metrics
-  const { data: vslMetrics, isLoading: vslLoading } = trpc.overview.vslMetrics.useQuery({
-    dateRange,
-  });
-
-  // Fetch email engagement
-  const { data: emailEngagement } = trpc.overview.emailEngagement.useQuery();
-
-   // Fetch channel performance with date range
-  const { data: channelPerformance, isLoading: channelLoading } = trpc.overview.channelPerformance.useQuery({
     dateRange,
   });
 
   // Track last fetch time
   useEffect(() => {
-    if (channelPerformance && !channelLoading) {
+    if (unifiedData && !unifiedLoading) {
       setLastFetchTime(new Date());
     }
-  }, [channelPerformance, channelLoading]);
+  }, [unifiedData, unifiedLoading]);
 
   const timeAgo = useTimeAgo(lastFetchTime);
-
-  // Fetch recent alerts
-  const { data: recentAlerts, isLoading: alertsLoading } = trpc.alerts.getRecent.useQuery({ limit: 3 });
-
-
 
   // Format currency
   const formatCurrency = (value: number) => {
@@ -96,9 +67,17 @@ export default function Overview() {
     return new Intl.NumberFormat('en-US').format(value);
   };
 
-  // Prepare chart data and sort by date (oldest to newest, left to right)
+  // Extract data from unified response
+  const kpis = unifiedData?.kpis;
+  const paidAdsFunnel = unifiedData?.paidAdsFunnel;
+  const organicFunnel = unifiedData?.organicFunnel;
+  const metaPerformance = unifiedData?.metaPerformance;
+  const metaCampaignBreakdown = unifiedData?.metaCampaignBreakdown;
+  const googlePerformance = unifiedData?.googlePerformance;
+  const vslPerformance = unifiedData?.vslPerformance;
+
+  // Prepare chart data
   const chartData = (dailyKpis?.map((kpi: any) => {
-    // Parse date as YYYY-MM-DD and treat as local date to avoid timezone shifts
     const [year, month, day] = kpi.date.split('-').map(Number);
     const dateObj = new Date(year, month - 1, day);
     return {
@@ -110,6 +89,34 @@ export default function Overview() {
       roas: parseFloat(kpi.roas || '0'),
     };
   }) || []).sort((a: any, b: any) => a.dateObj.getTime() - b.dateObj.getTime());
+
+  // Transform funnel data for ConversionFunnel component
+  const transformFunnelData = (funnel: any) => ({
+    totalLeads: funnel?.leads || 0,
+    wisdomPurchases: funnel?.wisdomSales || 0,
+    kingdomSeekerTrials: funnel?.kingdomSeekers || 0,
+    manychatConnected: funnel?.manychatConnected || 0,
+    botAlertsSubscribed: funnel?.botAlertsSubscribed || 0,
+    leadToWisdomRate: funnel?.leadToWisdomRate || 0,
+    wisdomToKingdomRate: funnel?.wisdomToKingdomRate || 0,
+    kingdomToManychatRate: funnel?.leadsToManychatRate || 0,
+    manychatToBotAlertsRate: funnel?.manychatToBotAlertsRate || 0,
+  });
+
+  // Transform VSL data for VSLPerformance component
+  const transformVslData = (vsl: any) => ({
+    totalLeads: vsl?.totalLeads || 0,
+    vsl5Percent: vsl?.vsl5PercentViews || 0,
+    vsl25Percent: vsl?.vsl25PercentViews || 0,
+    vsl75Percent: vsl?.vsl75PercentViews || 0,
+    vsl95Percent: vsl?.vsl95PercentViews || 0,
+    dropOff5Percent: vsl?.dropOffLeadsTo5 || 0,
+    dropOff25Percent: vsl?.dropOff5To25 || 0,
+    dropOff75Percent: vsl?.dropOff25To75 || 0,
+    dropOff95Percent: vsl?.dropOff75To95 || 0,
+    wisdomPurchases: vsl?.wisdomPurchases || 0,
+    vslToPurchaseRate: vsl?.vsl95ToPurchaseRate || 0,
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -123,11 +130,8 @@ export default function Overview() {
             variant="outline"
             size="sm"
             onClick={() => {
-              utils.overview.metrics.invalidate();
-              utils.overview.channelPerformance.invalidate();
-              utils.overview.funnelMetrics.invalidate();
-              utils.overview.paidAdsFunnel.invalidate();
-              utils.overview.organicFunnel.invalidate();
+              utils.overview.unifiedMetrics.invalidate();
+              utils.overview.dailyKpis.invalidate();
               setLastFetchTime(new Date());
             }}
             className="gap-2"
@@ -157,20 +161,20 @@ export default function Overview() {
               <Users className="h-5 w-5 text-[#560BAD]" />
             </CardHeader>
             <CardContent>
-              {metricsLoading ? (
+              {unifiedLoading ? (
                 <Skeleton className="h-8 w-20" />
               ) : (
                 <>
-                  <div className="text-3xl font-bold">{metrics?.totalLeads || 0}</div>
+                  <div className="text-3xl font-bold">{kpis?.totalLeads || 0}</div>
                   <div className="mt-2 text-xs text-muted-foreground">
                     <div className="flex items-center justify-between mb-1">
                       <span>Goal: 200,000</span>
-                      <span className="font-semibold">{((metrics?.totalLeads || 0) / 200000 * 100).toFixed(1)}%</span>
+                      <span className="font-semibold">{((kpis?.totalLeads || 0) / 200000 * 100).toFixed(1)}%</span>
                     </div>
                     <div className="w-full bg-muted rounded-full h-1.5">
                       <div 
                         className="bg-[#560BAD] h-1.5 rounded-full transition-all" 
-                        style={{ width: `${Math.min(((metrics?.totalLeads || 0) / 200000 * 100), 100)}%` }}
+                        style={{ width: `${Math.min(((kpis?.totalLeads || 0) / 200000 * 100), 100)}%` }}
                       />
                     </div>
                   </div>
@@ -189,27 +193,27 @@ export default function Overview() {
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Number of Wisdom+ (Backstage Pass + Wisdom+ Experience) purchases</p>
+                    <p>Number of Wisdom+ (Backstage Pass) purchases</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
               <ShoppingCart className="h-5 w-5 text-[#B5179E]" />
             </CardHeader>
             <CardContent>
-              {metricsLoading ? (
+              {unifiedLoading ? (
                 <Skeleton className="h-8 w-20" />
               ) : (
                 <>
-                  <div className="text-3xl font-bold">{metrics?.vipSales || 0}</div>
+                  <div className="text-3xl font-bold">{kpis?.wisdomSales || 0}</div>
                   <div className="mt-2 text-xs text-muted-foreground">
                     <div className="flex items-center justify-between mb-1">
                       <span>Goal: 30,000</span>
-                      <span className="font-semibold">{((metrics?.vipSales || 0) / 30000 * 100).toFixed(1)}%</span>
+                      <span className="font-semibold">{((kpis?.wisdomSales || 0) / 30000 * 100).toFixed(1)}%</span>
                     </div>
                     <div className="w-full bg-muted rounded-full h-1.5">
                       <div 
                         className="bg-[#B5179E] h-1.5 rounded-full transition-all" 
-                        style={{ width: `${Math.min(((metrics?.vipSales || 0) / 30000 * 100), 100)}%` }}
+                        style={{ width: `${Math.min(((kpis?.wisdomSales || 0) / 30000 * 100), 100)}%` }}
                       />
                     </div>
                   </div>
@@ -228,17 +232,17 @@ export default function Overview() {
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Number of 60-day free trials to Kingdom Seekers (third funnel step)</p>
+                    <p>Number of 60-day free trials to Kingdom Seekers</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
               <TrendingUp className="h-5 w-5 text-[#7209B7]" />
             </CardHeader>
             <CardContent>
-              {metricsLoading ? (
+              {unifiedLoading ? (
                 <Skeleton className="h-8 w-20" />
               ) : (
-                <div className="text-3xl font-bold">{metrics?.kingdomSeekerTrials || 0}</div>
+                <div className="text-3xl font-bold">{kpis?.kingdomSeekerTrials || 0}</div>
               )}
             </CardContent>
           </Card>
@@ -260,10 +264,10 @@ export default function Overview() {
               <DollarSign className="h-5 w-5 text-[#3A0CA3]" />
             </CardHeader>
             <CardContent>
-              {metricsLoading ? (
+              {unifiedLoading ? (
                 <Skeleton className="h-8 w-32" />
               ) : (
-                <div className="text-3xl font-bold">{formatCurrency(metrics?.totalSpend || 0)}</div>
+                <div className="text-3xl font-bold">{formatCurrency(kpis?.totalSpend || 0)}</div>
               )}
             </CardContent>
           </Card>
@@ -278,17 +282,17 @@ export default function Overview() {
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Total revenue from Wisdom+ sales (Backstage Pass + Wisdom+ Experience)</p>
+                    <p>Total revenue from Wisdom+ sales (Backstage Pass + Extras)</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
               <TrendingUp className="h-5 w-5 text-[#4361EE]" />
             </CardHeader>
             <CardContent>
-              {metricsLoading ? (
+              {unifiedLoading ? (
                 <Skeleton className="h-8 w-32" />
               ) : (
-                <div className="text-3xl font-bold">{formatCurrency(metrics?.totalRevenue || 0)}</div>
+                <div className="text-3xl font-bold">{formatCurrency(kpis?.totalRevenue || 0)}</div>
               )}
             </CardContent>
           </Card>
@@ -306,16 +310,16 @@ export default function Overview() {
                     <Info className="h-3 w-3 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Total Spend ÷ Total Leads</p>
+                    <p>LEADS/SALES Spend ÷ Paid Ads Leads</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
             </CardHeader>
             <CardContent>
-              {metricsLoading ? (
+              {unifiedLoading ? (
                 <Skeleton className="h-6 w-16" />
               ) : (
-                <div className="text-xl font-bold">{formatCurrency(metrics?.cpl || 0)}</div>
+                <div className="text-xl font-bold">{formatCurrency(kpis?.cpl || 0)}</div>
               )}
             </CardContent>
           </Card>
@@ -330,16 +334,16 @@ export default function Overview() {
                     <Info className="h-3 w-3 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Total Spend ÷ Total Wisdom+ Sales</p>
+                    <p>LEADS/SALES Spend ÷ Paid Ads Wisdom+ Sales</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
             </CardHeader>
             <CardContent>
-              {metricsLoading ? (
+              {unifiedLoading ? (
                 <Skeleton className="h-6 w-16" />
               ) : (
-                <div className="text-xl font-bold">{formatCurrency(metrics?.cpp || 0)}</div>
+                <div className="text-xl font-bold">{formatCurrency(kpis?.cpp || 0)}</div>
               )}
             </CardContent>
           </Card>
@@ -348,54 +352,102 @@ export default function Overview() {
           <Card className="border-l-2 border-l-[#B5179E]">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-1">
-                <CardTitle className="text-xs font-medium text-muted-foreground">AOV</CardTitle>
+                <CardTitle className="text-xs font-medium text-muted-foreground">Avg Order Value</CardTitle>
                 <Tooltip>
                   <TooltipTrigger>
                     <Info className="h-3 w-3 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Average Order Value: Total Revenue ÷ Total Wisdom+ Sales</p>
+                    <p>Total Revenue ÷ Total Wisdom+ Sales</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
             </CardHeader>
             <CardContent>
-              {metricsLoading ? (
+              {unifiedLoading ? (
                 <Skeleton className="h-6 w-16" />
               ) : (
-                <div className="text-xl font-bold">{formatCurrency(metrics?.aov || 0)}</div>
+                <div className="text-xl font-bold">{formatCurrency(kpis?.aov || 0)}</div>
               )}
             </CardContent>
           </Card>
 
-          {/* Wisdom+ Conversion Rate */}
-          <Card className="border-l-2 border-l-[#4361EE]">
+          {/* ROAS */}
+          <Card className="border-l-2 border-l-[#3A0CA3]">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-1">
-                <CardTitle className="text-xs font-medium text-muted-foreground">Wisdom+ Conversion Rate</CardTitle>
+                <CardTitle className="text-xs font-medium text-muted-foreground">ROAS</CardTitle>
                 <Tooltip>
                   <TooltipTrigger>
                     <Info className="h-3 w-3 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Conversion rate: Total Wisdom+ Sales ÷ Total Leads</p>
+                    <p>Revenue ÷ LEADS/SALES Spend</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
             </CardHeader>
             <CardContent>
-              {metricsLoading ? (
+              {unifiedLoading ? (
                 <Skeleton className="h-6 w-16" />
               ) : (
-                <div className="text-xl font-bold">{formatPercent(metrics?.vipTakeRate || 0)}</div>
+                <div className="text-xl font-bold">{(kpis?.roas || 0).toFixed(2)}x</div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Wisdom Conversion */}
+          <Card className="border-l-2 border-l-[#4361EE]">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-1">
+                <CardTitle className="text-xs font-medium text-muted-foreground">Wisdom Conversion</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-3 w-3 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Wisdom+ Sales ÷ Total Leads</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {unifiedLoading ? (
+                <Skeleton className="h-6 w-16" />
+              ) : (
+                <div className="text-xl font-bold">{formatPercent(kpis?.wisdomConversion || 0)}</div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* ManyChat Connected */}
+          <Card className="border-l-2 border-l-[#4CC9F0]">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-1">
+                <CardTitle className="text-xs font-medium text-muted-foreground">ManyChat Connected</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-3 w-3 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Leads with ManyChat ID</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {unifiedLoading ? (
+                <Skeleton className="h-6 w-16" />
+              ) : (
+                <div className="text-xl font-bold">{kpis?.manychatConnected || 0}</div>
               )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Conversion Funnels - Split by Source */}
+        {/* Conversion Funnels - Side by Side */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Paid Ads Funnel (31daywisdom.com) */}
+          {/* Paid Ads Funnel */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -407,10 +459,10 @@ export default function Overview() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {paidAdsLoading ? (
+              {unifiedLoading ? (
                 <Skeleton className="h-[400px] w-full" />
               ) : paidAdsFunnel ? (
-                <ConversionFunnel data={paidAdsFunnel} />
+                <ConversionFunnel data={transformFunnelData(paidAdsFunnel)} />
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
                   No paid ads funnel data available
@@ -419,7 +471,7 @@ export default function Overview() {
             </CardContent>
           </Card>
 
-          {/* Organic/Affiliate Funnel (NOT 31daywisdom.com) */}
+          {/* Organic/Affiliate Funnel */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -431,10 +483,10 @@ export default function Overview() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {organicLoading ? (
+              {unifiedLoading ? (
                 <Skeleton className="h-[400px] w-full" />
               ) : organicFunnel ? (
-                <ConversionFunnel data={organicFunnel} />
+                <ConversionFunnel data={transformFunnelData(organicFunnel)} />
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
                   No organic funnel data available
@@ -500,7 +552,7 @@ export default function Overview() {
                 <CardTitle>Meta Performance</CardTitle>
                 <CardDescription>Facebook & Instagram advertising metrics</CardDescription>
               </div>
-              {channelPerformance?.meta && timeAgo && (
+              {timeAgo && (
                 <div className="text-xs text-muted-foreground">
                   Last updated: {timeAgo}
                 </div>
@@ -508,9 +560,9 @@ export default function Overview() {
             </div>
           </CardHeader>
           <CardContent>
-            {channelLoading ? (
+            {unifiedLoading ? (
               <Skeleton className="h-[150px] w-full" />
-            ) : channelPerformance?.meta ? (
+            ) : metaPerformance ? (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
@@ -518,39 +570,29 @@ export default function Overview() {
                       <th className="text-left py-3 px-4 font-medium">Type</th>
                       <th className="text-right py-3 px-4 font-medium">Spend ($)</th>
                       <th className="text-right py-3 px-4 font-medium">Clicks</th>
-                      <th className="text-right py-3 px-4 font-medium">Leads</th>
-                      <th className="text-right py-3 px-4 font-medium">CPL ($)</th>
-                      <th className="text-right py-3 px-4 font-medium">VIPs</th>
-                      <th className="text-right py-3 px-4 font-medium">CPP ($)</th>
-                      <th className="text-right py-3 px-4 font-medium">Connect Rate</th>
-                      <th className="text-right py-3 px-4 font-medium">Click to Lead</th>
-                      <th className="text-right py-3 px-4 font-medium">Click to Purchase</th>
-                      <th className="text-right py-3 px-4 font-medium">ROAS</th>
+                      <th className="text-right py-3 px-4 font-medium">Impressions</th>
+                      <th className="text-right py-3 px-4 font-medium">CPC ($)</th>
+                      <th className="text-right py-3 px-4 font-medium">CPM ($)</th>
+                      <th className="text-right py-3 px-4 font-medium">CTR (%)</th>
                     </tr>
                   </thead>
                   <tbody>
                     {/* Meta Total Row */}
                     <tr className="border-b bg-blue-50/50 dark:bg-blue-950/20 font-semibold">
                       <td className="py-3 px-4">Total</td>
-                      <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.meta.spend)}</td>
-                      <td className="text-right py-3 px-4">{formatNumber(channelPerformance.meta.clicks)}</td>
-                      <td className="text-right py-3 px-4">{formatNumber(channelPerformance.meta.leads)}</td>
-                      <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.meta.cpl)}</td>
-                      <td className="text-right py-3 px-4">{formatNumber(channelPerformance.meta.vips)}</td>
-                      <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.meta.cpp)}</td>
-                      <td className="text-right py-3 px-4">{formatPercent(channelPerformance.meta.connectRate)}</td>
-                      <td className="text-right py-3 px-4">{formatPercent(channelPerformance.meta.clickToLeadRate)}</td>
-                      <td className="text-right py-3 px-4">{formatPercent(channelPerformance.meta.clickToPurchaseRate)}</td>
-                      <td className="text-right py-3 px-4">{channelPerformance.meta.roas.toFixed(2)}x</td>
+                      <td className="text-right py-3 px-4">{formatCurrency(metaPerformance.spend)}</td>
+                      <td className="text-right py-3 px-4">{formatNumber(metaPerformance.clicks)}</td>
+                      <td className="text-right py-3 px-4">{formatNumber(metaPerformance.impressions)}</td>
+                      <td className="text-right py-3 px-4">{formatCurrency(metaPerformance.cpc)}</td>
+                      <td className="text-right py-3 px-4">{formatCurrency(metaPerformance.cpm)}</td>
+                      <td className="text-right py-3 px-4">{formatPercent(metaPerformance.ctr)}</td>
                     </tr>
-                    {/* Meta Breakdown Rows - Custom order: Sales, Leads, Retargeting, Content, Other */}
-                    {(() => {
-                      const sortOrder = ['Sales', 'Leads', 'Retargeting', 'Content', 'Other'];
-                      const breakdown = channelPerformance.meta.breakdown || {};
-                      const sortedEntries = Object.entries(breakdown).sort(([a], [b]) => {
+                    {/* Meta Breakdown Rows */}
+                    {metaCampaignBreakdown && (() => {
+                      const sortOrder = ['sales', 'leads', 'retargeting', 'content', 'other'];
+                      const sortedEntries = Object.entries(metaCampaignBreakdown).sort(([a], [b]) => {
                         const indexA = sortOrder.indexOf(a);
                         const indexB = sortOrder.indexOf(b);
-                        // If not in sortOrder, put at the end
                         const orderA = indexA === -1 ? sortOrder.length : indexA;
                         const orderB = indexB === -1 ? sortOrder.length : indexB;
                         return orderA - orderB;
@@ -558,17 +600,13 @@ export default function Overview() {
                       return sortedEntries;
                     })().map(([type, data]: [string, any]) => (
                       <tr key={`meta-${type}`} className="border-b hover:bg-muted/50 text-sm">
-                        <td className="py-2 px-4 pl-4 text-muted-foreground">{type}</td>
+                        <td className="py-2 px-4 pl-4 text-muted-foreground capitalize">{type}</td>
                         <td className="text-right py-2 px-4">{formatCurrency(data.spend)}</td>
                         <td className="text-right py-2 px-4">{formatNumber(data.clicks)}</td>
-                        <td className="text-right py-2 px-4">{formatNumber(data.leads)}</td>
-                        <td className="text-right py-2 px-4">{data.leads > 0 ? formatCurrency(data.spend / data.leads) : '$0.00'}</td>
-                        <td className="text-right py-2 px-4">{formatNumber(data.vips)}</td>
-                        <td className="text-right py-2 px-4">{data.vips > 0 ? formatCurrency(data.spend / data.vips) : '$0.00'}</td>
-                        <td className="text-right py-2 px-4">{data.clicks > 0 ? formatPercent((data.landingPageViews / data.clicks) * 100) : '0.00%'}</td>
-                        <td className="text-right py-2 px-4">{data.clicks > 0 ? formatPercent((data.leads / data.clicks) * 100) : '0.00%'}</td>
-                        <td className="text-right py-2 px-4">{data.clicks > 0 ? formatPercent((data.vips / data.clicks) * 100) : '0.00%'}</td>
-                        <td className="text-right py-2 px-4">-</td>
+                        <td className="text-right py-2 px-4">{formatNumber(data.impressions)}</td>
+                        <td className="text-right py-2 px-4">{formatCurrency(data.cpc)}</td>
+                        <td className="text-right py-2 px-4">{formatCurrency(data.cpm)}</td>
+                        <td className="text-right py-2 px-4">{formatPercent(data.ctr)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -589,45 +627,32 @@ export default function Overview() {
             <CardDescription>Google Ads search campaign metrics</CardDescription>
           </CardHeader>
           <CardContent>
-            {channelLoading ? (
+            {unifiedLoading ? (
               <Skeleton className="h-[150px] w-full" />
-            ) : channelPerformance?.google ? (
+            ) : googlePerformance && googlePerformance.spend > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b">
                       <th className="text-left py-3 px-4 font-medium">Type</th>
                       <th className="text-right py-3 px-4 font-medium">Spend ($)</th>
-                      <th className="text-right py-3 px-4 font-medium">Leads</th>
-                      <th className="text-right py-3 px-4 font-medium">CPL ($)</th>
-                      <th className="text-right py-3 px-4 font-medium">VIPs</th>
-                      <th className="text-right py-3 px-4 font-medium">CPP ($)</th>
-                      <th className="text-right py-3 px-4 font-medium">ROAS</th>
+                      <th className="text-right py-3 px-4 font-medium">Clicks</th>
+                      <th className="text-right py-3 px-4 font-medium">Impressions</th>
+                      <th className="text-right py-3 px-4 font-medium">CPC ($)</th>
+                      <th className="text-right py-3 px-4 font-medium">CPM ($)</th>
+                      <th className="text-right py-3 px-4 font-medium">CTR (%)</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {/* Google Total Row */}
                     <tr className="border-b bg-green-50/50 dark:bg-green-950/20 font-semibold">
                       <td className="py-3 px-4">Total</td>
-                      <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.google.spend)}</td>
-                      <td className="text-right py-3 px-4">{formatNumber(channelPerformance.google.leads)}</td>
-                      <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.google.cpl)}</td>
-                      <td className="text-right py-3 px-4">{formatNumber(channelPerformance.google.vips)}</td>
-                      <td className="text-right py-3 px-4">{formatCurrency(channelPerformance.google.cpp)}</td>
-                      <td className="text-right py-3 px-4">{channelPerformance.google.roas.toFixed(2)}x</td>
+                      <td className="text-right py-3 px-4">{formatCurrency(googlePerformance.spend)}</td>
+                      <td className="text-right py-3 px-4">{formatNumber(googlePerformance.clicks)}</td>
+                      <td className="text-right py-3 px-4">{formatNumber(googlePerformance.impressions)}</td>
+                      <td className="text-right py-3 px-4">{formatCurrency(googlePerformance.cpc)}</td>
+                      <td className="text-right py-3 px-4">{formatCurrency(googlePerformance.cpm)}</td>
+                      <td className="text-right py-3 px-4">{formatPercent(googlePerformance.ctr)}</td>
                     </tr>
-                    {/* Google Breakdown Rows */}
-                    {Object.entries(channelPerformance.google.breakdown || {}).map(([type, data]: [string, any]) => (
-                      <tr key={`google-${type}`} className="border-b hover:bg-muted/50 text-sm">
-                        <td className="py-2 px-4 pl-4 text-muted-foreground">{type}</td>
-                        <td className="text-right py-2 px-4">{formatCurrency(data.spend)}</td>
-                        <td className="text-right py-2 px-4">{formatNumber(data.leads)}</td>
-                        <td className="text-right py-2 px-4">{data.leads > 0 ? formatCurrency(data.spend / data.leads) : '$0.00'}</td>
-                        <td className="text-right py-2 px-4">{formatNumber(data.vips)}</td>
-                        <td className="text-right py-2 px-4">{data.vips > 0 ? formatCurrency(data.spend / data.vips) : '$0.00'}</td>
-                        <td className="text-right py-2 px-4">-</td>
-                      </tr>
-                    ))}
                   </tbody>
                 </table>
               </div>
@@ -648,10 +673,10 @@ export default function Overview() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {vslLoading ? (
+            {unifiedLoading ? (
               <Skeleton className="h-[300px] w-full" />
-            ) : vslMetrics ? (
-              <VSLPerformance data={vslMetrics} />
+            ) : vslPerformance ? (
+              <VSLPerformance data={transformVslData(vslPerformance)} />
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 No VSL data available
