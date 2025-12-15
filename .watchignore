@@ -1,0 +1,11 @@
+node_modules
+dist
+.git
+*.log
+*.tmp
+coverage
+.cache
+attached_assets
+migrations
+*.sql
+*.md
