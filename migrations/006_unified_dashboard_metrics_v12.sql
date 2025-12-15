@@ -470,8 +470,8 @@ BEGIN
         COALESCE(SUM(link_clicks), 0),
         COALESCE(SUM(impressions), 0),
         COALESCE(SUM(landing_page_views), 0),
-        COALESCE(SUM(leads), 0),
-        COALESCE(SUM(purchases), 0)
+        COALESCE(SUM(reported_leads), 0),
+        COALESCE(SUM(reported_purchases), 0)
     INTO v_meta_spend, v_meta_clicks, v_meta_impressions, v_meta_landing_page_views, v_meta_leads, v_meta_purchases
     FROM ad_performance
     WHERE date >= p_start_date AND date <= p_end_date AND platform ILIKE 'meta';
@@ -485,8 +485,8 @@ BEGIN
         COALESCE(SUM(spend), 0),
         COALESCE(SUM(link_clicks), 0),
         COALESCE(SUM(impressions), 0),
-        COALESCE(SUM(leads), 0),
-        COALESCE(SUM(purchases), 0)
+        COALESCE(SUM(reported_leads), 0),
+        COALESCE(SUM(reported_purchases), 0)
     INTO v_meta_sales_spend, v_meta_sales_clicks, v_meta_sales_impressions, v_meta_sales_leads, v_meta_sales_purchases
     FROM ad_performance
     WHERE date >= p_start_date AND date <= p_end_date 
@@ -498,8 +498,8 @@ BEGIN
         COALESCE(SUM(spend), 0),
         COALESCE(SUM(link_clicks), 0),
         COALESCE(SUM(impressions), 0),
-        COALESCE(SUM(leads), 0),
-        COALESCE(SUM(purchases), 0)
+        COALESCE(SUM(reported_leads), 0),
+        COALESCE(SUM(reported_purchases), 0)
     INTO v_meta_leads_spend, v_meta_leads_clicks, v_meta_leads_impressions, v_meta_leads_leads, v_meta_leads_purchases
     FROM ad_performance
     WHERE date >= p_start_date AND date <= p_end_date 
@@ -512,8 +512,8 @@ BEGIN
         COALESCE(SUM(spend), 0),
         COALESCE(SUM(link_clicks), 0),
         COALESCE(SUM(impressions), 0),
-        COALESCE(SUM(leads), 0),
-        COALESCE(SUM(purchases), 0)
+        COALESCE(SUM(reported_leads), 0),
+        COALESCE(SUM(reported_purchases), 0)
     INTO v_meta_retargeting_spend, v_meta_retargeting_clicks, v_meta_retargeting_impressions, v_meta_retargeting_leads, v_meta_retargeting_purchases
     FROM ad_performance
     WHERE date >= p_start_date AND date <= p_end_date 
@@ -527,8 +527,8 @@ BEGIN
         COALESCE(SUM(spend), 0),
         COALESCE(SUM(link_clicks), 0),
         COALESCE(SUM(impressions), 0),
-        COALESCE(SUM(leads), 0),
-        COALESCE(SUM(purchases), 0)
+        COALESCE(SUM(reported_leads), 0),
+        COALESCE(SUM(reported_purchases), 0)
     INTO v_meta_content_spend, v_meta_content_clicks, v_meta_content_impressions, v_meta_content_leads, v_meta_content_purchases
     FROM ad_performance
     WHERE date >= p_start_date AND date <= p_end_date 
@@ -544,8 +544,8 @@ BEGIN
         COALESCE(SUM(spend), 0),
         COALESCE(SUM(link_clicks), 0),
         COALESCE(SUM(impressions), 0),
-        COALESCE(SUM(leads), 0),
-        COALESCE(SUM(purchases), 0)
+        COALESCE(SUM(reported_leads), 0),
+        COALESCE(SUM(reported_purchases), 0)
     INTO v_meta_other_spend, v_meta_other_clicks, v_meta_other_impressions, v_meta_other_leads, v_meta_other_purchases
     FROM ad_performance
     WHERE date >= p_start_date AND date <= p_end_date 
