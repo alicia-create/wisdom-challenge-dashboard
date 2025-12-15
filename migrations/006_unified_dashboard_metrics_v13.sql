@@ -637,6 +637,7 @@ BEGIN
             'botAlertsSubscribed', v_bot_alerts,
             'welcomeEmailClicks', v_welcome_email_clicks,
             'totalSpend', ROUND(v_total_spend::NUMERIC, 2),
+            'leadsSalesSpend', ROUND(v_leads_sales_spend::NUMERIC, 2),
             'totalRevenue', ROUND(v_total_revenue::NUMERIC, 2),
             'linkClicks', v_link_clicks,
             'landingPageViews', v_landing_page_views,

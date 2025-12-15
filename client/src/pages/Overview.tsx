@@ -264,7 +264,7 @@ export default function Overview() {
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Combined ad spend from Meta Ads + Google Ads</p>
+                    <p>Lead + Sales campaigns spend (used for CPL/CPP/ROAS)</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -275,8 +275,15 @@ export default function Overview() {
                 <Skeleton className="h-8 w-32" />
               ) : (
                 <>
-                  <div className="text-3xl font-bold">{formatCurrency(kpis?.totalSpend || 0)}</div>
-                  <p className="text-xs text-muted-foreground mt-1">Lead + Sales Campaigns</p>
+                  <div className="text-3xl font-bold">
+                    {formatCurrency((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0))}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Lead + Sales Campaigns
+                    <span className="ml-2 text-muted-foreground/70">
+                      (All: {formatCurrency(kpis?.totalSpend || 0)})
+                    </span>
+                  </p>
                 </>
               )}
             </CardContent>
