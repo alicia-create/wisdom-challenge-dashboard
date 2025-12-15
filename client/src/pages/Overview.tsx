@@ -427,30 +427,6 @@ export default function Overview() {
             </CardContent>
           </Card>
 
-          {/* ManyChat Connected */}
-          <Card className="border-l-2 border-l-[#4CC9F0]">
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-1">
-                <CardTitle className="text-xs font-medium text-muted-foreground">ManyChat Connected</CardTitle>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-3 w-3 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Leads with ManyChat ID</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {unifiedLoading ? (
-                <Skeleton className="h-6 w-16" />
-              ) : (
-                <div className="text-xl font-bold">{kpis?.manychatConnected || 0}</div>
-              )}
-            </CardContent>
-          </Card>
-
           {/* Welcome Email Clicks */}
           <Card className="border-l-2 border-l-[#F72585]">
             <CardHeader className="pb-2">
@@ -470,7 +446,12 @@ export default function Overview() {
               {unifiedLoading ? (
                 <Skeleton className="h-6 w-16" />
               ) : (
-                <div className="text-xl font-bold">{kpis?.welcomeEmailClicks || 0}</div>
+                <>
+                  <div className="text-xl font-bold">{kpis?.welcomeEmailClicks || 0}</div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {kpis?.totalLeads ? ((kpis.welcomeEmailClicks / kpis.totalLeads) * 100).toFixed(1) : 0}% of total leads
+                  </p>
+                </>
               )}
             </CardContent>
           </Card>
