@@ -543,8 +543,20 @@ export default function Overview() {
                       <td className="text-right py-3 px-4">{formatPercent(channelPerformance.meta.clickToPurchaseRate)}</td>
                       <td className="text-right py-3 px-4">{channelPerformance.meta.roas.toFixed(2)}x</td>
                     </tr>
-                    {/* Meta Breakdown Rows */}
-                    {Object.entries(channelPerformance.meta.breakdown || {}).map(([type, data]: [string, any]) => (
+                    {/* Meta Breakdown Rows - Custom order: Sales, Leads, Retargeting, Content, Other */}
+                    {(() => {
+                      const sortOrder = ['Sales', 'Leads', 'Retargeting', 'Content', 'Other'];
+                      const breakdown = channelPerformance.meta.breakdown || {};
+                      const sortedEntries = Object.entries(breakdown).sort(([a], [b]) => {
+                        const indexA = sortOrder.indexOf(a);
+                        const indexB = sortOrder.indexOf(b);
+                        // If not in sortOrder, put at the end
+                        const orderA = indexA === -1 ? sortOrder.length : indexA;
+                        const orderB = indexB === -1 ? sortOrder.length : indexB;
+                        return orderA - orderB;
+                      });
+                      return sortedEntries;
+                    })().map(([type, data]: [string, any]) => (
                       <tr key={`meta-${type}`} className="border-b hover:bg-muted/50 text-sm">
                         <td className="py-2 px-4 pl-4 text-muted-foreground">{type}</td>
                         <td className="text-right py-2 px-4">{formatCurrency(data.spend)}</td>
