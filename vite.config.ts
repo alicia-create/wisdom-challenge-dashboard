@@ -24,21 +24,6 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react/jsx-runtime'],
-          'router': ['wouter'],
-          'ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select', '@radix-ui/react-tooltip'],
-          'charts': ['recharts'],
-          'utils': ['date-fns', 'clsx'],
-        },
-      },
-    },
-    chunkSizeWarningLimit: 1000,
-    minify: 'esbuild',
-    target: 'es2020',
-    cssCodeSplit: true,
   },
   server: {
     host: true,
