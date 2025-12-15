@@ -78,25 +78,12 @@ export async function getOverviewMetrics(startDate?: string, endDate?: string) {
     };
   }
 
-  // Get total leads (wisdom funnel only)
-  let leadsQuery = supabase
-    .from('contacts')
-    .select('*', { count: 'exact', head: true })
-    .in('id', wisdomContactIds);
-  
-  if (startDate) {
-    leadsQuery = leadsQuery.gte('created_at', startDate);
-  }
-  if (nextDayStr) {
-    // Add one day to endDate to include the entire end date
-    leadsQuery = leadsQuery.lt('created_at', nextDayStr);
-  }
-  
-  const { count: totalLeads, error: leadsError } = await leadsQuery;
-
-  if (leadsError) {
-    console.error('[Supabase] Error counting leads:', leadsError);
-  }
+  // Total leads = number of wisdom contacts (already filtered by date in getWisdomContactIds)
+  // Note: We use wisdomContactIds.length directly because:
+  // 1. getWisdomContactIds already filters by date range
+  // 2. Supabase .in() has a limit of ~1000 IDs which causes incorrect counts
+  const totalLeads = wisdomContactIds.length;
+  console.log(`[Overview Metrics] Total leads from wisdom filter: ${totalLeads}`);
 
    // Get total ad spend from ad_performance table (Meta + Google)
   let metaAdQuery = supabase

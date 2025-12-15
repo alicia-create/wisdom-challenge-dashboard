@@ -1206,3 +1206,6 @@
 - [x] Created useTimeAgo hook for relative timestamps
 - [ ] Test refresh button functionality
 - [ ] Verify timestamp updates correctly
+
+## KPI Cards Data Fix (2025-12-- [x] Fix KPI cards to show correct totals with Supabase pagination (Total Leads: 1024, Wisdom+: 144) [ ] Fix Total Wisdom+ Sales KPI to show sum of both funnels (should be 137, not 45)
+- [ ] Ensure KPI totals match the sum of funnel breakdowns
