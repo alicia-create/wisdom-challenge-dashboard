@@ -22,6 +22,9 @@ export default function Overview() {
   // Get tRPC utils for cache invalidation
   const utils = trpc.useUtils();
 
+  // Mutation to clear server-side cache
+  const clearCacheMutation = trpc.overview.clearCache.useMutation();
+
   // Keyboard shortcuts
   useKeyboardShortcuts();
 
@@ -129,15 +132,19 @@ export default function Overview() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => {
-              utils.overview.unifiedMetrics.invalidate();
-              utils.overview.dailyKpis.invalidate();
+            onClick={async () => {
+              // Clear server-side cache first
+              await clearCacheMutation.mutateAsync();
+              // Then invalidate client-side queries to refetch
+              await utils.overview.unifiedMetrics.invalidate();
+              await utils.overview.dailyKpis.invalidate();
               setLastFetchTime(new Date());
             }}
+            disabled={clearCacheMutation.isPending}
             className="gap-2"
           >
-            <RefreshCw className="h-4 w-4" />
-            Refresh Data
+            <RefreshCw className={`h-4 w-4 ${clearCacheMutation.isPending ? 'animate-spin' : ''}`} />
+            {clearCacheMutation.isPending ? 'Refreshing...' : 'Refresh Data'}
           </Button>
           <DateRangeFilter value={dateRange} onChange={setDateRange} />
         </div>

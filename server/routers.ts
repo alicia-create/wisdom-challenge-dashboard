@@ -168,6 +168,13 @@ export const appRouter = router({
 
   // Overview page queries
   overview: router({
+    // Clear server-side cache to force fresh data fetch
+    clearCache: publicProcedure.mutation(async () => {
+      console.log('[Cache] Clearing all overview cache entries');
+      await cache.clear();
+      return { success: true, message: 'Cache cleared successfully' };
+    }),
+
     // Get unified dashboard metrics from SQL function (single optimized query)
     unifiedMetrics: publicProcedure
       .input(z.object({
