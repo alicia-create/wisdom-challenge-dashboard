@@ -14,6 +14,8 @@
 --
 -- Solution: This function calculates all metrics from a single source of truth
 --           and returns them in a structured JSON format.
+--
+-- NOTE: analytics_events table uses 'timestamp' column, not 'created_at'
 -- ============================================================================
 
 -- Drop existing function if exists
@@ -177,14 +179,15 @@ BEGIN
     
     -- ========================================================================
     -- STEP 6: Bot Alerts Subscribed (gold.ntn.request_accepted event)
+    -- NOTE: analytics_events uses 'timestamp' column, not 'created_at'
     -- ========================================================================
     
     SELECT COUNT(DISTINCT ae.contact_id)
     INTO v_bot_alerts
     FROM analytics_events ae
     JOIN contacts c ON ae.contact_id = c.id
-    WHERE ae.created_at >= p_start_date
-      AND ae.created_at < p_end_date + INTERVAL '1 day'
+    WHERE ae.timestamp >= p_start_date
+      AND ae.timestamp < p_end_date + INTERVAL '1 day'
       AND ae.name = 'manychat.add_tag'
       AND ae.value ILIKE '%gold.ntn.request_accepted%';
     
