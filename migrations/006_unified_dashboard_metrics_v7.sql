@@ -414,7 +414,7 @@ BEGIN
     -- 1 = Backstage Pass, 2 = Express Shipping Fee, 4 = Extra Wisdom Journal
     -- ========================================================================
     
-    SELECT COALESCE(SUM(oi.price * oi.quantity), 0)
+    SELECT COALESCE(SUM(oi.amount), 0)
     INTO v_total_revenue
     FROM orders o
     JOIN order_items oi ON o.id = oi.order_id
