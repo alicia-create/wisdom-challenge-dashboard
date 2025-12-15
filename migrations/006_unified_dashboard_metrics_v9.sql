@@ -622,21 +622,29 @@ BEGIN
             'cpm', CASE WHEN v_google_impressions > 0 THEN ROUND((v_google_spend / v_google_impressions) * 1000, 2) ELSE 0 END
         ),
         'vslPerformance', jsonb_build_object(
+            -- Absolute view counts
             'totalLeads', v_total_leads,
-            'vsl5Percent', v_vsl_5_percent,
-            'vsl25Percent', v_vsl_25_percent,
-            'vsl75Percent', v_vsl_75_percent,
-            'vsl95Percent', v_vsl_95_percent,
+            'vsl5PercentViews', v_vsl_5_percent,
+            'vsl25PercentViews', v_vsl_25_percent,
+            'vsl75PercentViews', v_vsl_75_percent,
+            'vsl95PercentViews', v_vsl_95_percent,
             'wisdomPurchases', v_vsl_purchasers,
-            'vslToPurchaseRate', CASE WHEN v_vsl_5_percent > 0 THEN ROUND((v_vsl_purchasers::NUMERIC / v_vsl_5_percent) * 100, 2) ELSE 0 END,
-            'retention5Percent', CASE WHEN v_total_leads > 0 THEN ROUND((v_vsl_5_percent::NUMERIC / v_total_leads) * 100, 2) ELSE 0 END,
-            'retention25Percent', CASE WHEN v_total_leads > 0 THEN ROUND((v_vsl_25_percent::NUMERIC / v_total_leads) * 100, 2) ELSE 0 END,
-            'retention75Percent', CASE WHEN v_total_leads > 0 THEN ROUND((v_vsl_75_percent::NUMERIC / v_total_leads) * 100, 2) ELSE 0 END,
-            'retention95Percent', CASE WHEN v_total_leads > 0 THEN ROUND((v_vsl_95_percent::NUMERIC / v_total_leads) * 100, 2) ELSE 0 END,
-            'dropOff5Percent', CASE WHEN v_total_leads > 0 THEN ROUND(((v_total_leads - v_vsl_5_percent)::NUMERIC / v_total_leads) * 100, 2) ELSE 0 END,
-            'dropOff25Percent', CASE WHEN v_total_leads > 0 THEN ROUND(((v_total_leads - v_vsl_25_percent)::NUMERIC / v_total_leads) * 100, 2) ELSE 0 END,
-            'dropOff75Percent', CASE WHEN v_total_leads > 0 THEN ROUND(((v_total_leads - v_vsl_75_percent)::NUMERIC / v_total_leads) * 100, 2) ELSE 0 END,
-            'dropOff95Percent', CASE WHEN v_total_leads > 0 THEN ROUND(((v_total_leads - v_vsl_95_percent)::NUMERIC / v_total_leads) * 100, 2) ELSE 0 END
+            -- Sequential conversion rates (step by step)
+            'leadsTo5PercentRate', CASE WHEN v_total_leads > 0 THEN ROUND((v_vsl_5_percent::NUMERIC / v_total_leads) * 100, 2) ELSE 0 END,
+            'vsl5To25PercentRate', CASE WHEN v_vsl_5_percent > 0 THEN ROUND((v_vsl_25_percent::NUMERIC / v_vsl_5_percent) * 100, 2) ELSE 0 END,
+            'vsl25To75PercentRate', CASE WHEN v_vsl_25_percent > 0 THEN ROUND((v_vsl_75_percent::NUMERIC / v_vsl_25_percent) * 100, 2) ELSE 0 END,
+            'vsl75To95PercentRate', CASE WHEN v_vsl_75_percent > 0 THEN ROUND((v_vsl_95_percent::NUMERIC / v_vsl_75_percent) * 100, 2) ELSE 0 END,
+            'vsl95ToPurchaseRate', CASE WHEN v_vsl_95_percent > 0 THEN ROUND((v_vsl_purchasers::NUMERIC / v_vsl_95_percent) * 100, 2) ELSE 0 END,
+            -- Overall retention from leads
+            'overallRetention5', CASE WHEN v_total_leads > 0 THEN ROUND((v_vsl_5_percent::NUMERIC / v_total_leads) * 100, 2) ELSE 0 END,
+            'overallRetention25', CASE WHEN v_total_leads > 0 THEN ROUND((v_vsl_25_percent::NUMERIC / v_total_leads) * 100, 2) ELSE 0 END,
+            'overallRetention75', CASE WHEN v_total_leads > 0 THEN ROUND((v_vsl_75_percent::NUMERIC / v_total_leads) * 100, 2) ELSE 0 END,
+            'overallRetention95', CASE WHEN v_total_leads > 0 THEN ROUND((v_vsl_95_percent::NUMERIC / v_total_leads) * 100, 2) ELSE 0 END,
+            -- Sequential drop-off rates
+            'dropOffLeadsTo5', CASE WHEN v_total_leads > 0 THEN ROUND(((v_total_leads - v_vsl_5_percent)::NUMERIC / v_total_leads) * 100, 2) ELSE 0 END,
+            'dropOff5To25', CASE WHEN v_vsl_5_percent > 0 THEN ROUND(((v_vsl_5_percent - v_vsl_25_percent)::NUMERIC / v_vsl_5_percent) * 100, 2) ELSE 0 END,
+            'dropOff25To75', CASE WHEN v_vsl_25_percent > 0 THEN ROUND(((v_vsl_25_percent - v_vsl_75_percent)::NUMERIC / v_vsl_25_percent) * 100, 2) ELSE 0 END,
+            'dropOff75To95', CASE WHEN v_vsl_75_percent > 0 THEN ROUND(((v_vsl_75_percent - v_vsl_95_percent)::NUMERIC / v_vsl_75_percent) * 100, 2) ELSE 0 END
         ),
         'funnelRates', jsonb_build_object(
             'leadToWisdomRate', v_lead_to_wisdom_rate,
