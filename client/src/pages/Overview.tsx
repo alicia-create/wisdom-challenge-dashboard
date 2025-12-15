@@ -336,7 +336,13 @@ export default function Overview() {
               {unifiedLoading ? (
                 <Skeleton className="h-6 w-16" />
               ) : (
-                <div className="text-xl font-bold">{formatCurrency(kpis?.cpl || 0)}</div>
+                <div className="text-xl font-bold">
+                  {formatCurrency(
+                    paidAdsFunnel?.leads && paidAdsFunnel.leads > 0
+                      ? ((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0)) / paidAdsFunnel.leads
+                      : 0
+                  )}
+                </div>
               )}
             </CardContent>
           </Card>
@@ -360,7 +366,13 @@ export default function Overview() {
               {unifiedLoading ? (
                 <Skeleton className="h-6 w-16" />
               ) : (
-                <div className="text-xl font-bold">{formatCurrency(kpis?.cpp || 0)}</div>
+                <div className="text-xl font-bold">
+                  {formatCurrency(
+                    paidAdsFunnel?.wisdomSales && paidAdsFunnel.wisdomSales > 0
+                      ? ((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0)) / paidAdsFunnel.wisdomSales
+                      : 0
+                  )}
+                </div>
               )}
             </CardContent>
           </Card>
