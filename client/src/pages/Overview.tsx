@@ -564,28 +564,38 @@ export default function Overview() {
               <Skeleton className="h-[150px] w-full" />
             ) : metaPerformance ? (
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left py-3 px-4 font-medium">Type</th>
-                      <th className="text-right py-3 px-4 font-medium">Spend ($)</th>
-                      <th className="text-right py-3 px-4 font-medium">Clicks</th>
-                      <th className="text-right py-3 px-4 font-medium">Impressions</th>
-                      <th className="text-right py-3 px-4 font-medium">CPC ($)</th>
-                      <th className="text-right py-3 px-4 font-medium">CPM ($)</th>
-                      <th className="text-right py-3 px-4 font-medium">CTR (%)</th>
+                      <th className="text-left py-3 px-2 font-medium">Type</th>
+                      <th className="text-right py-3 px-2 font-medium">Spend</th>
+                      <th className="text-right py-3 px-2 font-medium">Purchases</th>
+                      <th className="text-right py-3 px-2 font-medium">CPP</th>
+                      <th className="text-right py-3 px-2 font-medium">Sales Rate</th>
+                      <th className="text-right py-3 px-2 font-medium">Leads</th>
+                      <th className="text-right py-3 px-2 font-medium">CPL</th>
+                      <th className="text-right py-3 px-2 font-medium">Lead Rate</th>
+                      <th className="text-right py-3 px-2 font-medium">Clicks</th>
+                      <th className="text-right py-3 px-2 font-medium">CPC</th>
+                      <th className="text-right py-3 px-2 font-medium">CTR</th>
+                      <th className="text-right py-3 px-2 font-medium">CPM</th>
                     </tr>
                   </thead>
                   <tbody>
                     {/* Meta Total Row */}
                     <tr className="border-b bg-blue-50/50 dark:bg-blue-950/20 font-semibold">
-                      <td className="py-3 px-4">Total</td>
-                      <td className="text-right py-3 px-4">{formatCurrency(metaPerformance.spend)}</td>
-                      <td className="text-right py-3 px-4">{formatNumber(metaPerformance.clicks)}</td>
-                      <td className="text-right py-3 px-4">{formatNumber(metaPerformance.impressions)}</td>
-                      <td className="text-right py-3 px-4">{formatCurrency(metaPerformance.cpc)}</td>
-                      <td className="text-right py-3 px-4">{formatCurrency(metaPerformance.cpm)}</td>
-                      <td className="text-right py-3 px-4">{formatPercent(metaPerformance.ctr)}</td>
+                      <td className="py-3 px-2">Total</td>
+                      <td className="text-right py-3 px-2">{formatCurrency(metaPerformance.spend)}</td>
+                      <td className="text-right py-3 px-2">{formatNumber(metaPerformance.purchases || 0)}</td>
+                      <td className="text-right py-3 px-2">{formatCurrency(metaPerformance.cpp || 0)}</td>
+                      <td className="text-right py-3 px-2">{formatPercent(metaPerformance.salesRate || 0)}</td>
+                      <td className="text-right py-3 px-2">{formatNumber(metaPerformance.leads || 0)}</td>
+                      <td className="text-right py-3 px-2">{formatCurrency(metaPerformance.cpl || 0)}</td>
+                      <td className="text-right py-3 px-2">{formatPercent(metaPerformance.leadRate || 0)}</td>
+                      <td className="text-right py-3 px-2">{formatNumber(metaPerformance.clicks)}</td>
+                      <td className="text-right py-3 px-2">{formatCurrency(metaPerformance.cpc)}</td>
+                      <td className="text-right py-3 px-2">{formatPercent(metaPerformance.ctr)}</td>
+                      <td className="text-right py-3 px-2">{formatCurrency(metaPerformance.cpm)}</td>
                     </tr>
                     {/* Meta Breakdown Rows */}
                     {metaCampaignBreakdown && (() => {
@@ -599,14 +609,19 @@ export default function Overview() {
                       });
                       return sortedEntries;
                     })().map(([type, data]: [string, any]) => (
-                      <tr key={`meta-${type}`} className="border-b hover:bg-muted/50 text-sm">
-                        <td className="py-2 px-4 pl-4 text-muted-foreground capitalize">{type}</td>
-                        <td className="text-right py-2 px-4">{formatCurrency(data.spend)}</td>
-                        <td className="text-right py-2 px-4">{formatNumber(data.clicks)}</td>
-                        <td className="text-right py-2 px-4">{formatNumber(data.impressions)}</td>
-                        <td className="text-right py-2 px-4">{formatCurrency(data.cpc)}</td>
-                        <td className="text-right py-2 px-4">{formatCurrency(data.cpm)}</td>
-                        <td className="text-right py-2 px-4">{formatPercent(data.ctr)}</td>
+                      <tr key={`meta-${type}`} className="border-b hover:bg-muted/50">
+                        <td className="py-2 px-2 text-muted-foreground capitalize">{type}</td>
+                        <td className="text-right py-2 px-2">{formatCurrency(data.spend)}</td>
+                        <td className="text-right py-2 px-2">{formatNumber(data.purchases || 0)}</td>
+                        <td className="text-right py-2 px-2">{formatCurrency(data.cpp || 0)}</td>
+                        <td className="text-right py-2 px-2">{formatPercent(data.salesRate || 0)}</td>
+                        <td className="text-right py-2 px-2">{formatNumber(data.leads || 0)}</td>
+                        <td className="text-right py-2 px-2">{formatCurrency(data.cpl || 0)}</td>
+                        <td className="text-right py-2 px-2">{formatPercent(data.leadRate || 0)}</td>
+                        <td className="text-right py-2 px-2">{formatNumber(data.clicks)}</td>
+                        <td className="text-right py-2 px-2">{formatCurrency(data.cpc)}</td>
+                        <td className="text-right py-2 px-2">{formatPercent(data.ctr)}</td>
+                        <td className="text-right py-2 px-2">{formatCurrency(data.cpm)}</td>
                       </tr>
                     ))}
                   </tbody>
