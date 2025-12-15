@@ -924,7 +924,7 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
   // Fetch Meta ad performance
   let metaQuery = supabase
     .from('ad_performance')
-    .select('spend, reported_leads, reported_purchases, campaign_name, link_clicks, landing_page_view_per_link_click')
+    .select('spend, reported_leads, reported_purchases, campaign_name, link_clicks, landing_page_views')
     .ilike('platform', 'meta');
   
   if (startDate) metaQuery = metaQuery.gte('date', startDate);
@@ -981,11 +981,9 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
   const metaVips = (metaAds || []).reduce((sum, row) => sum + parseInt(row.reported_purchases || '0', 10), 0);
   const metaClicks = (metaAds || []).reduce((sum, row) => sum + parseInt(row.link_clicks || '0', 10), 0);
   
-  // Calculate landing page views from clicks * landing_page_view_per_link_click rate
+  // Calculate landing page views directly from the landing_page_views column
   const metaLandingPageViews = (metaAds || []).reduce((sum, row) => {
-    const clicks = parseInt(row.link_clicks || '0', 10);
-    const lpRate = parseFloat(row.landing_page_view_per_link_click || '1');
-    return sum + (clicks * lpRate);
+    return sum + parseInt(row.landing_page_views || '0', 10);
   }, 0);
 
   // Calculate Google metrics
@@ -1011,9 +1009,7 @@ export async function getChannelPerformance(startDate?: string, endDate?: string
     acc[type].leads += parseInt(row.reported_leads || '0', 10);
     acc[type].vips += parseInt(row.reported_purchases || '0', 10);
     acc[type].clicks += parseInt(row.link_clicks || '0', 10);
-    const clicks = parseInt(row.link_clicks || '0', 10);
-    const lpRate = parseFloat(row.landing_page_view_per_link_click || '1');
-    acc[type].landingPageViews += (clicks * lpRate);
+    acc[type].landingPageViews += parseInt(row.landing_page_views || '0', 10);
     return acc;
   }, {});
 
