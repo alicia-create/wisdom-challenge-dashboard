@@ -326,8 +326,13 @@ export default function Overview() {
                   <TooltipTrigger>
                     <Info className="h-3 w-3 text-muted-foreground" />
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p>LEADS/SALES Spend ÷ Paid Ads Leads</p>
+                  <TooltipContent className="max-w-xs">
+                    <div className="space-y-2">
+                      <p className="font-medium">Spend: {formatCurrency((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0))}</p>
+                      <p className="font-medium">Leads: {formatNumber(paidAdsFunnel?.leads || 0)}</p>
+                      <hr className="border-border/50" />
+                      <p className="text-xs text-muted-foreground">Metas: Excellent ≤$3 | Great ≤$6 | Good ≤$9</p>
+                    </div>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -335,15 +340,21 @@ export default function Overview() {
             <CardContent>
               {unifiedLoading ? (
                 <Skeleton className="h-6 w-16" />
-              ) : (
-                <div className="text-xl font-bold">
-                  {formatCurrency(
-                    paidAdsFunnel?.leads && paidAdsFunnel.leads > 0
-                      ? ((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0)) / paidAdsFunnel.leads
-                      : 0
-                  )}
-                </div>
-              )}
+              ) : (() => {
+                const cplValue = paidAdsFunnel?.leads && paidAdsFunnel.leads > 0
+                  ? ((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0)) / paidAdsFunnel.leads
+                  : 0;
+                const cplColor = cplValue <= 3 ? 'text-green-600' : cplValue <= 6 ? 'text-emerald-500' : cplValue <= 9 ? 'text-yellow-600' : 'text-red-500';
+                const cplLabel = cplValue <= 3 ? 'Excellent' : cplValue <= 6 ? 'Great' : cplValue <= 9 ? 'Good' : 'Above Target';
+                return (
+                  <>
+                    <div className={`text-xl font-bold ${cplColor}`}>
+                      {formatCurrency(cplValue)}
+                    </div>
+                    <p className={`text-xs mt-1 ${cplColor}`}>{cplLabel}</p>
+                  </>
+                );
+              })()}
             </CardContent>
           </Card>
 
@@ -356,8 +367,13 @@ export default function Overview() {
                   <TooltipTrigger>
                     <Info className="h-3 w-3 text-muted-foreground" />
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p>LEADS/SALES Spend ÷ Paid Ads Wisdom+ Sales</p>
+                  <TooltipContent className="max-w-xs">
+                    <div className="space-y-2">
+                      <p className="font-medium">Spend: {formatCurrency((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0))}</p>
+                      <p className="font-medium">Wisdom+ Sales: {formatNumber(paidAdsFunnel?.wisdomSales || 0)}</p>
+                      <hr className="border-border/50" />
+                      <p className="text-xs text-muted-foreground">Metas: Excellent ≤$30 | Great ≤$60 | Good ≤$90</p>
+                    </div>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -365,15 +381,21 @@ export default function Overview() {
             <CardContent>
               {unifiedLoading ? (
                 <Skeleton className="h-6 w-16" />
-              ) : (
-                <div className="text-xl font-bold">
-                  {formatCurrency(
-                    paidAdsFunnel?.wisdomSales && paidAdsFunnel.wisdomSales > 0
-                      ? ((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0)) / paidAdsFunnel.wisdomSales
-                      : 0
-                  )}
-                </div>
-              )}
+              ) : (() => {
+                const cppValue = paidAdsFunnel?.wisdomSales && paidAdsFunnel.wisdomSales > 0
+                  ? ((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0)) / paidAdsFunnel.wisdomSales
+                  : 0;
+                const cppColor = cppValue <= 30 ? 'text-green-600' : cppValue <= 60 ? 'text-emerald-500' : cppValue <= 90 ? 'text-yellow-600' : 'text-red-500';
+                const cppLabel = cppValue <= 30 ? 'Excellent' : cppValue <= 60 ? 'Great' : cppValue <= 90 ? 'Good' : 'Above Target';
+                return (
+                  <>
+                    <div className={`text-xl font-bold ${cppColor}`}>
+                      {formatCurrency(cppValue)}
+                    </div>
+                    <p className={`text-xs mt-1 ${cppColor}`}>{cppLabel}</p>
+                  </>
+                );
+              })()}
             </CardContent>
           </Card>
 
