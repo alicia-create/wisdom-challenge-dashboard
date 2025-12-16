@@ -26,6 +26,7 @@ import {
   getFunnelConversionMetrics,
 } from "./supabase";
 import { getOverviewMetricsOptimized } from "./supabase-optimized";
+import { getDailyMetricsFromEdgeFunction, transformDailyMetricsForUI } from "./supabase-daily";
 import {
   getContactActivities,
   getContactActivitySummary,
@@ -428,7 +429,7 @@ export const appRouter = router({
 
   // Daily Analysis queries
   dailyAnalysis: router({
-    // Get daily metrics for spreadsheet view
+    // Get daily metrics for spreadsheet view (using optimized edge function)
     metrics: publicProcedure
       .input(z.object({
         dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
@@ -438,7 +439,28 @@ export const appRouter = router({
           ? getDateRangeValues(input.dateRange)
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
         
-        return await getDailyAnalysisMetrics(startDate, endDate);
+        try {
+          // Use the optimized edge function
+          const data = await getDailyMetricsFromEdgeFunction(startDate, endDate);
+          return transformDailyMetricsForUI(data);
+        } catch (error) {
+          console.error('[Daily Analysis] Edge function failed, falling back to legacy:', error);
+          // Fallback to legacy function if edge function fails
+          return await getDailyAnalysisMetrics(startDate, endDate);
+        }
+      }),
+    
+    // Get raw daily metrics from edge function (new format)
+    metricsV2: publicProcedure
+      .input(z.object({
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        const { startDate, endDate } = input?.dateRange 
+          ? getDateRangeValues(input.dateRange)
+          : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
+        
+        return await getDailyMetricsFromEdgeFunction(startDate, endDate);
       }),
   }),
 
