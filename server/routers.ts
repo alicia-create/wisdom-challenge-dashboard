@@ -825,6 +825,14 @@ export const appRouter = router({
         // Get comprehensive metrics from edge functions
         const { startDate, endDate } = getDateRangeValues(DATE_RANGES.LAST_7_DAYS);
         
+        // Fetch optimization metrics with temporal analysis (yesterday + trends)
+        const optimizationMetricsResult = await supabase.rpc('get_optimization_metrics', {
+          days_back: 7,
+          campaign_filter: '31DWC2026',
+        });
+        
+        const optimizationMetrics = optimizationMetricsResult.data || { yesterday: {}, trend_3day: [], trend_7day: [] };
+        
         // Fetch unified metrics from edge function for richer context
         const [metricsResult, journalsResult] = await Promise.all([
           supabase.rpc('get_dashboard_metrics', {
@@ -853,7 +861,7 @@ export const appRouter = router({
         const avg_cpp = total_purchases > 0 ? total_spend / total_purchases : 0;
         const conversion_rate = total_leads > 0 ? total_purchases / total_leads : 0;
 
-        // Generate LLM-powered insights
+        // Generate LLM-powered insights with temporal analysis
         const insights = await generateDailyReport(
           adRecommendations,
           funnelLeaks,
@@ -872,6 +880,10 @@ export const appRouter = router({
             cpl: kpis.cpl || 0,
             roas: kpis.roas || 0,
             aov: kpis.aov || 0,
+            // Temporal analysis (yesterday + trends)
+            yesterday: optimizationMetrics.yesterday,
+            trend_3day: optimizationMetrics.trend_3day,
+            trend_7day: optimizationMetrics.trend_7day,
           }
         );
 
@@ -893,6 +905,10 @@ export const appRouter = router({
             aov: kpis.aov || 0,
             manychat_connected: kpis.manychatConnected || 0,
             kingdom_seeker_trials: kpis.kingdomSeekerTrials || 0,
+            // Temporal analysis
+            yesterday: optimizationMetrics.yesterday || null,
+            trend_3day: optimizationMetrics.trend_3day || [],
+            trend_7day: optimizationMetrics.trend_7day || [],
           },
           funnelRates: dashboardMetrics.funnelRates || {},
           recommendations: adRecommendations,

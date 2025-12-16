@@ -1,8 +1,9 @@
 import { supabase } from "./supabase";
 import { randomUUID } from "crypto";
 
-// Campaign filter constant
+// Campaign filter constants
 const CAMPAIGN_NAME_FILTER = "31DWC2026";
+const CAMPAIGN_TYPE_FILTERS = ["[SALES]", "[LEADS]"]; // Only SALES and LEADS campaigns
 
 // Optimization thresholds
 const THRESHOLDS = {
@@ -81,6 +82,13 @@ export async function analyzeAdPerformance(): Promise<AdRecommendation[]> {
     return [];
   }
 
+  // Filter only SALES and LEADS campaigns
+  const filteredAds = ads.filter(ad => 
+    CAMPAIGN_TYPE_FILTERS.some(type => ad.campaign_name.includes(type))
+  );
+
+  console.log(`[Optimization Engine] Filtered ${filteredAds.length} ads from ${ads.length} total (SALES + LEADS only)`);
+
   // Group by ad_id and aggregate metrics
   const adMetrics = new Map<
     string,
@@ -103,7 +111,7 @@ export async function analyzeAdPerformance(): Promise<AdRecommendation[]> {
     }
   >();
 
-  for (const ad of ads) {
+  for (const ad of filteredAds) {
     const key = ad.ad_id;
     if (!adMetrics.has(key)) {
       adMetrics.set(key, {
@@ -267,6 +275,11 @@ export async function detectFunnelLeaks(): Promise<FunnelLeak[]> {
     return [];
   }
 
+  // Filter only SALES and LEADS campaigns
+  const filteredAds = ads.filter(ad => 
+    CAMPAIGN_TYPE_FILTERS.some(type => ad.campaign_name.includes(type))
+  );
+
   // Aggregate metrics across all ads
   let total_link_clicks = 0;
   let total_landing_page_views = 0;
@@ -274,7 +287,7 @@ export async function detectFunnelLeaks(): Promise<FunnelLeak[]> {
   let total_purchases = 0;
   let affected_ads_count = 0;
 
-  for (const ad of ads) {
+  for (const ad of filteredAds) {
     total_link_clicks += ad.inline_link_clicks || 0;
     total_landing_page_views += ad.landing_page_views || 0;
     total_leads += ad.reported_leads || 0;
@@ -391,6 +404,11 @@ export async function detectCreativeFatigue(): Promise<FatigueAlert[]> {
     return [];
   }
 
+  // Filter only SALES and LEADS campaigns
+  const filteredAds = ads.filter(ad => 
+    CAMPAIGN_TYPE_FILTERS.some(type => ad.campaign_name.includes(type))
+  );
+
   // Group by ad_id and calculate 3-day trends
   const adTrends = new Map<
     string,
@@ -405,7 +423,7 @@ export async function detectCreativeFatigue(): Promise<FatigueAlert[]> {
     }
   >();
 
-  for (const ad of ads) {
+  for (const ad of filteredAds) {
     if (!adTrends.has(ad.ad_id)) {
       adTrends.set(ad.ad_id, {
         ad_id: ad.ad_id,

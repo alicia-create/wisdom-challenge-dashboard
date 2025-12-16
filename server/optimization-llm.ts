@@ -44,6 +44,18 @@ export async function generateDailyReport(
     cpl?: number;
     roas?: number;
     aov?: number;
+    // Temporal analysis (optional)
+    yesterday?: {
+      spend: number;
+      link_clicks: number;
+      leads: number;
+      purchases: number;
+      purchase_rate: number;
+      click_to_purchase_rate: number;
+      cpp: number;
+    };
+    trend_3day?: Array<{ date: string; spend: number; purchases: number; cpp: number }>;
+    trend_7day?: Array<{ date: string; spend: number; purchases: number; cpp: number }>;
   }
 ): Promise<DailyReportInsights> {
   const criticalRecs = adRecommendations.filter((r) => r.severity === "critical");
@@ -54,17 +66,36 @@ export async function generateDailyReport(
 - Total Leads: ${campaignMetrics.total_leads?.toLocaleString() || 0}
 - Total Revenue: $${campaignMetrics.total_revenue?.toLocaleString() || 0}
 - Journals Sold: ${campaignMetrics.total_journals || 0}
-- Lead-to-Purchase Conversion: ${((campaignMetrics.conversion_rate || 0) * 100).toFixed(1)}%
+- Lead-to-Purchase Conversion: ${((campaignMetrics.conversion_rate || 0) * 100).toFixed(1)}% (Target: 40%, Last Year: 11.58%)
 - Cost Per Lead: $${(campaignMetrics.cpl || 0).toFixed(2)}
 - ROAS: ${(campaignMetrics.roas || 0).toFixed(2)}x
 - AOV: $${(campaignMetrics.aov || 0).toFixed(2)}` : '';
 
+  // Build temporal analysis section if available
+  const temporalAnalysis = campaignMetrics.yesterday ? `
+
+**Yesterday's Performance:**
+- Spend: $${campaignMetrics.yesterday.spend.toLocaleString()}
+- Link Clicks: ${campaignMetrics.yesterday.link_clicks.toLocaleString()}
+- Leads: ${campaignMetrics.yesterday.leads}
+- Purchases: ${campaignMetrics.yesterday.purchases}
+- Purchase Rate: ${(campaignMetrics.yesterday.purchase_rate * 100).toFixed(1)}%
+- Click-to-Purchase Rate: ${(campaignMetrics.yesterday.click_to_purchase_rate * 100).toFixed(1)}%
+- CPP: $${campaignMetrics.yesterday.cpp.toFixed(2)}
+
+**3-Day Trend:**
+${campaignMetrics.trend_3day?.map(d => `- ${d.date}: $${d.spend.toFixed(0)} spend, ${d.purchases} purchases, $${d.cpp.toFixed(2)} CPP`).join('\n') || 'No trend data'}
+
+**7-Day Trend:**
+${campaignMetrics.trend_7day?.map(d => `- ${d.date}: $${d.spend.toFixed(0)} spend, ${d.purchases} purchases, $${d.cpp.toFixed(2)} CPP`).join('\n') || 'No trend data'}` : '';
+
   const prompt = `You are a Facebook Ads optimization expert analyzing the 31DWC2026 campaign performance.
 
 **Campaign Context:**
-- Budget: $150K/day (Phase 2 scale period: Dec 26 - Jan 1)
-- Strategy: Broad/Advantage+ Audiences, Creative-driven performance
-- Primary Metric: Click-to-Purchase Rate (Target: 10%)
+- Phase 1 Budget (Dec 15-25): $150K total, starting ~$3.5-4K/day with 20% daily increase
+- Strategy: Broad/Advantage+ Audiences, Creative-driven performance, SALES and LEADS campaigns only
+- Primary Metric: Click-to-Purchase Rate (Target: 7%)
+- Lead-to-Purchase Rate: Target 40% (Last Year: 11.58%)
 - Cost Per Purchase: Target $30-$60
 - Journal Sales Goal: 20,000 units
 
@@ -72,8 +103,8 @@ export async function generateDailyReport(
 - Total Spend: $${campaignMetrics.total_spend.toLocaleString()}
 - Total Clicks: ${campaignMetrics.total_clicks.toLocaleString()}
 - Total Purchases: ${campaignMetrics.total_purchases}
-- Click-to-Purchase Rate: ${(campaignMetrics.click_to_purchase_rate * 100).toFixed(1)}% (Target: 10%)
-- Average CPP: $${campaignMetrics.avg_cpp.toFixed(2)} (Target: $30-$60)${extendedMetrics}
+- Click-to-Purchase Rate: ${(campaignMetrics.click_to_purchase_rate * 100).toFixed(1)}% (Target: 7%)
+- Average CPP: $${campaignMetrics.avg_cpp.toFixed(2)} (Target: $30-$60)${extendedMetrics}${temporalAnalysis}
 
 **Issues Detected:**
 - Critical Actions: ${criticalRecs.length} ads need immediate disabling
@@ -114,15 +145,24 @@ Generate a comprehensive daily optimization report in JSON format with the follo
   ]
 }
 
+**Funnel Leak Priority (Most to Least Important):**
+1. Lead-to-Purchase Leak (VIP Offer/Nurture Issue) - Target: 40% conversion
+2. Click-to-Purchase Leak - Target: 7%
+3. Click-to-Lead Leak (Landing Page Conversion Issue)
+4. Click-to-Page Leak (Connect Rate Issue)
+
 **Guidelines:**
 - Be direct and actionable, not generic
 - Use specific numbers from the data
 - Prioritize by business impact (wasted spend, missed revenue)
 - Explain WHY something is happening, not just WHAT
 - Focus on the top 3 priorities - don't overwhelm with too many actions
-- If Click-to-Purchase Rate is below 10%, make this the #1 priority
+- **Use yesterday's performance and trends to identify momentum:** Is performance improving or declining?
+- If Click-to-Purchase Rate is below 7%, make this a top priority
+- If Lead-to-Purchase Rate is below 40%, this is the #1 priority (last year was only 11.58%)
 - If CPP is above $60, explain which part of the funnel is broken
-- Connect the dots between funnel leaks and ad performance`;
+- Connect the dots between funnel leaks and ad performance
+- Analyze trends: Are we scaling properly with the 20% daily budget increase?`;
 
   try {
     const response = await invokeLLM({

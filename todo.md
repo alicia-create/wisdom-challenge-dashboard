@@ -1233,3 +1233,15 @@
 - [x] Check dev server status and configuration
 - [x] Fix WebSocket configuration in vite.config.ts (protocol: 'wss', clientPort: 443)
 - [x] Test hot module replacement after fix (no console errors)
+
+## AI Agent Updates - Campaign Filtering & Temporal Analysis (2025-12-16)
+- [x] Filter optimization to only SALES and LEADS campaigns (exclude content, retargeting, other)
+- [x] Create edge function get_optimization_metrics to process data in Supabase (20 ads analyzed, yesterday + 3/7-day trends)
+- [x] Add yesterday's metrics comparison to daily report (spend, purchases, CPP, rates)
+- [x] Add 3-7 day trend analysis to identify patterns (daily spend, purchases, CPP)
+- [x] Update Phase 1 budget info: $150K total, starting $3.5-4K/day with 20% daily increase
+- [x] Update Purchase Rate target: 40% (last year: 11.58%)
+- [x] Update Click-to-Purchase Rate target: 7%
+- [x] Update leak priorities: Lead-to-Purchase → Click-to-Purchase → Click-to-Lead → Click-to-Page
+- [x] Update optimization rules documentation with new targets
+- [x] Test AI Agent with new filters and temporal analysis (20 SALES/LEADS ads, yesterday + trends working)
