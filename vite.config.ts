@@ -44,5 +44,12 @@ export default defineConfig({
       strict: true,
       deny: ["**/.*"],
     },
+    watch: {
+      // Use polling with longer interval to reduce file descriptors
+      usePolling: true,
+      interval: 1000,
+      // Ignore node_modules and other large directories
+      ignored: ["**/node_modules/**", "**/.git/**", "**/dist/**"],
+    },
   },
 });
