@@ -255,7 +255,7 @@ export default function DailyAnalysis() {
                 <table className="w-full border-collapse text-sm">
                   <thead className="sticky top-0 z-20 bg-background shadow-sm">
                     <tr className="border-b-2 border-border">
-                      <th className="sticky left-0 z-30 bg-background text-left p-3 font-semibold min-w-[250px]">
+                      <th className="sticky left-0 z-30 bg-white dark:bg-gray-950 text-left p-3 font-semibold min-w-[250px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
                         Metric
                       </th>
                       <th className="text-right p-3 font-semibold min-w-[120px] bg-muted">
@@ -285,7 +285,7 @@ export default function DailyAnalysis() {
                         {/* Metrics in Category */}
                         {categoryMetrics.map((metric, idx) => (
                           <tr key={metric.key} className={idx % 2 === 0 ? "bg-background" : "bg-muted/20"}>
-                            <td className="sticky left-0 z-10 bg-inherit text-left p-3 border-r border-border">
+                            <td className="sticky left-0 z-10 bg-white dark:bg-gray-950 text-left p-3 border-r border-border shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
                               {metric.label}
                             </td>
                             <td className="text-right p-3 font-semibold bg-muted/50">
