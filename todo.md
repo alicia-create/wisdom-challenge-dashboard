@@ -1244,4 +1244,10 @@
 - [x] Update Click-to-Purchase Rate target: 7%
 - [x] Update leak priorities: Lead-to-Purchase → Click-to-Purchase → Click-to-Lead → Click-to-Page
 - [x] Update optimization rules documentation with new targets
-- [x] Test AI Agent with new filters and temporal analysis (20 SALES/LEADS ads, yesterday + trends working)
+- [x] Test AI Agent with new filters and temporal analysis (20 SALES/LEADS ads, ## Dashboard Visualization Fixes (2025-12-16)
+- [x] Fix funnel step labels - move outside colored boxes for better visibility on laptop screens
+- [x] Fix broken Daily Wisdom+ Sales chart (now showing Dec 15: 285, Dec 16: 312 sales)
+- [x] Fix broken Daily Leads chart (now showing Dec 15: 1557, Dec 16: 2218 leads)
+- [x] Add Conversions column to Google Performance table (showing reported_purchases from ad_performance)
+- [x] Verify Total Ad Spend includes Google Ads (Meta LEADS+SALES: $14,133.99 + Google: $452.08 = $14,586.07)
+- [x] Test all fixes in browser and verify charts and tables display correctly (all working!)

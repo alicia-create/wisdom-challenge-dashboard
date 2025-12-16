@@ -196,12 +196,16 @@ export const appRouter = router({
         
         console.log(`[Unified Metrics] Fetching data for ${startDate} to ${endDate}`);
         
-        const [metricsResult, journalsResult] = await Promise.all([
+        const [metricsResult, journalsResult, dailyResult] = await Promise.all([
           supabase.rpc('get_dashboard_metrics', {
             p_start_date: startDate,
             p_end_date: endDate,
           }),
           supabase.rpc('get_journals_metrics', {
+            p_start_date: startDate,
+            p_end_date: endDate,
+          }),
+          supabase.rpc('get_daily_metrics', {
             p_start_date: startDate,
             p_end_date: endDate,
           }),
@@ -212,7 +216,7 @@ export const appRouter = router({
           throw new Error(`Failed to fetch unified metrics: ${metricsResult.error.message}`);
         }
         
-        // Combine metrics with journals data
+        // Combine metrics with journals data and daily data
         const result = {
           ...metricsResult.data,
           journals: journalsResult.data || {
@@ -223,7 +227,22 @@ export const appRouter = router({
             journalProgress: 0,
             journalsRemaining: 20000,
           },
+          dailyKpis: dailyResult.data?.dailyData || [],
         };
+        
+        // Add Google conversions if not already present
+        if (result.googlePerformance && !result.googlePerformance.conversions) {
+          // Fetch Google conversions separately
+          const { data: googleConversions } = await supabase
+            .from('ad_performance')
+            .select('reported_purchases')
+            .eq('platform', 'Google')
+            .gte('date', startDate)
+            .lte('date', endDate);
+          
+          const totalConversions = googleConversions?.reduce((sum, row) => sum + (row.reported_purchases || 0), 0) || 0;
+          result.googlePerformance.conversions = totalConversions;
+        }
         
         // Cache for 2 minutes
         await cache.set(cacheKey, result, 2 * 60 * 1000);
@@ -834,12 +853,16 @@ export const appRouter = router({
         const optimizationMetrics = optimizationMetricsResult.data || { yesterday: {}, trend_3day: [], trend_7day: [] };
         
         // Fetch unified metrics from edge function for richer context
-        const [metricsResult, journalsResult] = await Promise.all([
+        const [metricsResult, journalsResult, dailyResult] = await Promise.all([
           supabase.rpc('get_dashboard_metrics', {
             p_start_date: startDate,
             p_end_date: endDate,
           }),
           supabase.rpc('get_journals_metrics', {
+            p_start_date: startDate,
+            p_end_date: endDate,
+          }),
+          supabase.rpc('get_daily_metrics', {
             p_start_date: startDate,
             p_end_date: endDate,
           }),

@@ -37,10 +37,7 @@ export default function Overview() {
     endDate,
   });
 
-  // Fetch daily KPIs for charts (still needed for time series)
-  const { data: dailyKpis, isLoading: kpisLoading } = trpc.overview.dailyKpis.useQuery({
-    dateRange,
-  });
+  // Daily KPIs are now included in unifiedMetrics response
 
   // Track last fetch time
   useEffect(() => {
@@ -79,20 +76,25 @@ export default function Overview() {
   const googlePerformance = unifiedData?.googlePerformance;
   const vslPerformance = unifiedData?.vslPerformance;
   const journals = unifiedData?.journals;
+  const dailyKpis = unifiedData?.dailyKpis;
 
-  // Prepare chart data
-  const chartData = (dailyKpis?.map((kpi: any) => {
-    const [year, month, day] = kpi.date.split('-').map(Number);
-    const dateObj = new Date(year, month - 1, day);
-    return {
-      date: dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      dateObj,
-      spend: parseFloat(kpi.total_spend_meta || '0') + parseFloat(kpi.total_spend_google || '0'),
-      leads: kpi.total_leads || 0,
-      vipSales: kpi.vip_sales || 0,
-      roas: parseFloat(kpi.roas || '0'),
-    };
-  }) || []).sort((a: any, b: any) => a.dateObj.getTime() - b.dateObj.getTime());
+  // Prepare chart data from daily metrics (filter out days with no activity)
+  const chartData = (dailyKpis
+    ?.filter((kpi: any) => (kpi.totalLeads || 0) > 0 || (kpi.totalWisdomSales || 0) > 0)
+    .map((kpi: any) => {
+      const [year, month, day] = kpi.date.split('-').map(Number);
+      const dateObj = new Date(year, month - 1, day);
+      return {
+        date: dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        dateObj,
+        spend: parseFloat(kpi.totalAdSpend || '0'),
+        leads: kpi.totalLeads || 0,
+        vipSales: kpi.totalWisdomSales || 0,
+        roas: parseFloat(kpi.roas || '0'),
+      };
+    }) || []).sort((a: any, b: any) => a.dateObj.getTime() - b.dateObj.getTime());
+  
+  console.log('[Overview] Chart data:', chartData.length, 'days', chartData.slice(0, 3));
 
   // Transform funnel data for ConversionFunnel component
   const transformFunnelData = (funnel: any) => ({
@@ -277,7 +279,7 @@ export default function Overview() {
               ) : (
                 <>
                   <div className="text-3xl font-bold">
-                    {formatCurrency((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0))}
+                    {formatCurrency((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0) + (googlePerformance?.spend || 0))}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
                     Lead + Sales Campaigns
@@ -285,8 +287,7 @@ export default function Overview() {
                   <p className="text-xs text-muted-foreground/70">
                     All: {formatCurrency(kpis?.totalSpend || 0)}
                   </p>
-                </>
-              )}
+                </>              )}
             </CardContent>
           </Card>
 
@@ -521,7 +522,7 @@ export default function Overview() {
             <CardDescription>VIP purchases over time (orders $31+)</CardDescription>
           </CardHeader>
           <CardContent>
-            {kpisLoading ? (
+            {unifiedLoading ? (
               <Skeleton className="h-[300px] w-full" />
             ) : (
               <ResponsiveContainer width="100%" height={300}>
@@ -545,7 +546,7 @@ export default function Overview() {
             <CardDescription>Lead generation over time</CardDescription>
           </CardHeader>
           <CardContent>
-            {kpisLoading ? (
+            {unifiedLoading ? (
               <Skeleton className="h-[300px] w-full" />
             ) : (
               <ResponsiveContainer width="100%" height={300}>
@@ -671,6 +672,7 @@ export default function Overview() {
                       <th className="text-right py-3 px-4 font-medium">Spend ($)</th>
                       <th className="text-right py-3 px-4 font-medium">Clicks</th>
                       <th className="text-right py-3 px-4 font-medium">Impressions</th>
+                      <th className="text-right py-3 px-4 font-medium">Conversions</th>
                       <th className="text-right py-3 px-4 font-medium">CPC ($)</th>
                       <th className="text-right py-3 px-4 font-medium">CPM ($)</th>
                       <th className="text-right py-3 px-4 font-medium">CTR (%)</th>
@@ -682,6 +684,7 @@ export default function Overview() {
                       <td className="text-right py-3 px-4">{formatCurrency(googlePerformance.spend)}</td>
                       <td className="text-right py-3 px-4">{formatNumber(googlePerformance.clicks)}</td>
                       <td className="text-right py-3 px-4">{formatNumber(googlePerformance.impressions)}</td>
+                      <td className="text-right py-3 px-4">{formatNumber(googlePerformance.conversions || 0)}</td>
                       <td className="text-right py-3 px-4">{formatCurrency(googlePerformance.cpc)}</td>
                       <td className="text-right py-3 px-4">{formatCurrency(googlePerformance.cpm)}</td>
                       <td className="text-right py-3 px-4">{formatPercent(googlePerformance.ctr)}</td>

@@ -94,21 +94,24 @@ export function ConversionFunnel({ data }: ConversionFunnelProps) {
 
             {/* Funnel stage */}
             <div className="relative">
+              {/* Label outside the box on the left */}
+              <div className="flex items-center gap-3 mb-2">
+                <div className={`${stage.color} p-1.5 rounded-lg flex-shrink-0`}>
+                  <div className="text-white">{stage.icon}</div>
+                </div>
+                <div className="font-semibold text-sm sm:text-base text-foreground">
+                  {stage.name}
+                </div>
+              </div>
+              
+              {/* Colored funnel box with count */}
               <div
                 className={`${stage.color} rounded-lg p-3 sm:p-4 transition-all duration-500 ease-out`}
                 style={{ width: `${Math.max(widthPercent, 30)}%`, marginLeft: 'auto', marginRight: 'auto' }}
               >
                 <div className="flex items-center justify-between text-white gap-2">
-                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                    <div className="bg-white/20 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
-                      {stage.icon}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="font-semibold text-sm sm:text-base truncate">{stage.name}</div>
-                      <div className="text-xs sm:text-sm opacity-90">
-                        {stage.count.toLocaleString()} users
-                      </div>
-                    </div>
+                  <div className="text-xs sm:text-sm opacity-90">
+                    {stage.count.toLocaleString()} users
                   </div>
                   <div className="text-xl sm:text-2xl font-bold flex-shrink-0">
                     {stage.count.toLocaleString()}
