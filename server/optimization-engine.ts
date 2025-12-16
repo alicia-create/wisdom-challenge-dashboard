@@ -72,7 +72,7 @@ export async function analyzeAdPerformance(): Promise<AdRecommendation[]> {
   const { data: ads, error } = await supabase
     .from("ad_performance")
     .select("*")
-    .eq("campaign_name", CAMPAIGN_NAME_FILTER)
+    .ilike("campaign_name", `%${CAMPAIGN_NAME_FILTER}%`)
     .gte("date", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0])
     .order("date", { ascending: false });
 
@@ -131,10 +131,10 @@ export async function analyzeAdPerformance(): Promise<AdRecommendation[]> {
     metrics.total_impressions += ad.impressions || 0;
     metrics.total_link_clicks += ad.inline_link_clicks || 0;
     metrics.total_landing_page_views += ad.landing_page_views || 0;
-    metrics.total_leads += ad.leads || 0;
-    metrics.total_purchases += ad.purchases || 0;
-    metrics.total_video_3_sec_views += ad.video_3_sec_views || 0;
-    metrics.frequency = Math.max(metrics.frequency, ad.frequency || 0);
+    metrics.total_leads += ad.reported_leads || 0;
+    metrics.total_purchases += ad.reported_purchases || 0;
+    metrics.total_video_3_sec_views += 0; // Not available in current schema
+    metrics.frequency = 0; // Not available in current schema
   }
 
   // Apply optimization rules
@@ -259,7 +259,7 @@ export async function detectFunnelLeaks(): Promise<FunnelLeak[]> {
   const { data: ads, error } = await supabase
     .from("ad_performance")
     .select("*")
-    .eq("campaign_name", CAMPAIGN_NAME_FILTER)
+    .ilike("campaign_name", `%${CAMPAIGN_NAME_FILTER}%`)
     .gte("date", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]);
 
   if (error || !ads) {
@@ -277,8 +277,8 @@ export async function detectFunnelLeaks(): Promise<FunnelLeak[]> {
   for (const ad of ads) {
     total_link_clicks += ad.inline_link_clicks || 0;
     total_landing_page_views += ad.landing_page_views || 0;
-    total_leads += ad.leads || 0;
-    total_purchases += ad.purchases || 0;
+    total_leads += ad.reported_leads || 0;
+    total_purchases += ad.reported_purchases || 0;
     affected_ads_count++;
   }
 
@@ -382,7 +382,7 @@ export async function detectCreativeFatigue(): Promise<FatigueAlert[]> {
   const { data: ads, error } = await supabase
     .from("ad_performance")
     .select("*")
-    .eq("campaign_name", CAMPAIGN_NAME_FILTER)
+    .ilike("campaign_name", `%${CAMPAIGN_NAME_FILTER}%`)
     .gte("date", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0])
     .order("date", { ascending: true });
 

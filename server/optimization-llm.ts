@@ -36,10 +36,28 @@ export async function generateDailyReport(
     total_purchases: number;
     click_to_purchase_rate: number;
     avg_cpp: number;
+    // Extended metrics (optional)
+    total_leads?: number;
+    total_revenue?: number;
+    total_journals?: number;
+    conversion_rate?: number;
+    cpl?: number;
+    roas?: number;
+    aov?: number;
   }
 ): Promise<DailyReportInsights> {
   const criticalRecs = adRecommendations.filter((r) => r.severity === "critical");
   const warningRecs = adRecommendations.filter((r) => r.severity === "warning");
+
+  // Build extended metrics section if available
+  const extendedMetrics = campaignMetrics.total_leads ? `
+- Total Leads: ${campaignMetrics.total_leads?.toLocaleString() || 0}
+- Total Revenue: $${campaignMetrics.total_revenue?.toLocaleString() || 0}
+- Journals Sold: ${campaignMetrics.total_journals || 0}
+- Lead-to-Purchase Conversion: ${((campaignMetrics.conversion_rate || 0) * 100).toFixed(1)}%
+- Cost Per Lead: $${(campaignMetrics.cpl || 0).toFixed(2)}
+- ROAS: ${(campaignMetrics.roas || 0).toFixed(2)}x
+- AOV: $${(campaignMetrics.aov || 0).toFixed(2)}` : '';
 
   const prompt = `You are a Facebook Ads optimization expert analyzing the 31DWC2026 campaign performance.
 
@@ -48,13 +66,14 @@ export async function generateDailyReport(
 - Strategy: Broad/Advantage+ Audiences, Creative-driven performance
 - Primary Metric: Click-to-Purchase Rate (Target: 10%)
 - Cost Per Purchase: Target $30-$60
+- Journal Sales Goal: 20,000 units
 
-**Current Performance:**
+**Current Performance (Last 7 Days):**
 - Total Spend: $${campaignMetrics.total_spend.toLocaleString()}
 - Total Clicks: ${campaignMetrics.total_clicks.toLocaleString()}
 - Total Purchases: ${campaignMetrics.total_purchases}
 - Click-to-Purchase Rate: ${(campaignMetrics.click_to_purchase_rate * 100).toFixed(1)}% (Target: 10%)
-- Average CPP: $${campaignMetrics.avg_cpp.toFixed(2)} (Target: $30-$60)
+- Average CPP: $${campaignMetrics.avg_cpp.toFixed(2)} (Target: $30-$60)${extendedMetrics}
 
 **Issues Detected:**
 - Critical Actions: ${criticalRecs.length} ads need immediate disabling

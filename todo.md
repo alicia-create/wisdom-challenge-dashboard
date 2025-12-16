@@ -1217,3 +1217,13 @@
 
 ## KPI Cards Data Fix (2025-12-- [x] Fix KPI cards to show correct totals with Supabase pagination (Total Leads: 1024, Wisdom+: 144) [ ] Fix Total Wisdom+ Sales KPI to show sum of both funnels (should be 137, not 45)
 - [ ] Ensure KPI totals match the sum of funnel breakdowns
+
+## AI Agent Fixes (2025-12-16)
+- [x] Fix campaign name filter in optimization-engine.ts (use ILIKE '%31DWC2026%' instead of exact match)
+- [x] Fix column names (reported_leads, reported_purchases instead of leads, purchases)
+- [x] Update optimization router to use edge functions (get_dashboard_metrics, get_journals_metrics)
+- [x] Add extended metrics to LLM context (leads, revenue, journals, conversion rate, CPL, ROAS, AOV)
+- [x] Fix cache.get/set/delete to use await (async methods)
+- [x] Add cache validation to only use cache if it has valid insights and metrics
+- [x] Test AI agent generates insights correctly (12s response with full data)
+- [x] Verify all optimization metrics display on Agent page in browser (working with full insights)

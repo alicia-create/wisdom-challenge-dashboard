@@ -82,7 +82,7 @@ async function checkHighCPP(): Promise<void> {
   const { data: ads } = await supabase
     .from("ad_performance")
     .select("*")
-    .eq("campaign_name", CAMPAIGN_NAME_FILTER)
+    .ilike("campaign_name", `%${CAMPAIGN_NAME_FILTER}%`)
     .gte("date", startDate)
     .lte("date", endDate);
 
@@ -127,7 +127,7 @@ async function checkLowClickToPurchase(): Promise<void> {
   const { data: ads } = await supabase
     .from("ad_performance")
     .select("*")
-    .eq("campaign_name", CAMPAIGN_NAME_FILTER)
+    .ilike("campaign_name", `%${CAMPAIGN_NAME_FILTER}%`)
     .gte("date", startDate)
     .lte("date", endDate);
 
@@ -172,7 +172,7 @@ async function checkHighFrequency(): Promise<void> {
   const { data: ads } = await supabase
     .from("ad_performance")
     .select("*")
-    .eq("campaign_name", CAMPAIGN_NAME_FILTER)
+    .ilike("campaign_name", `%${CAMPAIGN_NAME_FILTER}%`)
     .gte("date", startDate)
     .lte("date", endDate);
 

@@ -780,7 +780,7 @@ export const appRouter = router({
     invalidateCache: publicProcedure
       .mutation(async () => {
         const cacheKey = "optimization:dailyReport";
-        cache.delete(cacheKey);
+        await cache.delete(cacheKey);
         console.log("[Optimization] Cache invalidated manually");
         return { success: true, message: "Cache cleared. Next request will generate fresh report." };
       }),
@@ -807,43 +807,51 @@ export const appRouter = router({
       .query(async () => {
         // Check cache first (TTL: 30 minutes)
         const cacheKey = "optimization:dailyReport";
-        const cached = cache.get<any>(cacheKey);
+        const cached = await cache.get<any>(cacheKey);
         
-        if (cached) {
+        // Only use cache if it has valid insights data
+        if (cached && cached.insights && cached.metrics) {
           console.log("[Optimization] Returning cached daily report");
           return { ...cached, cached: true };
         }
 
-        console.log("[Optimization] Generating fresh daily report (cache miss)");
+        console.log("[Optimization] Generating fresh daily report");
 
         // Fetch all optimization data
         const adRecommendations = await analyzeAdPerformance();
         const funnelLeaks = await detectFunnelLeaks();
         const creativeFatigue = await detectCreativeFatigue();
 
-        // Calculate campaign metrics from ad performance data
+        // Get comprehensive metrics from edge functions
         const { startDate, endDate } = getDateRangeValues(DATE_RANGES.LAST_7_DAYS);
-        const { data: ads } = await supabase
-          .from("ad_performance")
-          .select("*")
-          .eq("campaign_name", "31DWC2026")
-          .gte("date", startDate)
-          .lte("date", endDate);
-
-        let total_spend = 0;
-        let total_clicks = 0;
-        let total_purchases = 0;
-
-        if (ads) {
-          for (const ad of ads) {
-            total_spend += ad.spend || 0;
-            total_clicks += ad.inline_link_clicks || 0;
-            total_purchases += ad.purchases || 0;
-          }
-        }
-
+        
+        // Fetch unified metrics from edge function for richer context
+        const [metricsResult, journalsResult] = await Promise.all([
+          supabase.rpc('get_dashboard_metrics', {
+            p_start_date: startDate,
+            p_end_date: endDate,
+          }),
+          supabase.rpc('get_journals_metrics', {
+            p_start_date: startDate,
+            p_end_date: endDate,
+          }),
+        ]);
+        
+        const dashboardMetrics = metricsResult.data || {};
+        const journalsMetrics = journalsResult.data || {};
+        
+        // Extract key metrics from edge function response
+        const kpis = dashboardMetrics.kpis || {};
+        const total_spend = kpis.totalSpend || 0;
+        const total_clicks = kpis.linkClicks || 0;
+        const total_purchases = kpis.wisdomSales || 0;
+        const total_leads = kpis.totalLeads || 0;
+        const total_revenue = kpis.totalRevenue || 0;
+        const total_journals = journalsMetrics.totalJournals || 0;
+        
         const click_to_purchase_rate = total_clicks > 0 ? total_purchases / total_clicks : 0;
         const avg_cpp = total_purchases > 0 ? total_spend / total_purchases : 0;
+        const conversion_rate = total_leads > 0 ? total_purchases / total_leads : 0;
 
         // Generate LLM-powered insights
         const insights = await generateDailyReport(
@@ -856,6 +864,14 @@ export const appRouter = router({
             total_purchases,
             click_to_purchase_rate,
             avg_cpp,
+            // Extended metrics from edge functions
+            total_leads,
+            total_revenue,
+            total_journals,
+            conversion_rate,
+            cpl: kpis.cpl || 0,
+            roas: kpis.roas || 0,
+            aov: kpis.aov || 0,
           }
         );
 
@@ -865,9 +881,20 @@ export const appRouter = router({
             total_spend,
             total_clicks,
             total_purchases,
+            total_leads,
+            total_revenue,
+            total_journals,
             click_to_purchase_rate,
+            conversion_rate,
             avg_cpp,
+            // Additional metrics from edge functions
+            cpl: kpis.cpl || 0,
+            roas: kpis.roas || 0,
+            aov: kpis.aov || 0,
+            manychat_connected: kpis.manychatConnected || 0,
+            kingdom_seeker_trials: kpis.kingdomSeekerTrials || 0,
           },
+          funnelRates: dashboardMetrics.funnelRates || {},
           recommendations: adRecommendations,
           funnel_leaks: funnelLeaks,
           creative_fatigue: creativeFatigue,
@@ -875,7 +902,7 @@ export const appRouter = router({
         };
 
         // Cache the result for 30 minutes
-        cache.set(cacheKey, result, 30 * 60 * 1000);
+        await cache.set(cacheKey, result, 30 * 60 * 1000);
 
         return result;
       }),
