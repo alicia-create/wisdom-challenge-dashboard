@@ -54,7 +54,6 @@ export default defineConfig({
       // Configure HMR for proxied environments
       overlay: false,
       protocol: 'wss',
-      host: '3000-ikzu0p9w0hx4kyk0u2oei-2f4d94ad.manusvm.computer',
       clientPort: 443,
     },
     fs: {
