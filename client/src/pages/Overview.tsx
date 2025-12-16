@@ -321,7 +321,7 @@ export default function Overview() {
           <Card className="border-l-2 border-l-[#560BAD]">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-1">
-                <CardTitle className="text-xs font-medium text-muted-foreground">Cost Per Lead</CardTitle>
+                <CardTitle className="text-xs font-medium text-muted-foreground">Cost per Lead (Ads)</CardTitle>
                 <Tooltip>
                   <TooltipTrigger>
                     <Info className="h-3 w-3 text-muted-foreground" />
@@ -346,12 +346,16 @@ export default function Overview() {
                   : 0;
                 const cplColor = cplValue <= 3 ? 'text-green-600' : cplValue <= 6 ? 'text-emerald-500' : cplValue <= 9 ? 'text-yellow-600' : 'text-red-500';
                 const cplLabel = cplValue <= 3 ? 'Excellent' : cplValue <= 6 ? 'Great' : cplValue <= 9 ? 'Good' : 'Above Target';
+                const trueCpl = kpis?.totalLeads && kpis.totalLeads > 0
+                  ? kpis.totalSpend / kpis.totalLeads
+                  : 0;
                 return (
                   <>
                     <div className={`text-xl font-bold ${cplColor}`}>
                       {formatCurrency(cplValue)}
                     </div>
                     <p className={`text-xs mt-1 ${cplColor}`}>{cplLabel}</p>
+                    <p className="text-xs text-muted-foreground mt-2">True CPL: {formatCurrency(trueCpl)}</p>
                   </>
                 );
               })()}
@@ -362,7 +366,7 @@ export default function Overview() {
           <Card className="border-l-2 border-l-[#7209B7]">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-1">
-                <CardTitle className="text-xs font-medium text-muted-foreground">Cost Per Purchase</CardTitle>
+                <CardTitle className="text-xs font-medium text-muted-foreground">Cost per Purchase (Ads)</CardTitle>
                 <Tooltip>
                   <TooltipTrigger>
                     <Info className="h-3 w-3 text-muted-foreground" />
@@ -387,12 +391,16 @@ export default function Overview() {
                   : 0;
                 const cppColor = cppValue <= 30 ? 'text-green-600' : cppValue <= 60 ? 'text-emerald-500' : cppValue <= 90 ? 'text-yellow-600' : 'text-red-500';
                 const cppLabel = cppValue <= 30 ? 'Excellent' : cppValue <= 60 ? 'Great' : cppValue <= 90 ? 'Good' : 'Above Target';
+                const trueCpp = kpis?.wisdomSales && kpis.wisdomSales > 0
+                  ? kpis.totalSpend / kpis.wisdomSales
+                  : 0;
                 return (
                   <>
                     <div className={`text-xl font-bold ${cppColor}`}>
                       {formatCurrency(cppValue)}
                     </div>
                     <p className={`text-xs mt-1 ${cppColor}`}>{cppLabel}</p>
+                    <p className="text-xs text-muted-foreground mt-2">True CPP: {formatCurrency(trueCpp)}</p>
                   </>
                 );
               })()}
