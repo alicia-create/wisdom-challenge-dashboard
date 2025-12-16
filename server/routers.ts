@@ -196,20 +196,39 @@ export const appRouter = router({
         
         console.log(`[Unified Metrics] Fetching data for ${startDate} to ${endDate}`);
         
-        const { data, error } = await supabase.rpc('get_dashboard_metrics', {
-          p_start_date: startDate,
-          p_end_date: endDate,
-        });
+        const [metricsResult, journalsResult] = await Promise.all([
+          supabase.rpc('get_dashboard_metrics', {
+            p_start_date: startDate,
+            p_end_date: endDate,
+          }),
+          supabase.rpc('get_journals_metrics', {
+            p_start_date: startDate,
+            p_end_date: endDate,
+          }),
+        ]);
         
-        if (error) {
-          console.error('[Unified Metrics] Error:', error);
-          throw new Error(`Failed to fetch unified metrics: ${error.message}`);
+        if (metricsResult.error) {
+          console.error('[Unified Metrics] Error:', metricsResult.error);
+          throw new Error(`Failed to fetch unified metrics: ${metricsResult.error.message}`);
         }
         
-        // Cache for 2 minutes
-        await cache.set(cacheKey, data, 2 * 60 * 1000);
+        // Combine metrics with journals data
+        const result = {
+          ...metricsResult.data,
+          journals: journalsResult.data || {
+            wisdomJournals: 0,
+            extraJournals: 0,
+            totalJournals: 0,
+            journalGoal: 20000,
+            journalProgress: 0,
+            journalsRemaining: 20000,
+          },
+        };
         
-        return data;
+        // Cache for 2 minutes
+        await cache.set(cacheKey, result, 2 * 60 * 1000);
+        
+        return result;
       }),
 
     // Get aggregated overview metrics (total leads, spend, CPL, ROAS, etc.)

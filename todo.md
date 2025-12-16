@@ -29,6 +29,14 @@
 - [x] Connect sales to original UTM parameters
 - [x] Display conversion funnel
 
+## Journals Card Implementation (2025-12-16)
+- [x] Create get_journals_metrics edge function in Supabase
+- [x] Add journals metrics call to backend (server/routers.ts)
+- [x] Create Journals card in Overview page showing: total journals, progress bar, breakdown
+- [x] Reorganize secondary KPI cards: Conversion, Journals, CPP, CPL, AOV, Email Clicks
+- [x] Optimize card spacing and copy to prevent vertical stretching
+- [x] Test journals data displays correctly (518 total, 2.59% of 20k goal)
+
 ## Polish & Testing
 - [x] Implement loading states for all data fetches
 - [x] Add error handling and user feedback

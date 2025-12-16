@@ -1473,3 +1473,28 @@ export async function getFunnelConversionMetrics(startDate?: string, endDate?: s
     };
   }
 }
+
+
+/**
+ * Helper to fetch journals metrics from edge function
+ */
+export async function getJournalsMetrics(startDate?: string, endDate?: string) {
+  const { data, error } = await supabase.rpc('get_journals_metrics', {
+    p_start_date: startDate || null,
+    p_end_date: endDate || null,
+  });
+
+  if (error) {
+    console.error('[Supabase] Error fetching journals metrics:', error);
+    return {
+      wisdomJournals: 0,
+      extraJournals: 0,
+      totalJournals: 0,
+      journalGoal: 20000,
+      journalProgress: 0,
+      journalsRemaining: 20000,
+    };
+  }
+
+  return data;
+}

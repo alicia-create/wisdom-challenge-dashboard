@@ -78,6 +78,7 @@ export default function Overview() {
   const metaCampaignBreakdown = unifiedData?.metaCampaignBreakdown;
   const googlePerformance = unifiedData?.googlePerformance;
   const vslPerformance = unifiedData?.vslPerformance;
+  const journals = unifiedData?.journals;
 
   // Prepare chart data
   const chartData = (dailyKpis?.map((kpi: any) => {
@@ -317,167 +318,144 @@ export default function Overview() {
 
         {/* Secondary KPIs - Smaller Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-6 sm:mb-8">
-          {/* Cost Per Lead */}
-          <Card className="border-l-2 border-l-[#560BAD]">
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-1">
-                <CardTitle className="text-xs font-medium text-muted-foreground">Cost per Lead (Ads)</CardTitle>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-3 w-3 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
-                    <div className="space-y-2">
-                      <p className="font-medium">Spend: {formatCurrency((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0))}</p>
-                      <p className="font-medium">Leads: {formatNumber(paidAdsFunnel?.leads || 0)}</p>
-                      <hr className="border-border/50" />
-                      <p className="text-xs text-muted-foreground">Metas: Excellent ≤$3 | Great ≤$6 | Good ≤$9</p>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {unifiedLoading ? (
-                <Skeleton className="h-6 w-16" />
-              ) : (() => {
-                const cplValue = paidAdsFunnel?.leads && paidAdsFunnel.leads > 0
-                  ? ((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0)) / paidAdsFunnel.leads
-                  : 0;
-                const cplColor = cplValue <= 3 ? 'text-green-600' : cplValue <= 6 ? 'text-emerald-500' : cplValue <= 9 ? 'text-yellow-600' : 'text-red-500';
-                const cplLabel = cplValue <= 3 ? 'Excellent' : cplValue <= 6 ? 'Great' : cplValue <= 9 ? 'Good' : 'Above Target';
-                const trueCpl = kpis?.totalLeads && kpis.totalLeads > 0
-                  ? kpis.totalSpend / kpis.totalLeads
-                  : 0;
-                return (
-                  <>
-                    <div className={`text-xl font-bold ${cplColor}`}>
-                      {formatCurrency(cplValue)}
-                    </div>
-                    <p className={`text-xs mt-1 ${cplColor}`}>{cplLabel}</p>
-                    <p className="text-xs text-muted-foreground mt-2">True CPL: {formatCurrency(trueCpl)}</p>
-                  </>
-                );
-              })()}
-            </CardContent>
-          </Card>
-
-          {/* Cost Per Purchase */}
-          <Card className="border-l-2 border-l-[#7209B7]">
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-1">
-                <CardTitle className="text-xs font-medium text-muted-foreground">Cost per Purchase (Ads)</CardTitle>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-3 w-3 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
-                    <div className="space-y-2">
-                      <p className="font-medium">Spend: {formatCurrency((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0))}</p>
-                      <p className="font-medium">Wisdom+ Sales: {formatNumber(paidAdsFunnel?.wisdomSales || 0)}</p>
-                      <hr className="border-border/50" />
-                      <p className="text-xs text-muted-foreground">Metas: Excellent ≤$30 | Great ≤$60 | Good ≤$90</p>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {unifiedLoading ? (
-                <Skeleton className="h-6 w-16" />
-              ) : (() => {
-                const cppValue = paidAdsFunnel?.wisdomSales && paidAdsFunnel.wisdomSales > 0
-                  ? ((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0)) / paidAdsFunnel.wisdomSales
-                  : 0;
-                const cppColor = cppValue <= 30 ? 'text-green-600' : cppValue <= 60 ? 'text-emerald-500' : cppValue <= 90 ? 'text-yellow-600' : 'text-red-500';
-                const cppLabel = cppValue <= 30 ? 'Excellent' : cppValue <= 60 ? 'Great' : cppValue <= 90 ? 'Good' : 'Above Target';
-                const trueCpp = kpis?.wisdomSales && kpis.wisdomSales > 0
-                  ? kpis.totalSpend / kpis.wisdomSales
-                  : 0;
-                return (
-                  <>
-                    <div className={`text-xl font-bold ${cppColor}`}>
-                      {formatCurrency(cppValue)}
-                    </div>
-                    <p className={`text-xs mt-1 ${cppColor}`}>{cppLabel}</p>
-                    <p className="text-xs text-muted-foreground mt-2">True CPP: {formatCurrency(trueCpp)}</p>
-                  </>
-                );
-              })()}
-            </CardContent>
-          </Card>
-
-          {/* AOV */}
-          <Card className="border-l-2 border-l-[#B5179E]">
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-1">
-                <CardTitle className="text-xs font-medium text-muted-foreground">Avg Order Value</CardTitle>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-3 w-3 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Total Revenue ÷ Total Wisdom+ Sales</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {unifiedLoading ? (
-                <Skeleton className="h-6 w-16" />
-              ) : (
-                <div className="text-xl font-bold">{formatCurrency(kpis?.aov || 0)}</div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Wisdom Conversion */}
+          {/* 1. Wisdom Conversion */}
           <Card className="border-l-2 border-l-[#4361EE]">
-            <CardHeader className="pb-2">
+            <CardHeader className="pb-1">
               <div className="flex items-center gap-1">
-                <CardTitle className="text-xs font-medium text-muted-foreground">Wisdom Conversion</CardTitle>
+                <CardTitle className="text-xs font-medium text-muted-foreground">Conversion</CardTitle>
                 <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-3 w-3 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Wisdom+ Sales ÷ Total Leads</p>
-                  </TooltipContent>
+                  <TooltipTrigger><Info className="h-3 w-3 text-muted-foreground" /></TooltipTrigger>
+                  <TooltipContent><p>Wisdom+ Sales ÷ Total Leads</p></TooltipContent>
                 </Tooltip>
               </div>
             </CardHeader>
-            <CardContent>
-              {unifiedLoading ? (
-                <Skeleton className="h-6 w-16" />
-              ) : (
+            <CardContent className="pt-1">
+              {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (
                 <div className="text-xl font-bold">{formatPercent(kpis?.wisdomConversion || 0)}</div>
               )}
             </CardContent>
           </Card>
 
-          {/* Welcome Email Clicks */}
-          <Card className="border-l-2 border-l-[#F72585]">
-            <CardHeader className="pb-2">
+          {/* 2. Journals */}
+          <Card className="border-l-2 border-l-[#10B981]">
+            <CardHeader className="pb-1">
               <div className="flex items-center gap-1">
-                <CardTitle className="text-xs font-medium text-muted-foreground">Welcome Email Clicks</CardTitle>
+                <CardTitle className="text-xs font-medium text-muted-foreground">Journals</CardTitle>
                 <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-3 w-3 text-muted-foreground" />
-                  </TooltipTrigger>
+                  <TooltipTrigger><Info className="h-3 w-3 text-muted-foreground" /></TooltipTrigger>
                   <TooltipContent>
-                    <p>Leads who clicked the NTN link in welcome email</p>
+                    <p>Wisdom+: {journals?.wisdomJournals || 0} | Extra: {journals?.extraJournals || 0}</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
             </CardHeader>
-            <CardContent>
-              {unifiedLoading ? (
-                <Skeleton className="h-6 w-16" />
-              ) : (
+            <CardContent className="pt-1">
+              {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (
+                <>
+                  <div className="text-xl font-bold">{formatNumber(journals?.totalJournals || 0)}</div>
+                  <p className="text-xs text-muted-foreground">{journals?.journalProgress || 0}% of 20k</p>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* 3. Cost Per Purchase */}
+          <Card className="border-l-2 border-l-[#7209B7]">
+            <CardHeader className="pb-1">
+              <div className="flex items-center gap-1">
+                <CardTitle className="text-xs font-medium text-muted-foreground">CPP (Ads)</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger><Info className="h-3 w-3 text-muted-foreground" /></TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p>Spend: {formatCurrency((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0))}</p>
+                    <p>Sales: {formatNumber(paidAdsFunnel?.wisdomSales || 0)}</p>
+                    <p className="text-xs mt-1">Excellent ≤$30 | Great ≤$60 | Good ≤$90</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-1">
+              {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (() => {
+                const cppValue = paidAdsFunnel?.wisdomSales && paidAdsFunnel.wisdomSales > 0
+                  ? ((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0)) / paidAdsFunnel.wisdomSales : 0;
+                const cppColor = cppValue <= 30 ? 'text-green-600' : cppValue <= 60 ? 'text-emerald-500' : cppValue <= 90 ? 'text-yellow-600' : 'text-red-500';
+                const trueCpp = kpis?.wisdomSales && kpis.wisdomSales > 0 ? kpis.totalSpend / kpis.wisdomSales : 0;
+                return (
+                  <>
+                    <div className={`text-xl font-bold ${cppColor}`}>{formatCurrency(cppValue)}</div>
+                    <p className="text-xs text-muted-foreground">True: {formatCurrency(trueCpp)}</p>
+                  </>
+                );
+              })()}
+            </CardContent>
+          </Card>
+
+          {/* 4. Cost Per Lead */}
+          <Card className="border-l-2 border-l-[#560BAD]">
+            <CardHeader className="pb-1">
+              <div className="flex items-center gap-1">
+                <CardTitle className="text-xs font-medium text-muted-foreground">CPL (Ads)</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger><Info className="h-3 w-3 text-muted-foreground" /></TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p>Spend: {formatCurrency((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0))}</p>
+                    <p>Leads: {formatNumber(paidAdsFunnel?.leads || 0)}</p>
+                    <p className="text-xs mt-1">Excellent ≤$3 | Great ≤$6 | Good ≤$9</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-1">
+              {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (() => {
+                const cplValue = paidAdsFunnel?.leads && paidAdsFunnel.leads > 0
+                  ? ((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0)) / paidAdsFunnel.leads : 0;
+                const cplColor = cplValue <= 3 ? 'text-green-600' : cplValue <= 6 ? 'text-emerald-500' : cplValue <= 9 ? 'text-yellow-600' : 'text-red-500';
+                const trueCpl = kpis?.totalLeads && kpis.totalLeads > 0 ? kpis.totalSpend / kpis.totalLeads : 0;
+                return (
+                  <>
+                    <div className={`text-xl font-bold ${cplColor}`}>{formatCurrency(cplValue)}</div>
+                    <p className="text-xs text-muted-foreground">True: {formatCurrency(trueCpl)}</p>
+                  </>
+                );
+              })()}
+            </CardContent>
+          </Card>
+
+          {/* 5. AOV */}
+          <Card className="border-l-2 border-l-[#B5179E]">
+            <CardHeader className="pb-1">
+              <div className="flex items-center gap-1">
+                <CardTitle className="text-xs font-medium text-muted-foreground">AOV</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger><Info className="h-3 w-3 text-muted-foreground" /></TooltipTrigger>
+                  <TooltipContent><p>Total Revenue ÷ Wisdom+ Sales</p></TooltipContent>
+                </Tooltip>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-1">
+              {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (
+                <div className="text-xl font-bold">{formatCurrency(kpis?.aov || 0)}</div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* 6. Welcome Email */}
+          <Card className="border-l-2 border-l-[#F72585]">
+            <CardHeader className="pb-1">
+              <div className="flex items-center gap-1">
+                <CardTitle className="text-xs font-medium text-muted-foreground">Email Clicks</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger><Info className="h-3 w-3 text-muted-foreground" /></TooltipTrigger>
+                  <TooltipContent><p>Leads who clicked NTN link in welcome email</p></TooltipContent>
+                </Tooltip>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-1">
+              {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (
                 <>
                   <div className="text-xl font-bold">{kpis?.welcomeEmailClicks || 0}</div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {kpis?.totalLeads ? ((kpis.welcomeEmailClicks / kpis.totalLeads) * 100).toFixed(1) : 0}% of total leads
+                  <p className="text-xs text-muted-foreground">
+                    {kpis?.totalLeads ? ((kpis.welcomeEmailClicks / kpis.totalLeads) * 100).toFixed(1) : 0}% of leads
                   </p>
                 </>
               )}
