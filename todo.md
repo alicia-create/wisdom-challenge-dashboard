@@ -1227,3 +1227,9 @@
 - [x] Add cache validation to only use cache if it has valid insights and metrics
 - [x] Test AI agent generates insights correctly (12s response with full data)
 - [x] Verify all optimization metrics display on Agent page in browser (working with full insights)
+
+## WebSocket Error Fix (2025-12-16)
+- [x] Investigate Vite WebSocket connection error on /overview page
+- [x] Check dev server status and configuration
+- [x] Fix WebSocket configuration in vite.config.ts (protocol: 'wss', clientPort: 443)
+- [x] Test hot module replacement after fix (no console errors)

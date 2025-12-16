@@ -37,8 +37,10 @@ export default defineConfig({
       "127.0.0.1",
     ],
     hmr: {
-      // Disable HMR overlay to prevent WebSocket errors in proxied environments
+      // Configure HMR for proxied environments
       overlay: false,
+      protocol: 'wss',
+      clientPort: 443,
     },
     fs: {
       strict: true,
