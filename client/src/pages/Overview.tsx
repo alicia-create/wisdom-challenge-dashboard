@@ -280,9 +280,9 @@ export default function Overview() {
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
                     Lead + Sales Campaigns
-                    <span className="ml-2 text-muted-foreground/70">
-                      (All: {formatCurrency(kpis?.totalSpend || 0)})
-                    </span>
+                  </p>
+                  <p className="text-xs text-muted-foreground/70">
+                    All: {formatCurrency(kpis?.totalSpend || 0)}
                   </p>
                 </>
               )}
