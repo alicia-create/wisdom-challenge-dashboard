@@ -1296,3 +1296,9 @@
 - [x] Add Flag History link to main navigation menu or Agent dropdown
 - [x] Test navigation from both locations
 - [x] Verify Flag History dashboard loads correctly
+
+## WebSocket Error Fix (User Report - Dec 17)
+- [x] Update vite.config.ts HMR settings for proxy environment
+- [x] Configure WebSocket protocol (wss) and port (443)
+- [x] Test WebSocket connection on /overview page
+- [x] Verify no console errors

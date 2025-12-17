@@ -52,6 +52,7 @@ export default defineConfig({
     ],
     hmr: {
       // Configure HMR for proxied environments
+      // Do not set host - let it auto-detect from browser URL
       overlay: false,
       protocol: 'wss',
       clientPort: 443,
