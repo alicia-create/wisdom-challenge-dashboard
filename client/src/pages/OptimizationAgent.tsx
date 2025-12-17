@@ -22,6 +22,7 @@ import {
   RefreshCw,
   MessageSquare,
   BookOpen,
+  Flag,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Streamdown } from "streamdown";
@@ -98,6 +99,12 @@ export default function OptimizationAgent() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <Link href="/flag-history">
+              <Button variant="outline" size="sm">
+                <Flag className="h-4 w-4 mr-2" />
+                Flag History
+              </Button>
+            </Link>
             <Link href="/ads-diary">
               <Button variant="outline" size="sm">
                 <BookOpen className="h-4 w-4 mr-2" />

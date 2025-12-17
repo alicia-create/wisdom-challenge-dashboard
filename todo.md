@@ -1290,3 +1290,9 @@
 - [x] Add filtering by ad, date range, and status
 - [x] Add route to App.tsx
 - [x] Test flag history tracking end-to-end
+
+## Flag History Navigation (User Request - Dec 17)
+- [x] Add "View Flag History" button to Optimization Agent page header
+- [x] Add Flag History link to main navigation menu or Agent dropdown
+- [x] Test navigation from both locations
+- [x] Verify Flag History dashboard loads correctly
