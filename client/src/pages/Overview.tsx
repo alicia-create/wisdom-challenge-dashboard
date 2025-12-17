@@ -572,7 +572,7 @@ export default function Overview() {
             <div className="flex items-start justify-between">
               <div>
                 <CardTitle>Meta Performance</CardTitle>
-                <CardDescription>Facebook & Instagram advertising metrics</CardDescription>
+                <CardDescription>Third-party Data from Meta Ads</CardDescription>
               </div>
               {timeAgo && (
                 <div className="text-xs text-muted-foreground">
@@ -661,7 +661,7 @@ export default function Overview() {
         <Card className="mt-6">
           <CardHeader>
             <CardTitle>Google Performance</CardTitle>
-            <CardDescription>Google Ads search campaign metrics</CardDescription>
+            <CardDescription>Third-party Data from Google Ads</CardDescription>
           </CardHeader>
           <CardContent>
             {unifiedLoading ? (

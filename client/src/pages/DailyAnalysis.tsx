@@ -76,8 +76,16 @@ export default function DailyAnalysis() {
   };
 
   // Fetch daily analysis metrics
-  const { data: dailyData, isLoading } = trpc.dailyAnalysis.metrics.useQuery({
+  const { data: rawDailyData, isLoading } = trpc.dailyAnalysis.metrics.useQuery({
     dateRange,
+  });
+
+  // Filter data to start from Dec 13, 2025
+  const dailyStartDate = new Date(2025, 11, 13); // Dec 13, 2025 (month is 0-indexed)
+  const dailyData = rawDailyData?.filter((day) => {
+    const [year, month, dayNum] = day.date.split('-').map(Number);
+    const dayDate = new Date(year, month - 1, dayNum);
+    return dayDate >= dailyStartDate;
   });
 
   // Format currency

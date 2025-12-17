@@ -1310,3 +1310,11 @@
 - [x] Update Organic & Affiliate Funnel description to "First-party data from 31daywisdomchallenge.com (Organic & Affiliate traffic)"
 - [x] Update Daily Wisdom+ Sales chart to start from Dec 13 + label "All Wisdom+ purchases"
 - [x] Update Daily Leads chart to start from Dec 13 + label "All Challenge Leads"
+
+## Daily Analysis Page Date Filter (User Request - Dec 17)
+- [x] Update Daily Analysis page to show data starting from Dec 13, 2025
+- [x] Test Daily page to verify data starts from Dec 13
+
+## Performance Section Label Updates (User Request - Dec 17)
+- [x] Update Meta Performance description to "Third-party Data from Meta Ads"
+- [x] Update Google Performance description to "Third-party Data from Google Ads"
