@@ -1251,3 +1251,21 @@
 - [x] Add Conversions column to Google Performance table (showing reported_purchases from ad_performance)
 - [x] Verify Total Ad Spend includes Google Ads (Meta LEADS+SALES: $14,133.99 + Google: $452.08 = $14,586.07)
 - [x] Test all fixes in browser and verify charts and tables display correctly (all working!)
+
+## Optimization Agent v3 Updates (2025-12-16)
+- [x] Create optimization-rules-v3.md with updated rules
+- [x] Filter analysis to SALES and LEADS campaigns only
+- [x] Implement temporal analysis (yesterday + 3-7 day trends)
+- [x] Update Phase 1 budget logic ($3.5K-4K/day, 20% daily increase)
+- [x] Separate analysis by platform (Meta vs Google)
+- [x] Update leak priority order (Lead-to-Purchase first)
+- [x] Update Purchase Rate target to 12% (from 40%)
+- [x] Update Click-to-Purchase target to 7% (from 10%)
+- [x] Update CPP targets (Good $90, Great $60, Excellent $30)
+- [x] Update CPL targets (Good $9, Great $6, Excellent $3)
+- [x] Implement 3-strike flag system before recommending disable
+- [x] Add protection rule: don't disable if CPP is good
+- [x] Update backend tRPC procedures with new logic
+- [x] Test agent with updated rules
+- [x] Update frontend Click-to-Purchase target display to 7%
+- [x] Update OptimizationAgent.tsx to load v3 rules

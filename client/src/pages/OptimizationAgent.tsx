@@ -42,7 +42,7 @@ export default function OptimizationAgent() {
 
   // Load optimization rules document
   useEffect(() => {
-    fetch("/docs/optimization-rules-v2.md")
+    fetch("/docs/optimization-rules-v3.md")
       .then((res) => res.text())
       .then((text) => setRulesContent(text))
       .catch((err) => console.error("Failed to load optimization rules:", err));
@@ -151,8 +151,8 @@ export default function OptimizationAgent() {
                   <p className="text-2xl font-bold">
                     {metrics ? `${(metrics.click_to_purchase_rate * 100).toFixed(1)}%` : "--"}
                   </p>
-                  <p className="text-xs text-muted-foreground">Target: 10%</p>
-                  {metrics && metrics.click_to_purchase_rate < 0.1 && (
+                  <p className="text-xs text-muted-foreground">Target: 7%</p>
+                  {metrics && metrics.click_to_purchase_rate < 0.07 && (
                     <Badge variant="destructive" className="mt-1">
                       Below Target
                     </Badge>
