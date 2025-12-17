@@ -1328,3 +1328,11 @@
 
 ## Kingdom Seekers Trial Label Revert (Visual Edit - Dec 17)
 - [x] Revert Kingdom Seekers Trial label back to original "Kingdom Seekers Trial"
+
+## WebSocket Connection Fix #2 (User Report - Dec 17)
+- [x] Restart dev server to fix recurring WebSocket error
+
+## GitHub Push (User Request - Dec 17)
+- [ ] Check git status and prepare commit
+- [ ] Commit all changes with descriptive message
+- [ ] Push to GitHub repository
