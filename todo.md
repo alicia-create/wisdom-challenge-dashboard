@@ -1318,3 +1318,10 @@
 ## Performance Section Label Updates (User Request - Dec 17)
 - [x] Update Meta Performance description to "Third-party Data from Meta Ads"
 - [x] Update Google Performance description to "Third-party Data from Google Ads"
+
+## WebSocket Connection Fix (User Report - Dec 17)
+- [x] Restart dev server to fix WebSocket connection error
+- [x] Verify WebSocket is working without errors
+
+## Kingdom Seekers Trial Label Update (User Request - Dec 17)
+- [x] Update Kingdom Seekers Trial label in Paid Ads Funnel to include deactivation note
