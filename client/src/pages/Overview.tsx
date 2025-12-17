@@ -79,6 +79,8 @@ export default function Overview() {
   const dailyKpis = unifiedData?.dailyKpis;
 
   // Prepare chart data from daily metrics (filter out days with no activity)
+  // Start from Dec 13, 2025 as requested
+  const chartStartDate = new Date(2025, 11, 13); // Dec 13, 2025 (month is 0-indexed)
   const chartData = (dailyKpis
     ?.filter((kpi: any) => (kpi.totalLeads || 0) > 0 || (kpi.totalWisdomSales || 0) > 0)
     .map((kpi: any) => {
@@ -92,7 +94,8 @@ export default function Overview() {
         vipSales: kpi.totalWisdomSales || 0,
         roas: parseFloat(kpi.roas || '0'),
       };
-    }) || []).sort((a: any, b: any) => a.dateObj.getTime() - b.dateObj.getTime());
+    })
+    .filter((item: any) => item.dateObj >= chartStartDate) || []).sort((a: any, b: any) => a.dateObj.getTime() - b.dateObj.getTime());
   
   console.log('[Overview] Chart data:', chartData.length, 'days', chartData.slice(0, 3));
 
@@ -474,7 +477,7 @@ export default function Overview() {
                 Paid Ads Funnel
               </CardTitle>
               <CardDescription>
-                Traffic from 31daywisdom.com (Meta & Google Ads)
+                First-party data from 31daywisdom.com (Meta & Google Ads traffic only)
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -498,7 +501,7 @@ export default function Overview() {
                 Organic & Affiliate Funnel
               </CardTitle>
               <CardDescription>
-                Traffic from 31daywisdomchallenge.com and other sources
+                First-party data from 31daywisdomchallenge.com (Organic & Affiliate traffic)
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -519,7 +522,7 @@ export default function Overview() {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Daily Wisdom+ Sales</CardTitle>
-            <CardDescription>VIP purchases over time (orders $31+)</CardDescription>
+            <CardDescription>All Wisdom+ purchases</CardDescription>
           </CardHeader>
           <CardContent>
             {unifiedLoading ? (
@@ -543,7 +546,7 @@ export default function Overview() {
         <Card>
           <CardHeader>
             <CardTitle>Daily Leads</CardTitle>
-            <CardDescription>Lead generation over time</CardDescription>
+            <CardDescription>All Challenge Leads</CardDescription>
           </CardHeader>
           <CardContent>
             {unifiedLoading ? (
@@ -588,10 +591,10 @@ export default function Overview() {
                     <tr className="border-b">
                       <th className="text-left py-3 px-2 font-medium">Type</th>
                       <th className="text-right py-3 px-2 font-medium">Spend</th>
-                      <th className="text-right py-3 px-2 font-medium">Purchases</th>
+                      <th className="text-right py-3 px-2 font-medium">Reported Purchases</th>
                       <th className="text-right py-3 px-2 font-medium">CPP</th>
                       <th className="text-right py-3 px-2 font-medium">Sales Rate</th>
-                      <th className="text-right py-3 px-2 font-medium">Leads</th>
+                      <th className="text-right py-3 px-2 font-medium">Reported Leads</th>
                       <th className="text-right py-3 px-2 font-medium">CPL</th>
                       <th className="text-right py-3 px-2 font-medium">Lead Rate</th>
                       <th className="text-right py-3 px-2 font-medium">Clicks</th>

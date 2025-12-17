@@ -1302,3 +1302,11 @@
 - [x] Configure WebSocket protocol (wss) and port (443)
 - [x] Test WebSocket connection on /overview page
 - [x] Verify no console errors
+
+## Overview Page Label Updates (User Request - Dec 17)
+- [x] Update Meta Performance table: "Purchases" → "Reported Purchases"
+- [x] Update Meta Performance table: "Leads" → "Reported Leads"
+- [x] Update Paid Ads Funnel description to "First-party data from 31daywisdom.com (Meta & Google Ads traffic only)"
+- [x] Update Organic & Affiliate Funnel description to "First-party data from 31daywisdomchallenge.com (Organic & Affiliate traffic)"
+- [x] Update Daily Wisdom+ Sales chart to start from Dec 13 + label "All Wisdom+ purchases"
+- [x] Update Daily Leads chart to start from Dec 13 + label "All Challenge Leads"
