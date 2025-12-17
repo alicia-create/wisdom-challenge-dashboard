@@ -66,7 +66,7 @@ export async function generateDailyReport(
 - Total Leads: ${campaignMetrics.total_leads?.toLocaleString() || 0}
 - Total Revenue: $${campaignMetrics.total_revenue?.toLocaleString() || 0}
 - Journals Sold: ${campaignMetrics.total_journals || 0}
-- Lead-to-Purchase Conversion: ${((campaignMetrics.conversion_rate || 0) * 100).toFixed(1)}% (Target: 40%, Last Year: 11.58%)
+- Lead-to-Purchase Conversion: ${((campaignMetrics.conversion_rate || 0) * 100).toFixed(1)}% (Target: 12%, Last Year: 11.58%)
 - Cost Per Lead: $${(campaignMetrics.cpl || 0).toFixed(2)}
 - ROAS: ${(campaignMetrics.roas || 0).toFixed(2)}x
 - AOV: $${(campaignMetrics.aov || 0).toFixed(2)}` : '';
@@ -91,12 +91,17 @@ ${campaignMetrics.trend_7day?.map(d => `- ${d.date}: $${d.spend.toFixed(0)} spen
 
   const prompt = `You are a Facebook Ads optimization expert analyzing the 31DWC2026 campaign performance.
 
+**IMPORTANT: 2026 Performance Targets**
+- Lead-to-Purchase Rate target: 12% (last year achieved 11.58%)
+- This represents a realistic and achievable improvement over last year's performance
+
 **Campaign Context:**
 - Phase 1 Budget (Dec 15-25): $150K total, starting ~$3.5-4K/day with 20% daily increase
 - Strategy: Broad/Advantage+ Audiences, Creative-driven performance, SALES and LEADS campaigns only
 - Primary Metric: Click-to-Purchase Rate (Target: 7%)
-- Lead-to-Purchase Rate: Target 40% (Last Year: 11.58%)
-- Cost Per Purchase: Target $30-$60
+- Lead-to-Purchase Rate: Target 12% (Last Year: 11.58%)
+- Cost Per Purchase: Good $90, Great $60, Excellent $30
+- Cost Per Lead: Good $9, Great $6, Excellent $3
 - Journal Sales Goal: 20,000 units
 
 **Current Performance (Last 7 Days):**
@@ -146,10 +151,16 @@ Generate a comprehensive daily optimization report in JSON format with the follo
 }
 
 **Funnel Leak Priority (Most to Least Important):**
-1. Lead-to-Purchase Leak (VIP Offer/Nurture Issue) - Target: 40% conversion
+1. Lead-to-Purchase Leak (VIP Offer/Nurture Issue) - Current: 15.6%, Target: 12%
 2. Click-to-Purchase Leak - Target: 7%
 3. Click-to-Lead Leak (Landing Page Conversion Issue)
 4. Click-to-Page Leak (Connect Rate Issue)
+
+**3-Strike Flag System:**
+- Day 1 poor performance: 🚩 FLAG (monitor)
+- Day 2 consecutive poor performance: 🚩🚩 CRITICAL FLAG (prepare backup)
+- Day 3 consecutive poor performance: ❌ DISABLE
+- CPP Override Rule: Keep ads with CPP ≤$90 even if other metrics are poor
 
 **Guidelines:**
 - Be direct and actionable, not generic
@@ -159,7 +170,7 @@ Generate a comprehensive daily optimization report in JSON format with the follo
 - Focus on the top 3 priorities - don't overwhelm with too many actions
 - **Use yesterday's performance and trends to identify momentum:** Is performance improving or declining?
 - If Click-to-Purchase Rate is below 7%, make this a top priority
-- If Lead-to-Purchase Rate is below 40%, this is the #1 priority (last year was only 11.58%)
+- If Lead-to-Purchase Rate is below 12%, this is the #1 priority (last year was only 11.58%)
 - If CPP is above $60, explain which part of the funnel is broken
 - Connect the dots between funnel leaks and ad performance
 - Analyze trends: Are we scaling properly with the 20% daily budget increase?`;

@@ -344,6 +344,14 @@ export default function OptimizationAgent() {
                         <span>Ad ID: {rec.ad_id}</span>
                         <span>•</span>
                         <span>Ad Set: {rec.adset_id}</span>
+                        {rec.metadata?.strike_count && rec.metadata.strike_count > 0 && (
+                          <>
+                            <span>•</span>
+                            <span className="font-semibold text-destructive">
+                              🚩 Strike {rec.metadata.strike_count}/3
+                            </span>
+                          </>
+                        )}
                       </div>
                       <div className="flex gap-2">
                         <Button size="sm" variant="destructive">
@@ -399,6 +407,11 @@ export default function OptimizationAgent() {
                       <p className="mb-2">{rec.description}</p>
                       <p className="font-semibold mb-2">Action: {rec.action_required}</p>
                       <p className="text-sm mb-3">Expected Impact: {rec.expected_impact}</p>
+                      {rec.metadata?.strike_count && rec.metadata.strike_count > 0 && (
+                        <p className="text-xs text-warning font-semibold mb-2">
+                          🚩 Strike {rec.metadata.strike_count}/3 - Monitor closely
+                        </p>
+                      )}
                       <div className="flex gap-2">
                         <Button size="sm">Approve</Button>
                         <Button size="sm" variant="outline">
@@ -530,7 +543,7 @@ export default function OptimizationAgent() {
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
-                📋 Optimization Rules (v2)
+                📋 Optimization Rules (v3)
               </CardTitle>
               <Badge variant="outline">{expandedSections.rules ? "Hide" : "Show"}</Badge>
             </div>

@@ -1269,3 +1269,9 @@
 - [x] Test agent with updated rules
 - [x] Update frontend Click-to-Purchase target display to 7%
 - [x] Update OptimizationAgent.tsx to load v3 rules
+
+## Optimization Agent v3 Final Updates (2025-12-17)
+- [x] Update UI title from "Optimization Rules (v2)" to "v3"
+- [x] Update LLM prompt in dailyReport to use v3 targets (12% Purchase Rate, 7% Click-to-Purchase)
+- [x] Add strike count display in recommendation cards
+- [x] Change cache TTL from 30 minutes to 24 hours

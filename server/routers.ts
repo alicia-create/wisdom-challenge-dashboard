@@ -824,7 +824,7 @@ export const appRouter = router({
     // Get LLM-powered daily report with insights
     dailyReport: publicProcedure
       .query(async () => {
-        // Check cache first (TTL: 30 minutes)
+        // Check cache first (TTL: 24 hours)
         const cacheKey = "optimization:dailyReport";
         const cached = await cache.get<any>(cacheKey);
         
@@ -940,8 +940,8 @@ export const appRouter = router({
           cached: false,
         };
 
-        // Cache the result for 30 minutes
-        await cache.set(cacheKey, result, 30 * 60 * 1000);
+        // Cache the result for 24 hours
+        await cache.set(cacheKey, result, 24 * 60 * 60 * 1000);
 
         return result;
       }),
