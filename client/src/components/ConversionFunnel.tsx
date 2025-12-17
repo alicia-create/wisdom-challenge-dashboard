@@ -36,7 +36,7 @@ export function ConversionFunnel({ data }: ConversionFunnelProps) {
       color: "bg-blue-500",
     },
     {
-      name: "Kingdom Seekers Trial (currently deactivated, waiting for a new VSL)",
+      name: "Kingdom Seekers Trial",
       count: data.kingdomSeekerTrials,
       icon: <Zap className="h-5 w-5" />,
       color: "bg-indigo-500",

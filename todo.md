@@ -1325,3 +1325,6 @@
 
 ## Kingdom Seekers Trial Label Update (User Request - Dec 17)
 - [x] Update Kingdom Seekers Trial label in Paid Ads Funnel to include deactivation note
+
+## Kingdom Seekers Trial Label Revert (Visual Edit - Dec 17)
+- [x] Revert Kingdom Seekers Trial label back to original "Kingdom Seekers Trial"
