@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, adFlagHistory, InsertAdFlagHistory, AdFlagHistory } from "../drizzle/schema";
 import { ENV } from './_core/env';
 import { hasAccess } from './auth-guard';
 
@@ -98,6 +98,81 @@ export async function getUserByOpenId(openId: string) {
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
 
   return result.length > 0 ? result[0] : undefined;
+}
+
+// Flag History Helpers
+
+export async function saveFlagHistory(flag: InsertAdFlagHistory): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot save flag history: database not available");
+    return;
+  }
+
+  try {
+    await db.insert(adFlagHistory).values(flag);
+  } catch (error) {
+    console.error("[Database] Failed to save flag history:", error);
+    throw error;
+  }
+}
+
+export async function getFlagHistory(filters?: {
+  adId?: string;
+  startDate?: Date;
+  endDate?: Date;
+  status?: "flagged" | "recovered" | "disabled";
+}): Promise<AdFlagHistory[]> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get flag history: database not available");
+    return [];
+  }
+
+  try {
+    let query = db.select().from(adFlagHistory);
+
+    // Apply filters (simplified - in production use Drizzle's where() properly)
+    const results = await query;
+    
+    // Filter in memory for now (can optimize with Drizzle where() later)
+    return results.filter(row => {
+      if (filters?.adId && row.adId !== filters.adId) return false;
+      if (filters?.startDate && new Date(row.date) < filters.startDate) return false;
+      if (filters?.endDate && new Date(row.date) > filters.endDate) return false;
+      if (filters?.status && row.status !== filters.status) return false;
+      return true;
+    });
+  } catch (error) {
+    console.error("[Database] Failed to get flag history:", error);
+    return [];
+  }
+}
+
+export async function updateFlagStatus(
+  adId: string,
+  date: Date,
+  newStatus: "recovered" | "disabled"
+): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot update flag status: database not available");
+    return;
+  }
+
+  try {
+    // Update all flags for this ad on this date
+    await db
+      .update(adFlagHistory)
+      .set({ 
+        status: newStatus,
+        resolvedAt: new Date()
+      })
+      .where(sql`ad_id = ${adId} AND DATE(date) = DATE(${date.toISOString()})`);
+  } catch (error) {
+    console.error("[Database] Failed to update flag status:", error);
+    throw error;
+  }
 }
 
 // TODO: add feature queries here as your schema grows.

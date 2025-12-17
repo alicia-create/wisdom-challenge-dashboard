@@ -804,6 +804,65 @@ export const appRouter = router({
         return { success: true, message: "Cache cleared. Next request will generate fresh report." };
       }),
 
+    // Save flag history
+    saveFlagHistory: protectedProcedure
+      .input(z.object({
+        adId: z.string(),
+        adName: z.string(),
+        campaignId: z.string().optional(),
+        campaignName: z.string().optional(),
+        adsetId: z.string().optional(),
+        adsetName: z.string().optional(),
+        date: z.string(), // ISO date string
+        strikeCount: z.number().int().min(1).max(3),
+        flagType: z.string(),
+        severity: z.enum(["info", "warning", "critical"]),
+        metricValue: z.number().optional(),
+        threshold: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { saveFlagHistory } = await import("./db");
+        await saveFlagHistory({
+          ...input,
+          date: new Date(input.date),
+          status: "flagged",
+          metricValue: input.metricValue?.toString(),
+          threshold: input.threshold?.toString(),
+        });
+        return { success: true };
+      }),
+
+    // Get flag history with filters
+    getFlagHistory: publicProcedure
+      .input(z.object({
+        adId: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+        status: z.enum(["flagged", "recovered", "disabled"]).optional(),
+      }))
+      .query(async ({ input }) => {
+        const { getFlagHistory } = await import("./db");
+        const filters = {
+          ...input,
+          startDate: input.startDate ? new Date(input.startDate) : undefined,
+          endDate: input.endDate ? new Date(input.endDate) : undefined,
+        };
+        return await getFlagHistory(filters);
+      }),
+
+    // Update flag status (recovered or disabled)
+    updateFlagStatus: protectedProcedure
+      .input(z.object({
+        adId: z.string(),
+        date: z.string(),
+        newStatus: z.enum(["recovered", "disabled"]),
+      }))
+      .mutation(async ({ input }) => {
+        const { updateFlagStatus } = await import("./db");
+        await updateFlagStatus(input.adId, new Date(input.date), input.newStatus);
+        return { success: true };
+      }),
+
     // Get cache metadata (last updated timestamp)
     getCacheMetadata: publicProcedure
       .query(async () => {

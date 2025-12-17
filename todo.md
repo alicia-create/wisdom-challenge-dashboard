@@ -1275,3 +1275,18 @@
 - [x] Update LLM prompt in dailyReport to use v3 targets (12% Purchase Rate, 7% Click-to-Purchase)
 - [x] Add strike count display in recommendation cards
 - [x] Change cache TTL from 30 minutes to 24 hours
+
+## Flag History Dashboard (2025-12-17)
+- [x] Design flag history data structure (ad_id, date, strike_count, flag_type, status)
+- [x] Create ad_flag_history table in Drizzle schema
+- [x] Push database migration
+- [x] Create tRPC procedure to save flag history
+- [x] Update optimization engine to log flags to history table
+- [x] Create tRPC procedure to fetch flag history with filters
+- [x] Create tRPC procedure to update flag status
+- [x] Create FlagHistory page component
+- [x] Add timeline visualization showing strike progression
+- [x] Add recovery vs disabled metrics
+- [x] Add filtering by ad, date range, and status
+- [x] Add route to App.tsx
+- [x] Test flag history tracking end-to-end

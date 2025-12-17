@@ -238,4 +238,34 @@ export const diaryActions = mysqlTable("diary_actions", {
 export type DiaryAction = typeof diaryActions.$inferSelect;
 export type InsertDiaryAction = typeof diaryActions.$inferInsert;
 
+/**
+ * Ad Flag History table - tracks strike progression for ads over time
+ * Logs every time an ad receives a flag/strike from optimization engine
+ */
+export const adFlagHistory = mysqlTable("ad_flag_history", {
+  id: int("id").autoincrement().primaryKey(),
+  adId: varchar("ad_id", { length: 255 }).notNull(),
+  adName: varchar("ad_name", { length: 500 }).notNull(),
+  campaignId: varchar("campaign_id", { length: 255 }),
+  campaignName: varchar("campaign_name", { length: 500 }),
+  adsetId: varchar("adset_id", { length: 255 }),
+  adsetName: varchar("adset_name", { length: 500 }),
+  date: datetime("date").notNull(), // Date of the flag
+  strikeCount: int("strike_count").notNull(), // 1, 2, or 3
+  flagType: varchar("flag_type", { length: 100 }).notNull(), // "low_cpp", "low_lead_rate", "low_connect_rate", etc.
+  severity: mysqlEnum("severity", ["info", "warning", "critical"]).notNull(),
+  status: mysqlEnum("status", [
+    "flagged",      // Currently has strikes
+    "recovered",    // Had strikes but recovered
+    "disabled"      // Was disabled due to strikes
+  ]).default("flagged").notNull(),
+  metricValue: decimal("metric_value", { precision: 10, scale: 2 }), // The actual metric value that triggered flag
+  threshold: decimal("threshold", { precision: 10, scale: 2 }), // The threshold it failed to meet
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  resolvedAt: timestamp("resolved_at"), // When status changed to recovered/disabled
+});
+
+export type AdFlagHistory = typeof adFlagHistory.$inferSelect;
+export type InsertAdFlagHistory = typeof adFlagHistory.$inferInsert;
+
 

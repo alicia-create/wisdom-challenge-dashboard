@@ -474,6 +474,12 @@ export async function analyzeAdPerformance(): Promise<AdRecommendation[]> {
   }
 
   console.log(`[Optimization Engine] Generated ${recommendations.length} recommendations`);
+  
+  // Save flags to history table (async, don't block response)
+  saveFlagsToHistory(recommendations).catch(err => {
+    console.error("[Optimization Engine] Failed to save flags to history:", err);
+  });
+  
   return recommendations;
 }
 
@@ -710,4 +716,38 @@ export async function detectCreativeFatigue(): Promise<FatigueAlert[]> {
 
   console.log(`[Optimization Engine] Detected ${alerts.length} creative fatigue alerts`);
   return alerts;
+}
+
+/**
+ * Save flags to history table for tracking over time
+ */
+async function saveFlagsToHistory(recommendations: Awaited<ReturnType<typeof analyzeAdPerformance>>) {
+  const { saveFlagHistory } = await import("./db");
+  
+  for (const rec of recommendations) {
+    // Only save actual flags/warnings/critical (not info messages like "KEEP")
+    if (rec.severity === "info" && rec.strike_count === 0) {
+      continue; // Skip "KEEP" recommendations
+    }
+    
+    try {
+      await saveFlagHistory({
+        adId: rec.ad_id,
+        adName: rec.metadata?.ad_name || rec.ad_id,
+        campaignId: rec.campaign_id,
+        campaignName: rec.metadata?.campaign_name || undefined,
+        adsetId: rec.adset_id,
+        adsetName: rec.metadata?.adset_name || undefined,
+        date: new Date(),
+        strikeCount: rec.strike_count || 1,
+        flagType: rec.recommendation_type,
+        severity: rec.severity,
+        metricValue: rec.metadata?.cpp?.toString() || rec.metadata?.click_to_purchase_rate?.toString(),
+        threshold: rec.metadata?.targets?.good?.toString() || THRESHOLDS.MIN_CLICK_TO_PURCHASE.toString(),
+        status: "flagged",
+      });
+    } catch (error) {
+      console.error(`[Optimization Engine] Failed to save flag for ad ${rec.ad_id}:`, error);
+    }
+  }
 }
