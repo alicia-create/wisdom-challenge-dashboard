@@ -1371,3 +1371,15 @@
 - [x] Update DateRangeFilter component to show ALL button
 - [x] Change default date range from LAST_30_DAYS to ALL
 - [x] Test ALL filter displays all data correctly
+
+## Fix CPL/CPP Ads Calculation (Dec 18)
+- [x] Update get_dashboard_metrics v15 to use only Meta LEADS + SALES spend for CPL (Ads) and CPP (Ads)
+- [x] Change from leadsSalesSpend to (v_meta_leads_spend + v_meta_sales_spend)
+- [x] Test calculations to verify they match expected values
+- [x] Apply migration to Supabase
+
+## Restore Order Bump Conversion Indicator (Dec 18)
+- [x] Investigate why order bump indicator disappeared from Wisdom+ Purchases section
+- [x] Create SQL to add extraJournals back to get_dashboard_metrics function
+- [x] Applied SQL changes in Supabase (consolidated_fix_v2.sql)
+- [x] Test and confirm indicators display correctly after SQL update
