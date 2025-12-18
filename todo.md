@@ -1341,3 +1341,6 @@
 - [x] Investigate Apply Range button in custom date picker
 - [x] Fix button click handler
 - [x] Test date range selection
+
+## Kingdom Seekers Trial Deactivation Note (Visual Edit - Dec 18)
+- [x] Add "(step currently deactivated)" to Kingdom Seekers Trial label
