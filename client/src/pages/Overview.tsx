@@ -484,7 +484,7 @@ export default function Overview() {
               {unifiedLoading ? (
                 <Skeleton className="h-[400px] w-full" />
               ) : paidAdsFunnel ? (
-                <ConversionFunnel data={transformFunnelData(paidAdsFunnel)} />
+                <ConversionFunnel data={transformFunnelData(paidAdsFunnel)} funnelType="paid" />
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
                   No paid ads funnel data available
@@ -508,7 +508,7 @@ export default function Overview() {
               {unifiedLoading ? (
                 <Skeleton className="h-[400px] w-full" />
               ) : organicFunnel ? (
-                <ConversionFunnel data={transformFunnelData(organicFunnel)} />
+                <ConversionFunnel data={transformFunnelData(organicFunnel)} funnelType="organic" />
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
                   No organic funnel data available

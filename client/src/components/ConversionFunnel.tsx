@@ -19,9 +19,10 @@ interface ConversionFunnelProps {
     kingdomToManychatRate: number;
     manychatToBotAlertsRate: number;
   };
+  funnelType?: 'paid' | 'organic';
 }
 
-export function ConversionFunnel({ data }: ConversionFunnelProps) {
+export function ConversionFunnel({ data, funnelType = 'paid' }: ConversionFunnelProps) {
   const stages: FunnelStage[] = [
     {
       name: "Leads",
@@ -100,7 +101,9 @@ export function ConversionFunnel({ data }: ConversionFunnelProps) {
                   <div className="text-white">{stage.icon}</div>
                 </div>
                 <div className="font-semibold text-sm sm:text-base text-foreground">
-                  {stage.name === 'Kingdom Seekers Trial' ? 'Kingdom Seekers Trial (step currently deactivated)' : stage.name}
+                  {stage.name === 'Kingdom Seekers Trial' && funnelType === 'paid' 
+                    ? 'Kingdom Seekers Trial (step currently deactivated)' 
+                    : stage.name}
                 </div>
               </div>
               

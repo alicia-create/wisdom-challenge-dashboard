@@ -1344,3 +1344,8 @@
 
 ## Kingdom Seekers Trial Deactivation Note (Visual Edit - Dec 18)
 - [x] Add "(step currently deactivated)" to Kingdom Seekers Trial label
+
+## Kingdom Seekers Trial - Paid Ads Only Deactivation Note (User Clarification - Dec 18)
+- [x] Add funnel type prop to ConversionFunnel component
+- [x] Show deactivation note only in Paid Ads Funnel
+- [x] Keep original label in Organic - [ ] Keep original label in Organic & Affiliate Funnel Affiliate Funnel
