@@ -72,6 +72,7 @@ export function ConversionFunnel({ data, funnelType = 'paid' }: ConversionFunnel
         const widthPercent = maxCount > 0 ? (stage.count / maxCount) * 100 : 0;
         const conversionRate = conversionRates[index - 1];
         const dropOffRate = conversionRate !== undefined ? 100 - conversionRate : 0;
+        const minWidth = window.innerWidth < 640 ? 60 : 30; // Wider minimum on mobile
 
         return (
           <div key={index}>
@@ -97,11 +98,13 @@ export function ConversionFunnel({ data, funnelType = 'paid' }: ConversionFunnel
             {/* Funnel stage */}
             <div className="relative">
               {/* Label outside the box on the left */}
-              <div className="flex items-center gap-3 mb-2">
-                <div className={`${stage.color} p-1.5 rounded-lg flex-shrink-0`}>
-                  <div className="text-white">{stage.icon}</div>
+              <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                <div className={`${stage.color} p-1 sm:p-1.5 rounded-lg flex-shrink-0`}>
+                  <div className="text-white">
+                    <div className="h-4 w-4 sm:h-5 sm:w-5">{stage.icon}</div>
+                  </div>
                 </div>
-                <div className="font-semibold text-sm sm:text-base text-foreground">
+                <div className="font-semibold text-xs sm:text-sm md:text-base text-foreground">
                   {stage.name === 'Kingdom Seekers Trial' && funnelType === 'paid' 
                     ? 'Kingdom Seekers Trial (step currently deactivated)' 
                     : stage.name}
@@ -110,27 +113,27 @@ export function ConversionFunnel({ data, funnelType = 'paid' }: ConversionFunnel
               
               {/* Colored funnel box with count */}
               <div
-                className={`${stage.color} rounded-lg p-3 sm:p-4 transition-all duration-500 ease-out`}
-                style={{ width: `${Math.max(widthPercent, 30)}%`, marginLeft: 'auto', marginRight: 'auto' }}
+                className={`${stage.color} rounded-lg p-2 sm:p-3 md:p-4 transition-all duration-500 ease-out`}
+                style={{ width: `${Math.max(widthPercent, minWidth)}%`, marginLeft: 'auto', marginRight: 'auto' }}
               >
-                <div className="flex items-center justify-between text-white gap-2">
-                  <div className="text-xs sm:text-sm opacity-90">
+                <div className="flex items-center justify-between text-white gap-1 sm:gap-2">
+                  <div className="text-[10px] sm:text-xs opacity-90 truncate">
                     {stage.count.toLocaleString()} users
                   </div>
-                  <div className="text-xl sm:text-2xl font-bold flex-shrink-0">
+                  <div className="text-lg sm:text-xl md:text-2xl font-bold flex-shrink-0">
                     {stage.count.toLocaleString()}
                   </div>
                 </div>
                 
                 {/* Order Bump Indicator for Wisdom+ Purchases */}
                 {stage.name === 'Wisdom+ Purchases' && data.extraJournals !== undefined && data.extraJournals > 0 && (
-                  <div className="mt-2 pt-2 border-t border-white/20">
-                    <div className="flex items-center justify-between text-white/90 text-xs">
-                      <div className="flex items-center gap-1">
+                  <div className="mt-1.5 sm:mt-2 pt-1.5 sm:pt-2 border-t border-white/20">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5 sm:gap-2 text-white/90">
+                      <div className="flex items-center gap-1 text-[10px] sm:text-xs">
                         <span>↳</span>
-                        <span className="font-medium">+{data.extraJournals} Extra Journals</span>
+                        <span className="font-medium truncate">+{data.extraJournals} Extra Journals</span>
                       </div>
-                      <div className="font-semibold">
+                      <div className="font-semibold text-[10px] sm:text-xs whitespace-nowrap">
                         {stage.count > 0 ? ((data.extraJournals / stage.count) * 100).toFixed(1) : 0}% bump
                       </div>
                     </div>

@@ -1395,3 +1395,11 @@
 - [x] Create migration plan with all changes needed
 - [x] Apply corrected SQL with CPL/CPP Ads and Extra Journals fields
 - [x] Test and verify all calculations are correct
+
+## Mobile Layout Fixes (Dec 18, 2025)
+- [x] Fix KPI card font sizes - values being cut off on mobile (e.g., "$27,983.84" truncated)
+- [x] Reduce padding/spacing in KPI cards for mobile screens
+- [x] Fix conversion funnel width - too wide for mobile viewport
+- [x] Make funnel stage boxes smaller on mobile
+- [x] Fix order bump text readability - "+24 3.7% bump Extra Journals" is overlapping/unreadable
+- [ ] Test all responsive breakpoints (375px, 390px, 428px)

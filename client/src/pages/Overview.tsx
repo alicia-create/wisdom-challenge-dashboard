@@ -218,7 +218,7 @@ export default function Overview() {
                 <Skeleton className="h-8 w-20" />
               ) : (
                 <>
-                  <div className="text-3xl font-bold">{kpis?.wisdomSales || 0}</div>
+                  <div className="text-2xl sm:text-3xl font-bold">{kpis?.wisdomSales || 0}</div>
                   <div className="mt-2 text-xs text-muted-foreground">
                     <div className="flex items-center justify-between mb-1">
                       <span>Goal: 30,000</span>
@@ -256,7 +256,7 @@ export default function Overview() {
               {unifiedLoading ? (
                 <Skeleton className="h-8 w-20" />
               ) : (
-                <div className="text-3xl font-bold">{kpis?.kingdomSeekerTrials || 0}</div>
+                <div className="text-2xl sm:text-3xl font-bold">{kpis?.kingdomSeekerTrials || 0}</div>
               )}
             </CardContent>
           </Card>
@@ -282,7 +282,7 @@ export default function Overview() {
                 <Skeleton className="h-8 w-32" />
               ) : (
                 <>
-                  <div className="text-3xl font-bold">
+                  <div className="text-xl sm:text-2xl md:text-3xl font-bold break-words">
                     {formatCurrency((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0) + (googlePerformance?.spend || 0))}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -315,7 +315,7 @@ export default function Overview() {
               {unifiedLoading ? (
                 <Skeleton className="h-8 w-32" />
               ) : (
-                <div className="text-3xl font-bold">{formatCurrency(kpis?.totalRevenue || 0)}</div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold break-words">{formatCurrency(kpis?.totalRevenue || 0)}</div>
               )}
             </CardContent>
           </Card>
@@ -336,7 +336,7 @@ export default function Overview() {
             </CardHeader>
             <CardContent className="pt-1">
               {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (
-                <div className="text-xl font-bold">{formatPercent(kpis?.wisdomConversion || 0)}</div>
+                <div className="text-lg sm:text-xl font-bold">{formatPercent(kpis?.wisdomConversion || 0)}</div>
               )}
             </CardContent>
           </Card>
@@ -357,7 +357,7 @@ export default function Overview() {
             <CardContent className="pt-1">
               {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (
                 <>
-                  <div className="text-xl font-bold">{formatNumber(journals?.totalJournals || 0)}</div>
+                  <div className="text-lg sm:text-xl font-bold">{formatNumber(journals?.totalJournals || 0)}</div>
                   <p className="text-xs text-muted-foreground">{journals?.journalProgress || 0}% of 20k</p>
                 </>
               )}
@@ -386,7 +386,7 @@ export default function Overview() {
                 const trueCpp = kpis?.trueCpp || 0;
                 return (
                   <>
-                    <div className={`text-xl font-bold ${cppColor}`}>{formatCurrency(cppValue)}</div>
+                    <div className={`text-lg sm:text-xl font-bold ${cppColor}`}>{formatCurrency(cppValue)}</div>
                     <p className="text-xs text-muted-foreground">True: {formatCurrency(trueCpp)}</p>
                   </>
                 );
@@ -416,7 +416,7 @@ export default function Overview() {
                 const trueCpl = kpis?.trueCpl || 0;
                 return (
                   <>
-                    <div className={`text-xl font-bold ${cplColor}`}>{formatCurrency(cplValue)}</div>
+                    <div className={`text-lg sm:text-xl font-bold ${cplColor}`}>{formatCurrency(cplValue)}</div>
                     <p className="text-xs text-muted-foreground">True: {formatCurrency(trueCpl)}</p>
                   </>
                 );
@@ -437,7 +437,7 @@ export default function Overview() {
             </CardHeader>
             <CardContent className="pt-1">
               {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (
-                <div className="text-xl font-bold">{formatCurrency(kpis?.aov || 0)}</div>
+                <div className="text-lg sm:text-xl font-bold">{formatCurrency(kpis?.aov || 0)}</div>
               )}
             </CardContent>
           </Card>
