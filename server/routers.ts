@@ -239,7 +239,7 @@ export const appRouter = router({
     // Get aggregated overview metrics (total leads, spend, CPL, ROAS, etc.)
     metrics: publicProcedure
       .input(z.object({
-        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS, DATE_RANGES.ALL]).optional(),
       }).optional())
       .query(async ({ input }) => {
         const { startDate, endDate } = input?.dateRange 
@@ -267,7 +267,7 @@ export const appRouter = router({
     // Get daily KPIs for charts (spend & leads trend, ROAS trend)
     dailyKpis: publicProcedure
       .input(z.object({
-        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS, DATE_RANGES.ALL]).optional(),
       }).optional())
       .query(async ({ input }) => {
         const { startDate, endDate} = input?.dateRange 
@@ -311,7 +311,7 @@ export const appRouter = router({
     // Get performance comparison by channel (Meta vs Google)
     channelPerformance: publicProcedure
       .input(z.object({
-        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS, DATE_RANGES.ALL]).optional(),
       }).optional())
       .query(async ({ input }) => {
         const { startDate, endDate } = input?.dateRange 
@@ -339,7 +339,7 @@ export const appRouter = router({
     // Get conversion funnel metrics (Lead → Wisdom+ → Kingdom Seekers → ManyChat → Bot Alerts)
     funnelMetrics: publicProcedure
       .input(z.object({
-        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS, DATE_RANGES.ALL]).optional(),
       }).optional())
       .query(async ({ input }) => {
         const { startDate, endDate } = input?.dateRange 
@@ -367,7 +367,7 @@ export const appRouter = router({
     // Get Paid Ads funnel metrics (31daywisdom.com)
     paidAdsFunnel: publicProcedure
       .input(z.object({
-        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS, DATE_RANGES.ALL]).optional(),
       }).optional())
       .query(async ({ input }) => {
         const { startDate, endDate } = input?.dateRange 
@@ -396,7 +396,7 @@ export const appRouter = router({
     // Get Organic/Affiliate funnel metrics (NOT 31daywisdom.com)
     organicFunnel: publicProcedure
       .input(z.object({
-        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS, DATE_RANGES.ALL]).optional(),
       }).optional())
       .query(async ({ input }) => {
         const { startDate, endDate } = input?.dateRange 
@@ -425,7 +425,7 @@ export const appRouter = router({
     // Get VSL performance metrics from Vidalytics
     vslMetrics: publicProcedure
       .input(z.object({
-        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS, DATE_RANGES.ALL]).optional(),
       }).optional())
       .query(async ({ input }) => {
         const { startDate, endDate } = input?.dateRange 
@@ -456,7 +456,7 @@ export const appRouter = router({
     // Get daily metrics for spreadsheet view (using optimized edge function)
     metrics: publicProcedure
       .input(z.object({
-        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS, DATE_RANGES.ALL]).optional(),
       }).optional())
       .query(async ({ input }) => {
         const { startDate, endDate } = input?.dateRange 
@@ -477,7 +477,7 @@ export const appRouter = router({
     // Get raw daily metrics from edge function (new format)
     metricsV2: publicProcedure
       .input(z.object({
-        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS, DATE_RANGES.ALL]).optional(),
       }).optional())
       .query(async ({ input }) => {
         const { startDate, endDate } = input?.dateRange 
@@ -636,7 +636,7 @@ export const appRouter = router({
     // Get engagement metrics (attendance)
     metrics: publicProcedure
       .input(z.object({
-        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS, DATE_RANGES.ALL]).optional(),
       }).optional())
       .query(async ({ input }) => {
         const { startDate, endDate } = input?.dateRange 
@@ -649,7 +649,7 @@ export const appRouter = router({
     // Get high-ticket sales
     highTicketSales: publicProcedure
       .input(z.object({
-        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS, DATE_RANGES.ALL]).optional(),
       }).optional())
       .query(async ({ input }) => {
         const { startDate, endDate } = input?.dateRange 
@@ -662,7 +662,7 @@ export const appRouter = router({
     // Get full funnel metrics (VIP + HT revenue, ROAS, CPA)
     fullFunnel: publicProcedure
       .input(z.object({
-        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS]).optional(),
+        dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS, DATE_RANGES.ALL]).optional(),
       }).optional())
       .query(async ({ input }) => {
         const { startDate, endDate } = input?.dateRange 

@@ -16,7 +16,7 @@ import { ConversionFunnel } from "@/components/ConversionFunnel";
 import { VSLPerformance } from "@/components/VSLPerformance";
 
 export default function Overview() {
-  const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.LAST_30_DAYS);
+  const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.ALL);
   const [lastFetchTime, setLastFetchTime] = useState<Date>(new Date());
 
   // Get tRPC utils for cache invalidation

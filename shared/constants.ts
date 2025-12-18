@@ -33,6 +33,7 @@ export const DATE_RANGES = {
   LAST_7_DAYS: '7 DAYS',
   LAST_14_DAYS: '14 DAYS',
   LAST_30_DAYS: '30 DAYS',
+  ALL: 'ALL',
 } as const;
 
 export type DateRange = typeof DATE_RANGES[keyof typeof DATE_RANGES];
@@ -95,8 +96,12 @@ export function getDateRangeValues(range: DateRange): { startDate: string; endDa
       startDateStr = subtractDays(todayStr, 29); // Last 30 days including today
       endDateStr = todayStr;
       break;
+    case DATE_RANGES.ALL:
+      startDateStr = '2025-12-13'; // Campaign start date
+      endDateStr = todayStr;
+      break;
     default:
-      startDateStr = subtractDays(todayStr, 29);
+      startDateStr = '2025-12-13'; // Default to ALL
       endDateStr = todayStr;
   }
   

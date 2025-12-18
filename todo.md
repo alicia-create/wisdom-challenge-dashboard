@@ -1364,3 +1364,10 @@
 - [x] Update frontend Overview.tsx to use backend-calculated CPL/CPP values
 - [x] Remove frontend calculation logic for CPL/CPP
 - [x] Test all metrics display correctly after refactoring
+
+## Add ALL Date Range Filter (Dec 18)
+- [x] Add ALL constant to DATE_RANGES in shared/constants.ts
+- [x] Update getDateRangeValues to handle ALL option (start from Dec 13, 2025)
+- [x] Update DateRangeFilter component to show ALL button
+- [x] Change default date range from LAST_30_DAYS to ALL
+- [x] Test ALL filter displays all data correctly

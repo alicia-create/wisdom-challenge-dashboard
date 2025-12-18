@@ -23,6 +23,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
     DATE_RANGES.LAST_7_DAYS,
     DATE_RANGES.LAST_14_DAYS,
     DATE_RANGES.LAST_30_DAYS,
+    DATE_RANGES.ALL,
   ];
 
   const handleCustomRange = () => {
