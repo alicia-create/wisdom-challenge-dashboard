@@ -15,6 +15,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
   const [customStart, setCustomStart] = useState<Date>();
   const [customEnd, setCustomEnd] = useState<Date>();
   const [isCustom, setIsCustom] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const ranges: DateRange[] = [
     DATE_RANGES.TODAY,
@@ -29,6 +30,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
       const customRange = `${format(customStart, 'yyyy-MM-dd')} to ${format(customEnd, 'yyyy-MM-dd')}` as DateRange;
       onChange(customRange);
       setIsCustom(true);
+      setIsPopoverOpen(false);
     }
   };
 
@@ -46,7 +48,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
         </Button>
       ))}
       
-      <Popover>
+      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
           <Button
             variant={isCustom ? "default" : "outline"}
