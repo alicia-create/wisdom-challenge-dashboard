@@ -103,6 +103,7 @@ export default function Overview() {
   const transformFunnelData = (funnel: any) => ({
     totalLeads: funnel?.leads || 0,
     wisdomPurchases: funnel?.wisdomSales || 0,
+    extraJournals: funnel?.extraJournals || 0,
     kingdomSeekerTrials: funnel?.kingdomSeekers || 0,
     manychatConnected: funnel?.manychatConnected || 0,
     botAlertsSubscribed: funnel?.botAlertsSubscribed || 0,

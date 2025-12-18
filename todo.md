@@ -1349,3 +1349,8 @@
 - [x] Add funnel type prop to ConversionFunnel component
 - [x] Show deactivation note only in Paid Ads Funnel
 - [x] Keep original label in Organic - [ ] Keep original label in Organic & Affiliate Funnel Affiliate Funnel
+
+## Extra Journals Order Bump Indicator (Dec 18)
+- [x] Update get_dashboard_metrics to include extra journals count by funnel
+- [x] Add order bump indicator in ConversionFunnel Wisdom+ Purchases stage
+- [x] Show bump conversion rate (extra journals / wisdom purchases)

@@ -11,6 +11,7 @@ interface ConversionFunnelProps {
   data: {
     totalLeads: number;
     wisdomPurchases: number;
+    extraJournals?: number;
     kingdomSeekerTrials: number;
     manychatConnected: number;
     botAlertsSubscribed: number;
@@ -120,6 +121,21 @@ export function ConversionFunnel({ data, funnelType = 'paid' }: ConversionFunnel
                     {stage.count.toLocaleString()}
                   </div>
                 </div>
+                
+                {/* Order Bump Indicator for Wisdom+ Purchases */}
+                {stage.name === 'Wisdom+ Purchases' && data.extraJournals !== undefined && data.extraJournals > 0 && (
+                  <div className="mt-2 pt-2 border-t border-white/20">
+                    <div className="flex items-center justify-between text-white/90 text-xs">
+                      <div className="flex items-center gap-1">
+                        <span>↳</span>
+                        <span className="font-medium">+{data.extraJournals} Extra Journals</span>
+                      </div>
+                      <div className="font-semibold">
+                        {stage.count > 0 ? ((data.extraJournals / stage.count) * 100).toFixed(1) : 0}% bump
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
