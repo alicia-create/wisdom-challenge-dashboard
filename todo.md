@@ -1403,3 +1403,8 @@
 - [x] Make funnel stage boxes smaller on mobile
 - [x] Fix order bump text readability - "+24 3.7% bump Extra Journals" is overlapping/unreadable
 - [ ] Test all responsive breakpoints (375px, 390px, 428px)
+
+## Total Ad Spend Card Fix (Dec 18, 2025)
+- [x] Change main value to show only Meta LEADS + SALES campaigns (exclude Google)
+- [x] Keep "All:" line showing Meta all campaigns + Google (current total)
+- [x] This will make CPL/CPP calculations consistent with displayed spend

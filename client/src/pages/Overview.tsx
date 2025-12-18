@@ -271,7 +271,7 @@ export default function Overview() {
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Lead + Sales campaigns spend (used for CPL/CPP/ROAS)</p>
+                    <p>Meta Lead + Sales campaigns spend (used for CPL/CPP calculations)</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -283,13 +283,13 @@ export default function Overview() {
               ) : (
                 <>
                   <div className="text-xl sm:text-2xl md:text-3xl font-bold break-words">
-                    {formatCurrency((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0) + (googlePerformance?.spend || 0))}
+                    {formatCurrency((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0))}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Lead + Sales Campaigns
+                    Meta Lead + Sales Campaigns
                   </p>
                   <p className="text-xs text-muted-foreground/70">
-                    All: {formatCurrency(kpis?.totalSpend || 0)}
+                    All: {formatCurrency((kpis?.totalSpend || 0) + (googlePerformance?.spend || 0))}
                   </p>
                 </>              )}
             </CardContent>
