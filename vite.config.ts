@@ -56,6 +56,8 @@ export default defineConfig({
       overlay: false,
       protocol: 'wss',
       clientPort: 443,
+      // Timeout to prevent endless connection attempts
+      timeout: 5000,
     },
     fs: {
       strict: true,

@@ -1383,3 +1383,15 @@
 - [x] Create SQL to add extraJournals back to get_dashboard_metrics function
 - [x] Applied SQL changes in Supabase (consolidated_fix_v2.sql)
 - [x] Test and confirm indicators display correctly after SQL update
+
+## Fix Vite WebSocket Connection Error (Dec 18)
+- [x] Configure Vite HMR to handle WebSocket connection issues in proxied environment
+- [x] Add error suppression handler for Vite WebSocket errors
+- [ ] Test and verify error no longer appears in console
+
+## Restore Correct SQL Function with funil_name (Dec 18)
+- [x] Analyze differences between user's correct version and current version
+- [x] Identify all queries that should use funil_name instead of analytics_events
+- [x] Create migration plan with all changes needed
+- [x] Apply corrected SQL with CPL/CPP Ads and Extra Journals fields
+- [x] Test and verify all calculations are correct
