@@ -230,20 +230,6 @@ export const appRouter = router({
           dailyKpis: dailyResult.data?.dailyData || [],
         };
         
-        // Add Google conversions if not already present
-        if (result.googlePerformance && !result.googlePerformance.conversions) {
-          // Fetch Google conversions separately
-          const { data: googleConversions } = await supabase
-            .from('ad_performance')
-            .select('reported_purchases')
-            .eq('platform', 'Google')
-            .gte('date', startDate)
-            .lte('date', endDate);
-          
-          const totalConversions = googleConversions?.reduce((sum, row) => sum + (row.reported_purchases || 0), 0) || 0;
-          result.googlePerformance.conversions = totalConversions;
-        }
-        
         // Cache for 2 minutes
         await cache.set(cacheKey, result, 2 * 60 * 1000);
         

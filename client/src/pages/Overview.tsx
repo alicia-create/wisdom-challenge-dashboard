@@ -381,10 +381,9 @@ export default function Overview() {
             </CardHeader>
             <CardContent className="pt-1">
               {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (() => {
-                const cppValue = paidAdsFunnel?.wisdomSales && paidAdsFunnel.wisdomSales > 0
-                  ? ((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0)) / paidAdsFunnel.wisdomSales : 0;
+                const cppValue = kpis?.cppAds || 0;
                 const cppColor = cppValue <= 30 ? 'text-green-600' : cppValue <= 60 ? 'text-emerald-500' : cppValue <= 90 ? 'text-yellow-600' : 'text-red-500';
-                const trueCpp = kpis?.wisdomSales && kpis.wisdomSales > 0 ? kpis.totalSpend / kpis.wisdomSales : 0;
+                const trueCpp = kpis?.trueCpp || 0;
                 return (
                   <>
                     <div className={`text-xl font-bold ${cppColor}`}>{formatCurrency(cppValue)}</div>
@@ -412,10 +411,9 @@ export default function Overview() {
             </CardHeader>
             <CardContent className="pt-1">
               {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (() => {
-                const cplValue = paidAdsFunnel?.leads && paidAdsFunnel.leads > 0
-                  ? ((metaCampaignBreakdown?.leads?.spend || 0) + (metaCampaignBreakdown?.sales?.spend || 0)) / paidAdsFunnel.leads : 0;
+                const cplValue = kpis?.cplAds || 0;
                 const cplColor = cplValue <= 3 ? 'text-green-600' : cplValue <= 6 ? 'text-emerald-500' : cplValue <= 9 ? 'text-yellow-600' : 'text-red-500';
-                const trueCpl = kpis?.totalLeads && kpis.totalLeads > 0 ? kpis.totalSpend / kpis.totalLeads : 0;
+                const trueCpl = kpis?.trueCpl || 0;
                 return (
                   <>
                     <div className={`text-xl font-bold ${cplColor}`}>{formatCurrency(cplValue)}</div>

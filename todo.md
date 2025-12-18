@@ -1354,3 +1354,13 @@
 - [x] Update get_dashboard_metrics to include extra journals count by funnel
 - [x] Add order bump indicator in ConversionFunnel Wisdom+ Purchases stage
 - [x] Show bump conversion rate (extra journals / wisdom purchases)
+
+## Backend Refactoring - Move Calculations to SQL (Dec 18)
+- [x] Investigate Google conversions data source (where it comes from)
+- [x] Add CPP (Ads) calculation to get_dashboard_metrics: (leads.spend + sales.spend) / paidAdsFunnel.wisdomSales
+- [x] Add CPL (Ads) calculation to get_dashboard_metrics: (leads.spend + sales.spend) / paidAdsFunnel.leads
+- [x] Add True CPP calculation to get_dashboard_metrics: totalSpend / wisdomSales
+- [x] Add True CPL calculation to get_dashboard_metrics: totalSpend / totalLeads
+- [x] Update frontend Overview.tsx to use backend-calculated CPL/CPP values
+- [x] Remove frontend calculation logic for CPL/CPP
+- [x] Test all metrics display correctly after refactoring
