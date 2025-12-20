@@ -20,14 +20,23 @@ export interface DailyMetricsDay {
   totalLeads: number;
   totalWisdomSales: number;
   totalRevenue: number;
+  totalKingdomSeekers: number;
+  totalExtraJournals: number;
+  totalExtraShipping: number;
   // Paid Funnel
   paidLeads: number;
   paidWisdomSales: number;
   paidRevenue: number;
+  paidKingdomSeekers: number;
+  paidExtraJournals: number;
+  paidExtraShipping: number;
   // Organic Funnel
   organicLeads: number;
   organicWisdomSales: number;
   organicRevenue: number;
+  organicKingdomSeekers: number;
+  organicExtraJournals: number;
+  organicExtraShipping: number;
   // Ad Spend
   leadsSalesSpend: number;
   totalAdSpend: number;
@@ -99,9 +108,22 @@ export async function getDailyMetricsFromEdgeFunction(
     throw new Error(`Failed to fetch daily metrics: ${error.message}`);
   }
 
-  console.log(`[Daily Metrics] Received ${data?.dailyData?.length || 0} days of data`);
+  // Handle new nested structure: data is an array with get_daily_metrics key
+  let result: DailyMetricsResponse;
+  if (Array.isArray(data) && data.length > 0 && data[0].get_daily_metrics) {
+    console.log('[Daily Metrics] Extracting from nested structure');
+    result = data[0].get_daily_metrics as DailyMetricsResponse;
+  } else if (data?.dailyData) {
+    // Fallback to direct structure
+    result = data as DailyMetricsResponse;
+  } else {
+    console.error('[Daily Metrics] Unexpected data structure:', JSON.stringify(data).substring(0, 200));
+    throw new Error('Unexpected data structure from get_daily_metrics');
+  }
+
+  console.log(`[Daily Metrics] Received ${result.dailyData?.length || 0} days of data`);
   
-  return data as DailyMetricsResponse;
+  return result;
 }
 
 /**
@@ -172,5 +194,15 @@ export function transformDailyMetricsForUI(data: DailyMetricsResponse) {
     // Meta breakdown
     metaLeadsCampaign: day.metaLeads,
     metaSalesCampaign: day.metaSales,
+    // Kingdom Seekers & Extras
+    totalKingdomSeekers: day.totalKingdomSeekers,
+    paidKingdomSeekers: day.paidKingdomSeekers,
+    organicKingdomSeekers: day.organicKingdomSeekers,
+    totalExtraJournals: day.totalExtraJournals,
+    paidExtraJournals: day.paidExtraJournals,
+    organicExtraJournals: day.organicExtraJournals,
+    totalExtraShipping: day.totalExtraShipping,
+    paidExtraShipping: day.paidExtraShipping,
+    organicExtraShipping: day.organicExtraShipping,
   }));
 }

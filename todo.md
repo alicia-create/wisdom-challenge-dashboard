@@ -1408,3 +1408,10 @@
 - [x] Change main value to show only Meta LEADS + SALES campaigns (exclude Google)
 - [x] Keep "All:" line showing Meta all campaigns + Google (current total)
 - [x] This will make CPL/CPP calculations consistent with displayed spend
+
+## Daily Metrics Page Fix (Dec 18, 2025)
+- [x] Update backend tRPC procedure to parse new get_daily_metrics structure
+- [x] Update Daily page to handle new nested data format (get_daily_metrics.dailyData[])
+- [x] Fix inconsistent data display on Daily page
+- [x] Map new field names (metaLeads, metaSales, google, etc.)
+- [x] Add new fields: Kingdom Seekers, Extra Journals, Extra Shipping (paid/organic/total)
