@@ -89,8 +89,12 @@ export interface DailyMetricsResponse {
 }
 
 /**
- * Fetch daily metrics using the optimized edge function
- * Uses the same logic as get_dashboard_metrics for consistency
+ * Fetch daily metrics using the optimized edge function v2.0
+ * 
+ * v2.0 Changes:
+ * - Response is now direct (no nested wrapper)
+ * - Revenue includes ALL products (not just Wisdom+)
+ * - ROAS uses full paidRevenue (includes upsells)
  */
 export async function getDailyMetricsFromEdgeFunction(
   startDate: string,
@@ -108,20 +112,14 @@ export async function getDailyMetricsFromEdgeFunction(
     throw new Error(`Failed to fetch daily metrics: ${error.message}`);
   }
 
-  // Handle new nested structure: data is an array with get_daily_metrics key
-  let result: DailyMetricsResponse;
-  if (Array.isArray(data) && data.length > 0 && data[0].get_daily_metrics) {
-    console.log('[Daily Metrics] Extracting from nested structure');
-    result = data[0].get_daily_metrics as DailyMetricsResponse;
-  } else if (data?.dailyData) {
-    // Fallback to direct structure
-    result = data as DailyMetricsResponse;
-  } else {
-    console.error('[Daily Metrics] Unexpected data structure:', JSON.stringify(data).substring(0, 200));
-    throw new Error('Unexpected data structure from get_daily_metrics');
+  // v2.0: Response is now direct (no nested wrapper)
+  if (!data || !data.dailyData) {
+    console.error('[Daily Metrics] Invalid response structure:', JSON.stringify(data).substring(0, 200));
+    throw new Error('Invalid response from get_daily_metrics v2.0');
   }
 
-  console.log(`[Daily Metrics] Received ${result.dailyData?.length || 0} days of data`);
+  const result = data as DailyMetricsResponse;
+  console.log(`[Daily Metrics v2.0] Received ${result.dailyData.length} days of data`);
   
   return result;
 }
@@ -129,6 +127,11 @@ export async function getDailyMetricsFromEdgeFunction(
 /**
  * Transform edge function data to match the existing DailyAnalysis page format
  * This ensures backward compatibility with the current UI
+ * 
+ * v2.0 Changes:
+ * - Revenue now includes ALL products (not just Wisdom+)
+ * - ROAS calculated using full paidRevenue (includes upsells)
+ * - Response structure is direct (no nested wrapper)
  */
 export function transformDailyMetricsForUI(data: DailyMetricsResponse) {
   return data.dailyData.map(day => ({

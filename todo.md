@@ -1415,3 +1415,10 @@
 - [x] Fix inconsistent data display on Daily page
 - [x] Map new field names (metaLeads, metaSales, google, etc.)
 - [x] Add new fields: Kingdom Seekers, Extra Journals, Extra Shipping (paid/organic/total)
+
+## Daily Metrics v2.0 Update (Dec 20, 2025)
+- [x] Update TypeScript interfaces to match v2.0 API (no nested get_daily_metrics wrapper)
+- [x] Verify revenue calculation includes ALL products (not just Wisdom+)
+- [x] Ensure ROAS uses correct paidRevenue (not just Wisdom+ revenue)
+- [x] Update data transformation to handle direct dailyData response
+- [x] Test that CPL, CPP, ROAS calculations match documentation
