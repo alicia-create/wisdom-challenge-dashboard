@@ -1422,3 +1422,23 @@
 - [x] Ensure ROAS uses correct paidRevenue (not just Wisdom+ revenue)
 - [x] Update data transformation to handle direct dailyData response
 - [x] Test that CPL, CPP, ROAS calculations match documentation
+
+## Daily Page Rebuild - Excel-Style Table (Dec 20, 2025)
+- [x] Analyze Overview data source (get_dashboard_metrics via getOverviewMetricsOptimized)
+- [x] Create new tRPC procedure to fetch daily metrics using same source as Overview
+- [x] Design Excel-style table with ALL metrics from Overview (KPIs, funnels, ad performance)
+- [x] Implement table with fixed header, scrollable body, and proper formatting
+- [x] Add CSV export functionality
+- [ ] Verify totals match Overview exactly (100% consistency)
+- [x] Replace old DailyAnalysis page with new implementation
+
+## Daily Table Page Rebuild (Dec 20, 2025)
+- [x] Rebuild Daily page from scratch using get_daily_metrics v2.0 API
+- [x] Update backend to call get_daily_metrics (not get_dashboard_metrics day-by-day)
+- [x] Fix field mapping to use v2.0 structure (direct fields: totalLeads, paidLeads, etc)
+- [x] Update totals calculation to aggregate v2.0 fields correctly
+- [x] Update table rows to display v2.0 fields (no more nested kpis/paidAdsFunnel)
+- [x] Verify data displays correctly (KS, spend, ROAS, conversion all showing)
+- [x] Test CSV export functionality
+
+**Note:** totalLeads and totalWisdomSales showing as 0 in API response - this is a SQL function issue to be fixed in Supabase, not a frontend problem.

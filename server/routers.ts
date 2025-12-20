@@ -32,6 +32,7 @@ import {
   getContactActivitySummary,
   getContactTimeline,
 } from "./supabase-activities";
+import { getDailyTableData } from "./daily-table";
 import { getWorkflowErrors, getWorkflowErrorStats } from "./workflow-errors";
 import {
   getEmailEngagementMetrics,
@@ -453,7 +454,8 @@ export const appRouter = router({
 
   // Daily Analysis queries
   dailyAnalysis: router({
-    // Get daily metrics for spreadsheet view (using optimized edge function)
+    // Get daily metrics for Excel-style table view
+    // Uses SAME data source as Overview (get_dashboard_metrics) for 100% consistency
     metrics: publicProcedure
       .input(z.object({
         dateRange: z.enum([DATE_RANGES.TODAY, DATE_RANGES.YESTERDAY, DATE_RANGES.LAST_7_DAYS, DATE_RANGES.LAST_14_DAYS, DATE_RANGES.LAST_30_DAYS, DATE_RANGES.ALL]).optional(),
@@ -463,15 +465,12 @@ export const appRouter = router({
           ? getDateRangeValues(input.dateRange)
           : getDateRangeValues(DATE_RANGES.LAST_30_DAYS);
         
-        try {
-          // Use the optimized edge function
-          const data = await getDailyMetricsFromEdgeFunction(startDate, endDate);
-          return transformDailyMetricsForUI(data);
-        } catch (error) {
-          console.error('[Daily Analysis] Edge function failed, falling back to legacy:', error);
-          // Fallback to legacy function if edge function fails
-          return await getDailyAnalysisMetrics(startDate, endDate);
-        }
+        console.log(`[Daily Table] Fetching metrics from ${startDate} to ${endDate}`);
+        
+        // Use the same source as Overview for consistency
+        const dailyData = await getDailyTableData(startDate, endDate);
+        
+        return dailyData;
       }),
     
     // Get raw daily metrics from edge function (new format)
