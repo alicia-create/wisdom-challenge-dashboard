@@ -1442,3 +1442,20 @@
 - [x] Test CSV export functionality
 
 **Note:** totalLeads and totalWisdomSales showing as 0 in API response - this is a SQL function issue to be fixed in Supabase, not a frontend problem.
+
+## Daily Table Showing Zeros Bug (Dec 20, 2025)
+- [ ] Check if server restarted and lost code changes
+- [ ] Verify daily-table.ts backend code is correct
+- [ ] Check if API response structure changed
+- [ ] Add logging to see what data is being returned
+- [ ] Fix data extraction from API response
+- [ ] Test in browser to confirm fix works
+
+## Transposed Daily Table (Dec 20, 2025)
+- [x] Add console.log to show full get_daily_metrics JSON response
+- [x] Redesign Daily Table to be transposed: metrics as rows, days as columns
+- [x] Include ALL metrics from get_daily_metrics response (40+ metrics)
+- [x] Make table horizontally scrollable for many days
+- [x] Add group headers (Leads, Sales, Upsells, Revenue, Ad Spend, Metrics, Meta Leads, Meta Sales, Google)
+- [x] Fix React key error (use Fragment with key prop)
+- [x] Test with TODAY - showing correct data (2,599 leads, 283 sales, $10,948 revenue)

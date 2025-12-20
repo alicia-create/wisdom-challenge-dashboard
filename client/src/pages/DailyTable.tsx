@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { DATE_RANGES, type DateRange } from "@shared/constants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +19,15 @@ export default function DailyTable() {
   const { data: dailyData, isLoading } = trpc.dailyAnalysis.metrics.useQuery({
     dateRange,
   });
+
+  // DEBUG: Show full JSON response in console
+  useEffect(() => {
+    if (dailyData) {
+      console.log('===== FULL get_daily_metrics JSON RESPONSE =====');
+      console.log(JSON.stringify(dailyData, null, 2));
+      console.log('================================================');
+    }
+  }, [dailyData]);
 
   // Format currency
   const formatCurrency = (value: number) => {

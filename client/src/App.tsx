@@ -11,7 +11,7 @@ import Overview from "./pages/Overview";
 import NotFound from "./pages/NotFound";
 
 // Lazy load all other pages
-const DailyTable = lazy(() => import("./pages/DailyTable"));
+const DailyTableTransposed = lazy(() => import("./pages/DailyTableTransposed"));
 const EngagementSales = lazy(() => import("./pages/EngagementSales"));
 const EmailLeadQuality = lazy(() => import("./pages/EmailLeadQuality"));
 const RawData = lazy(() => import("./pages/RawData"));
@@ -46,7 +46,7 @@ function Router() {
       <Switch>
         <Route path={"/"} component={Home} />
         <Route path={"/overview"} component={Overview} />
-        <Route path={"/daily-analysis"} component={DailyTable} />
+        <Route path={"/daily-analysis"} component={DailyTableTransposed} />
         <Route path={"/engagement-sales"} component={EngagementSales} />
         <Route path={"/email-lead-quality"} component={EmailLeadQuality} />
         <Route path={"/raw-data"} component={RawData} />
