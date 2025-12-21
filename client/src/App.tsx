@@ -31,6 +31,7 @@ const Products = lazy(() => import("./pages/Products"));
 const Invites = lazy(() => import("./pages/Invites"));
 const AdsDiary = lazy(() => import("./pages/AdsDiary"));
 const FlagHistory = lazy(() => import("./pages/FlagHistory"));
+const SocialFollowers = lazy(() => import("./pages/SocialFollowers"));
 
 // Loading component
 const PageLoader = () => (
@@ -63,8 +64,8 @@ function Router() {
         <Route path={"/invites"} component={Invites} />
         <Route path={"/ads-diary"} component={AdsDiary} />
         <Route path={"/flag-history"} component={FlagHistory} />
-        <Route path={"/debug/google-campaigns"} component={DebugGoogleCampaigns} />
-        <Route path={"/debug/meta-campaigns"} component={DebugMetaCampaigns} />
+        <Route path={"/social-followers"} component={SocialFollowers} />
+        <Route path={"/debug/google-campaigns"} component={DebugGoogleCampaigns} />       <Route path={"/debug/meta-campaigns"} component={DebugMetaCampaigns} />
         <Route path="/debug/error-logs" component={ErrorLogs} />
         <Route path={"/404"} component={NotFound} />
         <Route component={NotFound} />

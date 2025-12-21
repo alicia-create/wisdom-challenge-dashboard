@@ -83,6 +83,11 @@ import {
 import { invokeLLM } from "./_core/llm";
 import { getFunnelMetrics, getVSLMetrics } from "./funnel";
 import { getPaidAdsContactIds, getOrganicContactIds } from "./wisdom-filter";
+import {
+  upsertSocialMediaFollowers,
+  getSocialMediaFollowers,
+  deleteSocialMediaFollowers,
+} from "./social-media";
 
 
 export const appRouter = router({
@@ -135,6 +140,32 @@ export const appRouter = router({
       }
       return await getWisdomTagDistribution();
     }),
+  }),
+
+  // Social Media Followers tracking
+  socialMedia: router({    list: publicProcedure.query(async () => {
+      return await getSocialMediaFollowers();
+    }),
+
+    upsert: publicProcedure
+      .input(z.object({
+        date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), // YYYY-MM-DD
+        facebookFollowers: z.number().int().min(0),
+        instagramFollowers: z.number().int().min(0),
+        youtubeFollowers: z.number().int().min(0),
+        comment: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return await upsertSocialMediaFollowers(input);
+      }),
+
+    delete: publicProcedure
+      .input(z.object({
+        date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+      }))
+      .mutation(async ({ input }) => {
+        return await deleteSocialMediaFollowers(input.date);
+      }),
   }),
 
   // Workflow error logs from n8n

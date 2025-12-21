@@ -1484,3 +1484,16 @@
 - [x] Backend returns correct date (2025-12-20)
 - [x] Fix date formatting in DailyTableTransposed to parse YYYY-MM-DD without timezone conversion
 - [ ] Test TODAY filter shows Dec 20 correctly in browser
+
+## Social Media Followers Tracking (Dec 20, 2025)
+- [x] Identified existing socialmedia_metrics table in Supabase (entity_type, entity_id, metric_name, metric_value)
+- [x] Created server/social-media.ts with Supabase queries (upsert, get, delete)
+- [x] Added tRPC procedures socialMedia.list/upsert/delete in routers.ts
+- [x] Built SocialFollowers page with manual entry form (date, FB/IG/YT followers, notes)
+- [x] Data stored as 3 rows per date: entity_type='page', entity_id='facebook'/'instagram'/'youtube', metric_name='followers'
+- [x] Added history table showing all recorded entries with delete action
+- [x] Added navigation link in Data Hub section (System & Tools)
+- [x] Created vitest tests for social media procedures (6 tests, all passing)
+- [x] Fixed entity_type constraint (use 'channel' instead of 'page')
+- [ ] Test form submission and data persistence in browser
+- [ ] Save checkpoint

@@ -78,6 +78,20 @@
       "when": 1765981338329,
       "tag": "0010_nebulous_vargas",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1766345065581,
+      "tag": "0011_romantic_quentin_quire",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "5",
+      "when": 1766345410027,
+      "tag": "0012_sloppy_thundra",
+      "breakpoints": true
     }
   ]
 }

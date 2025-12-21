@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { useLocation } from "wouter";
-import { Database, ShoppingCart, TrendingUp, AlertCircle, Users, Target, FileText, Mail, Activity, Package, UserPlus, BookOpen, Link as LinkIcon } from "lucide-react";
+import { Database, ShoppingCart, TrendingUp, AlertCircle, Users, Target, FileText, Mail, Activity, Package, UserPlus, BookOpen, Link as LinkIcon, Share2 } from "lucide-react";
 
 export default function OtherData() {
   const [, setLocation] = useLocation();
@@ -120,6 +120,14 @@ export default function OtherData() {
       path: "/raw-data/facebook-audiences",
       color: "text-indigo-600",
       bgColor: "bg-indigo-50 dark:bg-indigo-950",
+    },
+    {
+      title: "Social Followers",
+      description: "Manually track Facebook, Instagram, and YouTube followers",
+      icon: Share2,
+      path: "/social-followers",
+      color: "text-cyan-600",
+      bgColor: "bg-cyan-50 dark:bg-cyan-950",
     },
   ];
 
