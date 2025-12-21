@@ -106,9 +106,18 @@ export default function DailyTableTransposed() {
     { key: 'google.reportedPurchases', label: 'Google - Reported Purchases', format: formatNumber, group: 'Google' },
   ];
 
-  // Helper to get nested value from object using dot notation
+    // Helper to get nested values (e.g., 'metaLeads.spend')
   const getNestedValue = (obj: any, path: string) => {
     return path.split('.').reduce((current, key) => current?.[key], obj) ?? 0;
+  };
+
+  // Calculate totals for each metric across all days
+  const calculateTotal = (metricKey: string) => {
+    if (!dailyData || dailyData.length === 0) return 0;
+    return dailyData.reduce((sum: number, day: any) => {
+      const value = getNestedValue(day, metricKey);
+      return sum + (typeof value === 'number' ? value : 0);
+    }, 0);
   };
 
   // Export to CSV
@@ -118,16 +127,17 @@ export default function DailyTableTransposed() {
       return;
     }
 
-    // CSV headers: Metric, Date1, Date2, ...
-    const headers = ['Metric', ...dailyData.map((d: any) => d.date)];
+    // CSV headers: Metric, Total, Date1, Date2, ...
+    const headers = ['Metric', 'Total', ...dailyData.map((d: any) => d.date)];
     
-    // CSV rows: one per metric
+    // CSV rows: one per metric with total
     const rows = metrics.map(metric => {
+      const total = calculateTotal(metric.key);
       const values = dailyData.map((day: any) => {
         const value = getNestedValue(day, metric.key);
         return typeof value === 'number' ? value : 0;
       });
-      return [metric.label, ...values];
+      return [metric.label, total, ...values];
     });
 
     // Combine headers and rows
@@ -184,11 +194,19 @@ export default function DailyTableTransposed() {
                       <th className="sticky left-0 z-10 bg-muted/50 px-4 py-3 text-left font-semibold min-w-[200px]">
                         Metric
                       </th>
-                      {dailyData.map((day: any, idx: number) => (
-                        <th key={idx} className="px-4 py-3 text-right font-semibold min-w-[120px] whitespace-nowrap">
-                          {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </th>
-                      ))}
+                      <th className="px-4 py-3 text-right font-semibold min-w-[120px] bg-primary/10">
+                        Total
+                      </th>
+                      {dailyData.map((day: any, idx: number) => {
+                        // Parse date without timezone conversion (YYYY-MM-DD format)
+                        const [year, month, dayNum] = day.date.split('-').map(Number);
+                        const date = new Date(year, month - 1, dayNum);
+                        return (
+                          <th key={idx} className="px-4 py-3 text-right font-semibold min-w-[120px] whitespace-nowrap">
+                            {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </th>
+                        );
+                      })}
                     </tr>
                   </thead>
                   <tbody>
@@ -200,7 +218,7 @@ export default function DailyTableTransposed() {
                         <Fragment key={metric.key}>
                           {isFirstInGroup && (
                             <tr className="bg-muted/30">
-                              <td colSpan={dailyData.length + 1} className="px-4 py-2 font-semibold text-xs uppercase tracking-wide">
+                              <td colSpan={dailyData.length + 2} className="px-4 py-2 font-semibold text-xs uppercase tracking-wide">
                                 {metric.group}
                               </td>
                             </tr>
@@ -208,6 +226,9 @@ export default function DailyTableTransposed() {
                           <tr className="border-b hover:bg-muted/20">
                             <td className="sticky left-0 z-10 bg-background px-4 py-3 font-medium">
                               {metric.label}
+                            </td>
+                            <td className="px-4 py-3 text-right tabular-nums font-semibold bg-primary/5">
+                              {metric.format(calculateTotal(metric.key))}
                             </td>
                             {dailyData.map((day: any, dayIdx: number) => {
                               const value = getNestedValue(day, metric.key);

@@ -1459,3 +1459,28 @@
 - [x] Add group headers (Leads, Sales, Upsells, Revenue, Ad Spend, Metrics, Meta Leads, Meta Sales, Google)
 - [x] Fix React key error (use Fragment with key prop)
 - [x] Test with TODAY - showing correct data (2,599 leads, 283 sales, $10,948 revenue)
+
+
+## SQL Timeout Fix - Daily Analysis Page (Dec 20, 2025)
+- [x] Diagnose get_daily_metrics SQL function timeout issue (multiple EXISTS subqueries causing slowness)
+- [x] Check if wisdom_contacts materialized view exists and is up to date (exists in migrations/003, but only has contact_id)
+- [x] Create optimized get_daily_metrics v2 with pre-filtered contact CTEs
+- [x] Replace repeated EXISTS subqueries with paid_contact_ids and organic_contact_ids CTEs
+- [x] Fix column name error (wisdom_contacts doesn't have funnel_name)
+- [x] Apply corrected migration 008_optimize_daily_metrics.sql in Supabase
+- [x] Test query with date range Dec 13-20 (SUCCESS - returned 8 days of data in ~2 seconds)
+- [ ] Verify Daily Analysis page loads without timeout in browser
+- [ ] Test with ALL filter to confirm no timeout
+
+## Add Total Column to Daily Analysis (Dec 20, 2025)
+- [x] Update DailyTableTransposed component to calculate totals for all metrics
+- [x] Add "Total" column as first column after metric name (with highlighted background)
+- [x] Update CSV export to include Total column
+- [ ] Test Total column displays correct sums in browser
+- [ ] Save checkpoint
+
+## Fix Date Calculation Bug (Dec 20, 2025)
+- [x] Investigate why TODAY filter shows Dec 19 instead of Dec 20 (timezone conversion in frontend)
+- [x] Backend returns correct date (2025-12-20)
+- [x] Fix date formatting in DailyTableTransposed to parse YYYY-MM-DD without timezone conversion
+- [ ] Test TODAY filter shows Dec 20 correctly in browser
