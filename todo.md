@@ -1529,3 +1529,14 @@
 - [x] Update Instagram color from #E4405F (pink-red) to #9333EA (vibrant purple)
 - [x] Update color in line chart, stats cards, and empty state icons
 - [x] Much better contrast with YouTube red (#FF0000)
+
+
+## Fix Leads Page + Data Discrepancy Investigation (Dec 21, 2025)
+- [x] Check why Leads page is showing skeleton loading (getWisdomContactIds timeout)
+- [x] Investigate Supabase contacts table: 43,609 total records
+- [x] Verified NO duplicate emails (43,609 unique emails)
+- [x] Data breakdown: 20,670 CF IDs, 43,112 Keap IDs (Keap is primary CRM with more sources)
+- [x] Optimized getWisdomContactIds to use wisdom_contacts materialized view (60s → <1s)
+- [x] Removed manual pagination of analytics_events table
+- [ ] Test Leads page loads correctly in browser
+- [ ] Save checkpoint

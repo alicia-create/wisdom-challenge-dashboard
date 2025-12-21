@@ -16,59 +16,59 @@ const MAX_PAGES = 20; // Safety limit: max 20,000 rows
 
 /**
  * Get all contact IDs from the Wisdom funnel
- * Uses analytics_events to identify contacts with wisdom-related events
- * Filter: comment LIKE '%wisdom%' (matches both 31daywisdom.com and 31daywisdomchallenge.com)
- * @param startDate Optional start date filter (ISO string)
- * @param endDate Optional end date filter (ISO string)
+ * Uses wisdom_contacts materialized view for fast lookups
+ * @param startDate Optional start date filter (ISO string) - filters contacts.created_at
+ * @param endDate Optional end date filter (ISO string) - filters contacts.created_at
  */
 export async function getWisdomContactIds(startDate?: string, endDate?: string): Promise<number[]> {
-  const allEvents: { contact_id: number }[] = [];
-  let page = 0;
-  let hasMore = true;
+  // Use wisdom_contacts materialized view (much faster than scanning analytics_events)
+  const { data: wisdomData, error: wisdomError } = await supabase
+    .from('wisdom_contacts')
+    .select('contact_id');
 
-  while (hasMore && page < MAX_PAGES) {
-    let pageQuery = supabase
-      .from('analytics_events')
-      .select('contact_id')
-      .ilike('comment', '%wisdom%')
-      .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+  if (wisdomError) {
+    console.error('[Wisdom Filter] Error fetching from wisdom_contacts:', wisdomError);
+    return [];
+  }
+
+  if (!wisdomData || wisdomData.length === 0) {
+    console.log('[Wisdom Filter] No contacts found in wisdom_contacts materialized view');
+    return [];
+  }
+
+  const wisdomContactIds = wisdomData.map(row => row.contact_id);
+
+  // If date filters provided, filter by contacts.created_at
+  if (startDate || endDate) {
+    let dateQuery = supabase
+      .from('contacts')
+      .select('id')
+      .in('id', wisdomContactIds);
 
     if (startDate) {
-      pageQuery = pageQuery.gte('timestamp', startDate);
+      dateQuery = dateQuery.gte('created_at', startDate);
     }
     if (endDate) {
       const endDateTime = new Date(endDate);
       endDateTime.setDate(endDateTime.getDate() + 1);
-      pageQuery = pageQuery.lt('timestamp', endDateTime.toISOString());
+      dateQuery = dateQuery.lt('created_at', endDateTime.toISOString());
     }
 
-    const { data, error } = await pageQuery;
+    const { data: filteredContacts, error: dateError } = await dateQuery;
 
-    if (error) {
-      console.error('[Wisdom Filter] Error fetching page:', error);
-      break;
+    if (dateError) {
+      console.error('[Wisdom Filter] Error filtering by date:', dateError);
+      return wisdomContactIds; // Return unfiltered if date filter fails
     }
 
-    if (data && data.length > 0) {
-      allEvents.push(...data);
-      hasMore = data.length === PAGE_SIZE;
-      page++;
-    } else {
-      hasMore = false;
-    }
+    const filteredIds = filteredContacts?.map(c => c.id) || [];
+    const dateRange = `${startDate || 'all'} to ${endDate || 'now'}`;
+    console.log(`[Wisdom Filter] Found ${filteredIds.length} contacts from Wisdom funnel (${dateRange})`);
+    return filteredIds;
   }
 
-  // Extract unique contact IDs
-  const contactIds = Array.from(new Set(allEvents.map(e => e.contact_id)));
-
-  const dateRange = startDate && endDate 
-    ? `${startDate} to ${endDate}`
-    : startDate 
-    ? `from ${startDate}`
-    : 'all time';
-  console.log(`[Wisdom Filter] Found ${contactIds.length} contacts from Wisdom funnel (${dateRange}) - fetched ${allEvents.length} events in ${page} pages`);
-  
-  return contactIds;
+  console.log(`[Wisdom Filter] Found ${wisdomContactIds.length} contacts from Wisdom funnel (all time)`);
+  return wisdomContactIds;
 }
 
 /**
