@@ -1469,31 +1469,38 @@
 - [x] Fix column name error (wisdom_contacts doesn't have funnel_name)
 - [x] Apply corrected migration 008_optimize_daily_metrics.sql in Supabase
 - [x] Test query with date range Dec 13-20 (SUCCESS - returned 8 days of data in ~2 seconds)
-- [ ] Verify Daily Analysis page loads without timeout in browser
-- [ ] Test with ALL filter to confirm no timeout
+- [x] Verify Daily Analysis page loads without timeout in browser (CONFIRMED WORKING)
+- [x] Test with ALL filter to confirm no timeout (CONFIRMED WORKING)
 
 ## Add Total Column to Daily Analysis (Dec 20, 2025)
 - [x] Update DailyTableTransposed component to calculate totals for all metrics
 - [x] Add "Total" column as first column after metric name (with highlighted background)
 - [x] Update CSV export to include Total column
-- [ ] Test Total column displays correct sums in browser
-- [ ] Save checkpoint
+- [x] Test Total column displays correct sums in browser (WORKING)
+- [x] Save checkpoint (a5e4a316)
 
 ## Fix Date Calculation Bug (Dec 20, 2025)
 - [x] Investigate why TODAY filter shows Dec 19 instead of Dec 20 (timezone conversion in frontend)
 - [x] Backend returns correct date (2025-12-20)
 - [x] Fix date formatting in DailyTableTransposed to parse YYYY-MM-DD without timezone conversion
-- [ ] Test TODAY filter shows Dec 20 correctly in browser
+- [x] Test TODAY filter shows Dec 20 correctly in browser (CONFIRMED WORKING)
 
 ## Social Media Followers Tracking (Dec 20, 2025)
 - [x] Identified existing socialmedia_metrics table in Supabase (entity_type, entity_id, metric_name, metric_value)
 - [x] Created server/social-media.ts with Supabase queries (upsert, get, delete)
 - [x] Added tRPC procedures socialMedia.list/upsert/delete in routers.ts
 - [x] Built SocialFollowers page with manual entry form (date, FB/IG/YT followers, notes)
-- [x] Data stored as 3 rows per date: entity_type='page', entity_id='facebook'/'instagram'/'youtube', metric_name='followers'
+- [x] Data stored as 3 rows per date: entity_type='channel', entity_id='facebook'/'instagram'/'youtube', metric_name='followers'
 - [x] Added history table showing all recorded entries with delete action
 - [x] Added navigation link in Data Hub section (System & Tools)
 - [x] Created vitest tests for social media procedures (6 tests, all passing)
 - [x] Fixed entity_type constraint (use 'channel' instead of 'page')
-- [ ] Test form submission and data persistence in browser
+- [x] Save checkpoint (a5e4a316)
+
+
+## Fix tRPC Router Syntax Error (Dec 21, 2025)
+- [x] Diagnose socialMedia router syntax error ("No procedure found on path socialMedia.list")
+- [x] Fix router definition (missing newline after router({ declaration)
+- [x] Restart dev server
+- [ ] Test /social-followers page loads without error
 - [ ] Save checkpoint

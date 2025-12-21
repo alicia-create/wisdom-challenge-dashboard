@@ -143,7 +143,8 @@ export const appRouter = router({
   }),
 
   // Social Media Followers tracking
-  socialMedia: router({    list: publicProcedure.query(async () => {
+  socialMedia: router({
+    list: publicProcedure.query(async () => {
       return await getSocialMediaFollowers();
     }),
 
