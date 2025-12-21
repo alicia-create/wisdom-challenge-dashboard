@@ -71,7 +71,7 @@ export function FollowersGrowthChart({ data }: FollowersGrowthChartProps) {
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="flex gap-3 mb-4 opacity-50">
               <Facebook className="w-8 h-8 text-blue-600" />
-              <Instagram className="w-8 h-8 text-pink-600" />
+              <Instagram className="w-8 h-8 text-purple-600" />
               <Youtube className="w-8 h-8 text-red-600" />
             </div>
             <p className="text-muted-foreground mb-2">No followers data available yet</p>
@@ -117,8 +117,8 @@ export function FollowersGrowthChart({ data }: FollowersGrowthChartProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 bg-pink-50 dark:bg-pink-950/20 rounded-lg">
-            <Instagram className="w-8 h-8 text-pink-600" />
+          <div className="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+            <Instagram className="w-8 h-8 text-purple-600" />
             <div>
               <div className="text-sm text-muted-foreground">Instagram</div>
               <div className="text-lg font-bold">{formatNumber(latestRecord.instagramFollowers)}</div>
@@ -178,9 +178,9 @@ export function FollowersGrowthChart({ data }: FollowersGrowthChartProps) {
             <Line
               type="monotone"
               dataKey="Instagram"
-              stroke="#E4405F"
+              stroke="#9333EA"
               strokeWidth={2}
-              dot={{ fill: '#E4405F', r: 4 }}
+              dot={{ fill: '#9333EA', r: 4 }}
               activeDot={{ r: 6 }}
             />
             <Line
