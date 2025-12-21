@@ -14,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Button } from "@/components/ui/button";
 import { ConversionFunnel } from "@/components/ConversionFunnel";
 import { VSLPerformance } from "@/components/VSLPerformance";
+import { FollowersGrowthChart } from "@/components/FollowersGrowthChart";
 
 export default function Overview() {
   const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.ALL);
@@ -36,6 +37,9 @@ export default function Overview() {
     startDate,
     endDate,
   });
+
+  // Fetch social media followers data for growth chart
+  const { data: followersData, isLoading: followersLoading } = trpc.socialMedia.list.useQuery();
 
   // Daily KPIs are now included in unifiedMetrics response
 
@@ -722,6 +726,22 @@ export default function Overview() {
             )}
           </CardContent>
         </Card>
+
+        {/* Social Media Followers Growth Chart */}
+        <div className="mt-6">
+          {followersLoading ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>Social Media Followers Growth</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-[400px] w-full" />
+              </CardContent>
+            </Card>
+          ) : (
+            <FollowersGrowthChart data={followersData || []} />
+          )}
+        </div>
       </div>
     </div>
   );
