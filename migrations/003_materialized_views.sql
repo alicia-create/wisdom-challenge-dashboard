@@ -15,7 +15,7 @@ DROP MATERIALIZED VIEW IF EXISTS wisdom_contacts CASCADE;
 CREATE MATERIALIZED VIEW wisdom_contacts AS
 SELECT DISTINCT contact_id
 FROM analytics_events
-WHERE (comment ILIKE '%wisdom%' OR comment ILIKE '%31daywisdomchallenge%')
+WHERE comment ILIKE '%wisdom%'
   AND contact_id IS NOT NULL;
 
 -- Create index on the materialized view

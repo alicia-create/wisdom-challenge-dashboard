@@ -1538,5 +1538,24 @@
 - [x] Data breakdown: 20,670 CF IDs, 43,112 Keap IDs (Keap is primary CRM with more sources)
 - [x] Optimized getWisdomContactIds to use wisdom_contacts materialized view (60s → <1s)
 - [x] Removed manual pagination of analytics_events table
-- [ ] Test Leads page loads correctly in browser
-- [ ] Save checkpoint
+- [x] Test Leads page loads correctly in browser (WORKING)
+- [x] Save checkpoint (c5d9978a)
+
+## Simplify wisdom_contacts Materialized View (2025-12-21)
+- [ ] Update materialized view definition to use only '%wisdom%' filter
+- [ ] Create migration script to drop and recreate view
+- [ ] Refresh materialized view in Supabase
+- [ ] Verify new contact counts match expected values
+- [ ] Update documentation with simplified logic
+
+## Charts Visualization Page (2025-12-21)
+- [x] Create Charts page component with grid layout
+- [x] Implement Amount Spent bar chart (daily spend visualization)
+- [x] Implement Lead cumulative line chart
+- [x] Implement Cost Per Lead trend line chart
+- [x] Implement Purchase multi-line chart (Purchase, New Customer, First Payment)
+- [x] Implement Cost Per Purchase comparison chart
+- [x] Implement Funnel Performance chart (Lead Rate, Sales Rate, Lead to Sales Rate)
+- [x] Add Charts page to main navigation
+- [x] Test all charts display correctly with real data
+- [x] Ensure responsive design for mobile/desktop

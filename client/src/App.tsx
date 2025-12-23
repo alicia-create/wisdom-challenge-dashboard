@@ -32,6 +32,7 @@ const Invites = lazy(() => import("./pages/Invites"));
 const AdsDiary = lazy(() => import("./pages/AdsDiary"));
 const FlagHistory = lazy(() => import("./pages/FlagHistory"));
 const SocialFollowers = lazy(() => import("./pages/SocialFollowers"));
+const Charts = lazy(() => import("./pages/Charts"));
 
 // Loading component
 const PageLoader = () => (
@@ -48,6 +49,7 @@ function Router() {
         <Route path={"/"} component={Home} />
         <Route path={"/overview"} component={Overview} />
         <Route path={"/daily-analysis"} component={DailyTableTransposed} />
+        <Route path={"/charts"} component={Charts} />
         <Route path={"/engagement-sales"} component={EngagementSales} />
         <Route path={"/email-lead-quality"} component={EmailLeadQuality} />
         <Route path={"/raw-data"} component={RawData} />

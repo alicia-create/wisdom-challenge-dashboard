@@ -17,6 +17,7 @@ interface Tab {
 
 const tabs: Tab[] = [
   { label: "Overview", path: "/overview" },
+  { label: "Charts", path: "/charts" },
   { label: "Daily", path: "/daily-analysis" },
   { label: "Data Hub", path: "/other-data" },
   { label: "🎯 Agent", path: "/optimization-agent" },
