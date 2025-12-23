@@ -250,8 +250,28 @@ export const appRouter = router({
         }
         
         // Combine metrics with journals data and daily data
+        const metricsData = metricsResult.data as any;
+        const metaCampaignBreakdown = metricsData?.metaCampaignBreakdown || {};
+        const paidAdsFunnel = metricsData?.paidAdsFunnel || {};
+        
+        // Calculate cplAds and cppAds from Meta Lead + Sales campaigns
+        const metaLeadsSpend = metaCampaignBreakdown?.leads?.spend || 0;
+        const metaSalesSpend = metaCampaignBreakdown?.sales?.spend || 0;
+        const totalMetaLeadsSalesSpend = metaLeadsSpend + metaSalesSpend;
+        
+        const paidLeads = paidAdsFunnel?.leads || 0;
+        const paidWisdomSales = paidAdsFunnel?.wisdomSales || 0;
+        
+        const cplAds = paidLeads > 0 ? parseFloat((totalMetaLeadsSalesSpend / paidLeads).toFixed(2)) : 0;
+        const cppAds = paidWisdomSales > 0 ? parseFloat((totalMetaLeadsSalesSpend / paidWisdomSales).toFixed(2)) : 0;
+        
         const result = {
-          ...metricsResult.data,
+          ...metricsData,
+          kpis: {
+            ...metricsData?.kpis,
+            cplAds,
+            cppAds,
+          },
           journals: journalsResult.data || {
             wisdomJournals: 0,
             extraJournals: 0,

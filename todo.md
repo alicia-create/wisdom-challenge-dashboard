@@ -1588,3 +1588,12 @@
 - [x] Fixed field name mismatches in Overview.tsx (wisdomSales→totalWisdomSales, wisdomConversion→conversionRate, kingdomSeekerTrials→totalKingdomSeekers)
 - [x] Verified all KPI cards display correctly with real data
 - [x] Confirmed issue was unrelated to order bump layout fix
+
+## CPP/CPL Zero Values Investigation - Dec 23, 2025 18:03
+
+- [x] Investigate why CPP (Ads) card shows $0.00
+- [x] Investigate why CPL (Ads) card shows $0.00
+- [x] Check backend data for cplAds and cppAds fields
+- [x] Verify calculations are using correct spend and count values
+- [x] Fix CPP/CPL cards to display correct values
+- [x] Test cards show accurate cost metrics
