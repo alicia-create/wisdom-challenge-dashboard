@@ -1603,3 +1603,11 @@
 - [x] Create appropriate indexes for materialized view
 - [x] Apply migration to Supabase
 - [x] Test all new fields display correctly in Overview page
+
+## Improvements (2025-12-23)
+- [x] Investigate Kingdom Seekers zero conversions (check orders table, funnel_name patterns)
+- [x] Configure pg_cron to auto-refresh wisdom_engagement_events every 30 minutes
+- [x] Configure pg_cron to auto-refresh wisdom_lead_classification every 30 minutes
+- [x] Create performance alerts system (CPP > $90, conversion < 15%)
+- [x] Test alerts trigger correctly
+- [x] Document alert configuration for future maintenance

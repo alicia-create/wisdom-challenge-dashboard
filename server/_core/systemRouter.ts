@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { notifyOwner } from "./notification";
 import { adminProcedure, publicProcedure, router } from "./trpc";
+import { getDb } from "../db";
 
 export const systemRouter = router({
   health: publicProcedure
@@ -24,6 +25,23 @@ export const systemRouter = router({
       const delivered = await notifyOwner(input);
       return {
         success: delivered,
+      } as const;
+    }),
+
+  triggerPerformanceAlert: adminProcedure
+    .mutation(async () => {
+      const db = await getDb();
+      if (!db) {
+        throw new Error("Database not available");
+      }
+      
+      const result = await db.execute(
+        "SELECT trigger_performance_alert_check() as result"
+      );
+      
+      return {
+        success: true,
+        message: "Performance alert check triggered",
       } as const;
     }),
 });
