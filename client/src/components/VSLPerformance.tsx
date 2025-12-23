@@ -84,7 +84,7 @@ export function VSLPerformance({ data }: VSLPerformanceProps) {
             <div>
               <div className="font-semibold">VSL → Wisdom+ Conversion</div>
               <div className="text-sm text-muted-foreground">
-                {data.wisdomPurchases} purchases from {data.vsl50Percent} VSL 50% views
+                {data.wisdomPurchases} purchases from {data.vsl5Percent} VSL views
               </div>
             </div>
           </div>

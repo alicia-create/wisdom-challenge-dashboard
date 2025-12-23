@@ -128,12 +128,12 @@ export function ConversionFunnel({ data, funnelType = 'paid' }: ConversionFunnel
                 {/* Order Bump Indicator for Wisdom+ Purchases */}
                 {stage.name === 'Wisdom+ Purchases' && data.extraJournals !== undefined && data.extraJournals > 0 && (
                   <div className="mt-1.5 sm:mt-2 pt-1.5 sm:pt-2 border-t border-white/20">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5 sm:gap-2 text-white/90">
+                    <div className="flex flex-col gap-0.5 text-white/90">
                       <div className="flex items-center gap-1 text-[10px] sm:text-xs">
                         <span>↳</span>
-                        <span className="font-medium truncate">+{data.extraJournals} Extra Journals</span>
+                        <span className="font-medium">+{data.extraJournals} Extra Journals</span>
                       </div>
-                      <div className="font-semibold text-[10px] sm:text-xs whitespace-nowrap">
+                      <div className="font-semibold text-[10px] sm:text-xs pl-3">
                         {stage.count > 0 ? ((data.extraJournals / stage.count) * 100).toFixed(1) : 0}% bump
                       </div>
                     </div>

@@ -249,18 +249,9 @@ export const appRouter = router({
           throw new Error(`Failed to fetch unified metrics: ${metricsResult.error.message}`);
         }
         
-        // Extract data from get_dashboard_metrics response
-        // The SQL function returns the structure directly, no need to spread
-        const dashboardData = metricsResult.data || {};
-        
+        // Combine metrics with journals data and daily data
         const result = {
-          kpis: dashboardData.kpis || {},
-          paidAdsFunnel: dashboardData.paidAdsFunnel || {},
-          organicFunnel: dashboardData.organicFunnel || {},
-          metaPerformance: dashboardData.metaPerformance || {},
-          metaCampaignBreakdown: dashboardData.metaCampaignBreakdown || {},
-          googlePerformance: dashboardData.googlePerformance || {},
-          vslPerformance: dashboardData.vslPerformance || {},
+          ...metricsResult.data,
           journals: journalsResult.data || {
             wisdomJournals: 0,
             extraJournals: 0,

@@ -22,34 +22,30 @@ export default function Charts() {
   const [dateRange, setDateRange] = useState<DateRange>(DATE_RANGES.ALL);
   const { startDate, endDate } = getDateRangeValues(dateRange);
 
-  const { data: dailyMetrics, isLoading } = trpc.daily.getDailyMetrics.useQuery({
+  const { data: dailyData, isLoading } = trpc.daily.getDailyAnalysisMetrics.useQuery({
     startDate,
     endDate,
   });
 
   // Transform data for charts
   const chartData = useMemo(() => {
-    if (!dailyMetrics?.dailyData) return [];
+    if (!dailyData) return [];
 
-    return dailyMetrics.dailyData.map((day: any) => ({
+    return dailyData.map((day: any) => ({
       date: new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      spend: day.totalAdSpend || 0,
-      leads: day.totalLeads || 0,
-      cpl: day.cpl || 0,
-      purchases: day.totalWisdomSales || 0,
-      newCustomers: day.totalWisdomSales || 0,
-      firstPayment: day.totalWisdomSales || 0,
-      cpp: day.cpp || 0,
-      cpnc: day.cpp || 0,
-      leadRate: day.paidLeads > 0 && day.metaTotal?.landingPageViews > 0 
-        ? (day.paidLeads / day.metaTotal.landingPageViews) * 100 
-        : 0,
-      salesRate: day.totalLeads > 0 ? (day.totalWisdomSales / day.totalLeads) * 100 : 0,
-      leadToSalesRate: day.metaTotal?.landingPageViews > 0 
-        ? (day.totalWisdomSales / day.metaTotal.landingPageViews) * 100 
-        : 0,
+      spend: day.total_spend,
+      leads: day.total_leads,
+      cpl: day.total_leads > 0 ? day.total_spend / day.total_leads : 0,
+      purchases: day.total_orders,
+      newCustomers: day.total_orders, // Assuming all orders are new customers for now
+      firstPayment: day.vip_sales,
+      cpp: day.total_orders > 0 ? day.total_spend / day.total_orders : 0,
+      cpnc: day.total_orders > 0 ? day.total_spend / day.total_orders : 0,
+      leadRate: day.total_leads > 0 ? (day.total_leads / (day.total_leads + 1000)) * 100 : 0, // Placeholder calculation
+      salesRate: day.total_leads > 0 ? (day.total_orders / day.total_leads) * 100 : 0,
+      leadToSalesRate: day.total_leads > 0 ? (day.total_orders / day.total_leads) * 100 : 0,
     }));
-  }, [dailyMetrics]);
+  }, [dailyData]);
 
   // Calculate cumulative leads
   const cumulativeData = useMemo(() => {
