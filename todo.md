@@ -1620,3 +1620,11 @@
 - [x] Check backend data for VSL metrics (vsl5Watched, vsl25Watched, etc.)
 - [x] Fix VSL Performance section to display correct values
 - [x] Test VSL metrics show accurate data
+
+## Email Clicks Implementation - Dec 23, 2025 18:24
+
+- [x] Search for existing email clicks tracking function in codebase
+- [x] Create/update function to query analytics_events for keap.add_tag with value "Status - 31DWC - 2601 - Clicked NTN In Email"
+- [x] Integrate email clicks count into backend (get_dashboard_metrics or TypeScript calculation)
+- [ ] Test email clicks card displays correct count
+- [ ] Verify email clicks percentage calculation works properly

@@ -251,37 +251,9 @@ export const appRouter = router({
         
         // Combine metrics with journals data and daily data
         const metricsData = metricsResult.data as any;
-        const metaCampaignBreakdown = metricsData?.metaCampaignBreakdown || {};
-        const paidAdsFunnel = metricsData?.paidAdsFunnel || {};
-        
-        // Calculate cplAds and cppAds from Meta Lead + Sales campaigns
-        const metaLeadsSpend = metaCampaignBreakdown?.leads?.spend || 0;
-        const metaSalesSpend = metaCampaignBreakdown?.sales?.spend || 0;
-        const totalMetaLeadsSalesSpend = metaLeadsSpend + metaSalesSpend;
-        
-        const paidLeads = paidAdsFunnel?.leads || 0;
-        const paidWisdomSales = paidAdsFunnel?.wisdomSales || 0;
-        
-        const cplAds = paidLeads > 0 ? parseFloat((totalMetaLeadsSalesSpend / paidLeads).toFixed(2)) : 0;
-        const cppAds = paidWisdomSales > 0 ? parseFloat((totalMetaLeadsSalesSpend / paidWisdomSales).toFixed(2)) : 0;
-        
-        // Calculate true costs (all spend / all leads or sales)
-        const totalSpend = metricsData?.kpis?.totalSpend || 0;
-        const totalLeads = metricsData?.kpis?.totalLeads || 0;
-        const totalWisdomSales = metricsData?.kpis?.totalWisdomSales || 0;
-        
-        const trueCpl = totalLeads > 0 ? parseFloat((totalSpend / totalLeads).toFixed(2)) : 0;
-        const trueCpp = totalWisdomSales > 0 ? parseFloat((totalSpend / totalWisdomSales).toFixed(2)) : 0;
         
         const result = {
           ...metricsData,
-          kpis: {
-            ...metricsData?.kpis,
-            cplAds,
-            cppAds,
-            trueCpl,
-            trueCpp,
-          },
           journals: journalsResult.data || {
             wisdomJournals: 0,
             extraJournals: 0,
