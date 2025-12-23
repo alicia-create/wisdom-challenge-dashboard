@@ -62,7 +62,8 @@ export default function Overview() {
   };
 
   // Format percentage
-  const formatPercent = (value: number) => {
+  const formatPercent = (value: number | undefined | null) => {
+    if (value === undefined || value === null || isNaN(value)) return '0.00%';
     return `${value.toFixed(2)}%`;
   };
 
@@ -617,10 +618,10 @@ export default function Overview() {
                       <td className="text-right py-3 px-2">{formatNumber(metaPerformance.leads || 0)}</td>
                       <td className="text-right py-3 px-2">{formatCurrency(metaPerformance.cpl || 0)}</td>
                       <td className="text-right py-3 px-2">{formatPercent(metaPerformance.leadRate || 0)}</td>
-                      <td className="text-right py-3 px-2">{formatNumber(metaPerformance.clicks)}</td>
-                      <td className="text-right py-3 px-2">{formatCurrency(metaPerformance.cpc)}</td>
-                      <td className="text-right py-3 px-2">{formatPercent(metaPerformance.ctr)}</td>
-                      <td className="text-right py-3 px-2">{formatCurrency(metaPerformance.cpm)}</td>
+                      <td className="text-right py-3 px-2">{formatNumber(metaPerformance.clicks || 0)}</td>
+                      <td className="text-right py-3 px-2">{formatCurrency(metaPerformance.cpc || 0)}</td>
+                      <td className="text-right py-3 px-2">{formatPercent(metaPerformance.ctr || 0)}</td>
+                      <td className="text-right py-3 px-2">{formatCurrency(metaPerformance.cpm || 0)}</td>
                     </tr>
                     {/* Meta Breakdown Rows */}
                     {metaCampaignBreakdown && (() => {
@@ -643,10 +644,10 @@ export default function Overview() {
                         <td className="text-right py-2 px-2">{formatNumber(data.leads || 0)}</td>
                         <td className="text-right py-2 px-2">{formatCurrency(data.cpl || 0)}</td>
                         <td className="text-right py-2 px-2">{formatPercent(data.leadRate || 0)}</td>
-                        <td className="text-right py-2 px-2">{formatNumber(data.clicks)}</td>
-                        <td className="text-right py-2 px-2">{formatCurrency(data.cpc)}</td>
-                        <td className="text-right py-2 px-2">{formatPercent(data.ctr)}</td>
-                        <td className="text-right py-2 px-2">{formatCurrency(data.cpm)}</td>
+                        <td className="text-right py-2 px-2">{formatNumber(data.clicks || 0)}</td>
+                        <td className="text-right py-2 px-2">{formatCurrency(data.cpc || 0)}</td>
+                        <td className="text-right py-2 px-2">{formatPercent(data.ctr || 0)}</td>
+                        <td className="text-right py-2 px-2">{formatCurrency(data.cpm || 0)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -691,9 +692,9 @@ export default function Overview() {
                       <td className="text-right py-3 px-4">{formatNumber(googlePerformance.clicks)}</td>
                       <td className="text-right py-3 px-4">{formatNumber(googlePerformance.impressions)}</td>
                       <td className="text-right py-3 px-4">{formatNumber(googlePerformance.conversions || 0)}</td>
-                      <td className="text-right py-3 px-4">{formatCurrency(googlePerformance.cpc)}</td>
-                      <td className="text-right py-3 px-4">{formatCurrency(googlePerformance.cpm)}</td>
-                      <td className="text-right py-3 px-4">{formatPercent(googlePerformance.ctr)}</td>
+                      <td className="text-right py-3 px-4">{googlePerformance.clicks > 0 ? formatCurrency(googlePerformance.spend / googlePerformance.clicks) : '$0.00'}</td>
+                      <td className="text-right py-3 px-4">{googlePerformance.impressions > 0 ? formatCurrency((googlePerformance.spend / googlePerformance.impressions) * 1000) : '$0.00'}</td>
+                      <td className="text-right py-3 px-4">{googlePerformance.impressions > 0 ? formatPercent((googlePerformance.clicks / googlePerformance.impressions) * 100) : '0.00%'}</td>
                     </tr>
                   </tbody>
                 </table>

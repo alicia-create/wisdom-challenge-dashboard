@@ -1573,3 +1573,12 @@
 - [x] Transform data correctly for all 6 chart types
 - [x] Remove placeholder calculations (Lead Rate, Sales Rate)
 - [x] Test all charts display real data correctly
+
+## Fix Overview Page Production Error (2025-12-21)
+- [x] Investigate Overview page error in production
+- [ ] Check server logs for exact timeout errors
+- [ ] Review get_dashboard_metrics SQL code for slow queries
+- [ ] Review get_daily_metrics SQL code for slow queries
+- [ ] Optimize edge functions or create alternative
+- [ ] Test Overview page loads correctly
+- [ ] Verify all metrics display correctly
