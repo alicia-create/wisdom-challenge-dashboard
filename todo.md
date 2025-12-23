@@ -1673,3 +1673,11 @@
 - [x] Restore vslPerformance object
 - [x] Test function returns complete data structure
 - [x] Verify dashboard displays all metrics correctly (Ad Spend: $149,459.62 ✅)
+
+## Kingdom Seekers Showing 0 (2025-12-23)
+- [x] Query orders table - Kingdom Seekers NOT in funnel_name
+- [x] Find Kingdom Seekers product_id in order_items table (Product ID 8)
+- [x] Check products table for product_name pattern ("Kingdom Seekers - 60 Days")
+- [x] Update get_dashboard_metrics to JOIN order_items and filter by product_id = 8
+- [x] Test Kingdom Seekers count with corrected query (597 total, 28 today)
+- [x] Verify paid vs organic split using order.funnel_name (Dashboard shows 597 ✅)
