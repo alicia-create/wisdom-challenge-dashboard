@@ -120,16 +120,16 @@ export default function Overview() {
   // Transform VSL data for VSLPerformance component
   const transformVslData = (vsl: any) => ({
     totalLeads: vsl?.totalLeads || 0,
-    vsl5Percent: vsl?.vsl5PercentViews || 0,
-    vsl25Percent: vsl?.vsl25PercentViews || 0,
-    vsl50Percent: vsl?.vsl50PercentViews || 0,
-    vsl95Percent: vsl?.vsl95PercentViews || 0,
-    dropOff5Percent: vsl?.dropOffLeadsTo5 || 0,
-    dropOff25Percent: vsl?.dropOff5To25 || 0,
-    dropOff50Percent: vsl?.dropOff25To50 || 0,
-    dropOff95Percent: vsl?.dropOff50To95 || 0,
-    wisdomPurchases: vsl?.wisdomPurchases || 0,
-    vslToPurchaseRate: vsl?.vsl95ToPurchaseRate || 0,
+    vsl5Percent: vsl?.watched5Percent || 0,
+    vsl25Percent: vsl?.watched25Percent || 0,
+    vsl50Percent: vsl?.watched50Percent || 0,
+    vsl95Percent: vsl?.watched95Percent || 0,
+    dropOff5Percent: 0, // Not provided by backend
+    dropOff25Percent: vsl?.dropoff5to25 || 0,
+    dropOff50Percent: vsl?.dropoff25to50 || 0,
+    dropOff95Percent: vsl?.dropoff50to95 || 0,
+    wisdomPurchases: vsl?.purchasesFromVslViewers || 0,
+    vslToPurchaseRate: vsl?.conversionRate || 0,
   });
 
   return (
@@ -462,7 +462,7 @@ export default function Overview() {
                 <>
                   <div className="text-xl font-bold">{kpis?.welcomeEmailClicks || 0}</div>
                   <p className="text-xs text-muted-foreground">
-                    {kpis?.totalLeads ? ((kpis.welcomeEmailClicks / kpis.totalLeads) * 100).toFixed(1) : 0}% of leads
+                    {kpis?.totalLeads ? (((kpis.welcomeEmailClicks || 0) / kpis.totalLeads) * 100).toFixed(1) : 0}% of leads
                   </p>
                 </>
               )}

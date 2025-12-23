@@ -1604,3 +1604,19 @@
 - [x] Verify difference between regular CPL/CPP and true CPL/CPP
 - [x] Determine which metrics should be displayed in Overview cards
 - [x] Update UI if true costs should be shown instead
+
+## Email Clicks Regression - Dec 23, 2025 18:11
+
+- [x] Investigate Email Clicks card showing "0 NaN% of leads"
+- [x] Check backend data for welcomeEmailClicks field
+- [x] Verify calculation logic for email click rate
+- [x] Fix Email Clicks card to display correct values
+- [ ] Implement git commits to track changes and prevent regressions
+- [x] Test Email Clicks card shows accurate data
+
+## VSL Performance Regression - Dec 23, 2025 18:12
+
+- [x] Investigate VSL Performance showing all zeros (5%, 25%, 50%, 95% watched)
+- [x] Check backend data for VSL metrics (vsl5Watched, vsl25Watched, etc.)
+- [x] Fix VSL Performance section to display correct values
+- [x] Test VSL metrics show accurate data
