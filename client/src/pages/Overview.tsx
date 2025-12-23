@@ -222,16 +222,16 @@ export default function Overview() {
                 <Skeleton className="h-8 w-20" />
               ) : (
                 <>
-                  <div className="text-2xl sm:text-3xl font-bold">{kpis?.wisdomSales || 0}</div>
+                  <div className="text-2xl sm:text-3xl font-bold">{kpis?.totalWisdomSales || 0}</div>
                   <div className="mt-2 text-xs text-muted-foreground">
                     <div className="flex items-center justify-between mb-1">
                       <span>Goal: 30,000</span>
-                      <span className="font-semibold">{((kpis?.wisdomSales || 0) / 30000 * 100).toFixed(1)}%</span>
+                      <span className="font-semibold">{((kpis?.totalWisdomSales || 0) / 30000 * 100).toFixed(1)}%</span>
                     </div>
                     <div className="w-full bg-muted rounded-full h-1.5">
                       <div 
                         className="bg-[#B5179E] h-1.5 rounded-full transition-all" 
-                        style={{ width: `${Math.min(((kpis?.wisdomSales || 0) / 30000 * 100), 100)}%` }}
+                        style={{ width: `${Math.min(((kpis?.totalWisdomSales || 0) / 30000 * 100), 100)}%` }}
                       />
                     </div>
                   </div>
@@ -260,7 +260,7 @@ export default function Overview() {
               {unifiedLoading ? (
                 <Skeleton className="h-8 w-20" />
               ) : (
-                <div className="text-2xl sm:text-3xl font-bold">{kpis?.kingdomSeekerTrials || 0}</div>
+                <div className="text-2xl sm:text-3xl font-bold">{kpis?.totalKingdomSeekers || 0}</div>
               )}
             </CardContent>
           </Card>
@@ -340,7 +340,7 @@ export default function Overview() {
             </CardHeader>
             <CardContent className="pt-1">
               {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (
-                <div className="text-lg sm:text-xl font-bold">{formatPercent(kpis?.wisdomConversion || 0)}</div>
+                <div className="text-lg sm:text-xl font-bold">{formatPercent(kpis?.conversionRate || 0)}</div>
               )}
             </CardContent>
           </Card>

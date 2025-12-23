@@ -1572,3 +1572,19 @@
 - [x] Fix order bump text to display on two separate lines
 - [x] Change from "↳ +208... 8.5% bump" to two lines: "↳ +208 Extra Journals" and "8.5% bump"
 - [x] Test layout in all screen sizes (verified working correctly)
+
+## URGENT BUG FIX - Dec 23, 2025 17:58
+
+- [x] Investigate zero values in Total Wisdom+ Sales card (was working before order bump fix)
+- [x] Investigate zero values in Conversion card (was working before order bump fix)
+- [x] Fix broken calculations in Overview page KPI cards
+- [x] Verify funnels still show correct values (Paid: 2,436, Organic: 1,134)
+- [x] Test all KPI cards display correctly after fix
+
+## Bug Fix Completed - Dec 23, 2025 18:01
+
+- [x] Investigated zero values in Total Wisdom+ Sales card
+- [x] Investigated zero values in Conversion card
+- [x] Fixed field name mismatches in Overview.tsx (wisdomSales→totalWisdomSales, wisdomConversion→conversionRate, kingdomSeekerTrials→totalKingdomSeekers)
+- [x] Verified all KPI cards display correctly with real data
+- [x] Confirmed issue was unrelated to order bump layout fix
