@@ -223,16 +223,16 @@ export default function Overview() {
                 <Skeleton className="h-8 w-20" />
               ) : (
                 <>
-                  <div className="text-2xl sm:text-3xl font-bold">{kpis?.wisdomSales || 0}</div>
+                  <div className="text-2xl sm:text-3xl font-bold">{kpis?.totalWisdomSales || 0}</div>
                   <div className="mt-2 text-xs text-muted-foreground">
                     <div className="flex items-center justify-between mb-1">
                       <span>Goal: 30,000</span>
-                      <span className="font-semibold">{((kpis?.wisdomSales || 0) / 30000 * 100).toFixed(1)}%</span>
+                      <span className="font-semibold">{((kpis?.totalWisdomSales || 0) / 30000 * 100).toFixed(1)}%</span>
                     </div>
                     <div className="w-full bg-muted rounded-full h-1.5">
                       <div 
                         className="bg-[#B5179E] h-1.5 rounded-full transition-all" 
-                        style={{ width: `${Math.min(((kpis?.wisdomSales || 0) / 30000 * 100), 100)}%` }}
+                        style={{ width: `${Math.min(((kpis?.totalWisdomSales || 0) / 30000 * 100), 100)}%` }}
                       />
                     </div>
                   </div>
@@ -261,7 +261,7 @@ export default function Overview() {
               {unifiedLoading ? (
                 <Skeleton className="h-8 w-20" />
               ) : (
-                <div className="text-2xl sm:text-3xl font-bold">{kpis?.kingdomSeekerTrials || 0}</div>
+                <div className="text-2xl sm:text-3xl font-bold">{kpis?.totalKingdomSeekers || 0}</div>
               )}
             </CardContent>
           </Card>
@@ -341,7 +341,7 @@ export default function Overview() {
             </CardHeader>
             <CardContent className="pt-1">
               {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (
-                <div className="text-lg sm:text-xl font-bold">{formatPercent(kpis?.wisdomConversion || 0)}</div>
+                <div className="text-lg sm:text-xl font-bold">{formatPercent(kpis?.conversionRate || 0)}</div>
               )}
             </CardContent>
           </Card>
@@ -386,13 +386,11 @@ export default function Overview() {
             </CardHeader>
             <CardContent className="pt-1">
               {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (() => {
-                const cppValue = kpis?.cppAds || 0;
+                const cppValue = kpis?.cpp || 0;
                 const cppColor = cppValue <= 30 ? 'text-green-600' : cppValue <= 60 ? 'text-emerald-500' : cppValue <= 90 ? 'text-yellow-600' : 'text-red-500';
-                const trueCpp = kpis?.trueCpp || 0;
                 return (
                   <>
                     <div className={`text-lg sm:text-xl font-bold ${cppColor}`}>{formatCurrency(cppValue)}</div>
-                    <p className="text-xs text-muted-foreground">True: {formatCurrency(trueCpp)}</p>
                   </>
                 );
               })()}
@@ -416,13 +414,11 @@ export default function Overview() {
             </CardHeader>
             <CardContent className="pt-1">
               {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (() => {
-                const cplValue = kpis?.cplAds || 0;
+                const cplValue = kpis?.cpl || 0;
                 const cplColor = cplValue <= 3 ? 'text-green-600' : cplValue <= 6 ? 'text-emerald-500' : cplValue <= 9 ? 'text-yellow-600' : 'text-red-500';
-                const trueCpl = kpis?.trueCpl || 0;
                 return (
                   <>
                     <div className={`text-lg sm:text-xl font-bold ${cplColor}`}>{formatCurrency(cplValue)}</div>
-                    <p className="text-xs text-muted-foreground">True: {formatCurrency(trueCpl)}</p>
                   </>
                 );
               })()}
@@ -441,9 +437,12 @@ export default function Overview() {
               </div>
             </CardHeader>
             <CardContent className="pt-1">
-              {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (
-                <div className="text-lg sm:text-xl font-bold">{formatCurrency(kpis?.aov || 0)}</div>
-              )}
+              {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (() => {
+                const aov = (kpis?.totalWisdomSales && kpis.totalWisdomSales > 0) 
+                  ? (kpis.totalRevenue || 0) / kpis.totalWisdomSales 
+                  : 0;
+                return <div className="text-lg sm:text-xl font-bold">{formatCurrency(aov)}</div>;
+              })()}
             </CardContent>
           </Card>
 
@@ -459,14 +458,17 @@ export default function Overview() {
               </div>
             </CardHeader>
             <CardContent className="pt-1">
-              {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (
-                <>
-                  <div className="text-xl font-bold">{kpis?.welcomeEmailClicks || 0}</div>
-                  <p className="text-xs text-muted-foreground">
-                    {kpis?.totalLeads ? ((kpis.welcomeEmailClicks / kpis.totalLeads) * 100).toFixed(1) : 0}% of leads
-                  </p>
-                </>
-              )}
+              {unifiedLoading ? <Skeleton className="h-6 w-16" /> : (() => {
+                const totalEmailClicks = (paidAdsFunnel?.welcomeEmailClicks || 0) + (organicFunnel?.welcomeEmailClicks || 0);
+                return (
+                  <>
+                    <div className="text-xl font-bold">{totalEmailClicks}</div>
+                    <p className="text-xs text-muted-foreground">
+                      {kpis?.totalLeads ? ((totalEmailClicks / kpis.totalLeads) * 100).toFixed(1) : 0}% of leads
+                    </p>
+                  </>
+                );
+              })()}
             </CardContent>
           </Card>
         </div>
@@ -692,9 +694,9 @@ export default function Overview() {
                       <td className="text-right py-3 px-4">{formatNumber(googlePerformance.clicks)}</td>
                       <td className="text-right py-3 px-4">{formatNumber(googlePerformance.impressions)}</td>
                       <td className="text-right py-3 px-4">{formatNumber(googlePerformance.conversions || 0)}</td>
-                      <td className="text-right py-3 px-4">{googlePerformance.clicks > 0 ? formatCurrency(googlePerformance.spend / googlePerformance.clicks) : '$0.00'}</td>
-                      <td className="text-right py-3 px-4">{googlePerformance.impressions > 0 ? formatCurrency((googlePerformance.spend / googlePerformance.impressions) * 1000) : '$0.00'}</td>
-                      <td className="text-right py-3 px-4">{googlePerformance.impressions > 0 ? formatPercent((googlePerformance.clicks / googlePerformance.impressions) * 100) : '0.00%'}</td>
+                      <td className="text-right py-3 px-4">{formatCurrency(googlePerformance.cpc || 0)}</td>
+                      <td className="text-right py-3 px-4">{formatCurrency(googlePerformance.cpm || 0)}</td>
+                      <td className="text-right py-3 px-4">{formatPercent(googlePerformance.ctr || 0)}</td>
                     </tr>
                   </tbody>
                 </table>

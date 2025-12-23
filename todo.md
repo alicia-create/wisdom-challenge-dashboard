@@ -1582,3 +1582,14 @@
 - [ ] Optimize edge functions or create alternative
 - [ ] Test Overview page loads correctly
 - [ ] Verify all metrics display correctly
+
+## Bug Fix - Overview Page Zeros (2025-12-23)
+- [x] Investigate why Overview page shows all zeros after optimization
+- [x] Audit all fields Overview.tsx expects vs get_dashboard_metrics returns
+- [x] Create migration 013 to add ALL calculated fields to SQL (cpc, cpm, ctr, cpp, cpl, salesRate, leadRate, purchases, leads)
+- [x] Apply migration to Supabase via MCP
+- [x] Update routers.ts to correctly extract data from get_dashboard_metrics response
+- [x] Fix frontend field names (wisdomSales → totalWisdomSales, kingdomSeekerTrials → totalKingdomSeekers, wisdomConversion → conversionRate)
+- [x] Replace all frontend calculations with SQL-provided values
+- [x] Test all KPI cards show real values
+- [x] Verify Performance by Channel table displays correct metrics
