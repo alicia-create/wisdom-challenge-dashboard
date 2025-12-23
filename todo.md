@@ -1681,3 +1681,15 @@
 - [x] Update get_dashboard_metrics to JOIN order_items and filter by product_id = 8
 - [x] Test Kingdom Seekers count with corrected query (597 total, 28 today)
 - [x] Verify paid vs organic split using order.funnel_name (Dashboard shows 597 ✅)
+
+## VSL Performance & Email Clicks Tracking (2025-12-23)
+- [x] Investigate analytics_events for video.watched event structure (vidalytics.view_video)
+- [x] Check sample video.watched events to understand percentage tracking
+- [x] Investigate keap.email.clicked event structure (not available in DB)
+- [x] Create vsl_analytics materialized view for watch percentages (Migration 026)
+- [x] Update get_dashboard_metrics to query vsl_analytics instead of analytics_events
+- [x] Fix transformVslData in Overview.tsx to use correct field names (watched5Percent, etc)
+- [x] Test VSL metrics with materialized view approach (22,590 / 18,417 / 14,811 / 9,757 ✅)
+- [x] Email Clicks: Set to 0 until keap.email.clicked events are configured
+- [x] Verify dashboard displays VSL metrics correctly (47.4% conversion ✅)
+- [x] Run regression test: confirm Kingdom Seekers, Wisdom Sales, Ad Spend still work

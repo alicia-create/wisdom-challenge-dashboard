@@ -120,17 +120,17 @@ export default function Overview() {
 
   // Transform VSL data for VSLPerformance component
   const transformVslData = (vsl: any) => ({
-    totalLeads: vsl?.totalLeads || 0,
-    vsl5Percent: vsl?.vsl5PercentViews || 0,
-    vsl25Percent: vsl?.vsl25PercentViews || 0,
-    vsl50Percent: vsl?.vsl50PercentViews || 0,
-    vsl95Percent: vsl?.vsl95PercentViews || 0,
-    dropOff5Percent: vsl?.dropOffLeadsTo5 || 0,
-    dropOff25Percent: vsl?.dropOff5To25 || 0,
-    dropOff50Percent: vsl?.dropOff25To50 || 0,
-    dropOff95Percent: vsl?.dropOff50To95 || 0,
-    wisdomPurchases: vsl?.wisdomPurchases || 0,
-    vslToPurchaseRate: vsl?.vsl95ToPurchaseRate || 0,
+    totalLeads: kpis?.totalLeads || 0,
+    vsl5Percent: vsl?.watched5Percent || 0,
+    vsl25Percent: vsl?.watched25Percent || 0,
+    vsl50Percent: vsl?.watched50Percent || 0,
+    vsl95Percent: vsl?.watched95Percent || 0,
+    dropOff5Percent: 0, // Not calculated in current SQL
+    dropOff25Percent: 0, // Not calculated in current SQL
+    dropOff50Percent: 0, // Not calculated in current SQL
+    dropOff95Percent: 0, // Not calculated in current SQL
+    wisdomPurchases: kpis?.totalWisdomSales || 0,
+    vslToPurchaseRate: vsl?.conversionRate || 0,
   });
 
   return (
