@@ -1619,3 +1619,24 @@
 - [x] Fix get_dashboard_metrics SQL query for Kingdom Seekers (changed to product_id IN (8, 9))
 - [x] Test that Kingdom Seekers count appears correctly (now shows 597)
 - [x] Verify paid vs organic split works correctly (all 607 Kingdom Seekers are organic funnel)
+
+## BUG - VSL Performance & Meta Performance Showing Zeros (2025-12-23)
+- [ ] VSL: Correct event name is vidalytics.view_video (not video.watched)
+- [ ] VSL: Update wisdom_engagement_events materialized view to use correct event name
+- [ ] VSL: Extract watch percentage from event value/comment field
+- [ ] Meta: Investigate why calculated fields (CPP, CPL, CPC, CTR, CPM) are zero despite having clicks and spend
+- [ ] Meta: Check if metaPerformance query in get_dashboard_metrics is correct
+- [ ] Meta: Verify metaCampaignBreakdown calculations
+- [ ] Create Migration 018 to fix both issues using materialized views
+- [ ] Test VSL and Meta Performance sections display real data
+
+## Refactor - Modular Edge Functions (2025-12-23)
+- [x] Create get_ad_performance_metrics edge function (Meta + Google from ad_performance table)
+- [x] Add all calculated fields to get_ad_performance_metrics (CPC, CTR, CPM, CPL, CPP, Sales Rate, Lead Rate)
+- [ ] Create get_engagement_metrics edge function (VSL, bot subscribed, email clicks from analytics_events)
+- [ ] Fix VSL to use vidalytics.view_video event name
+- [ ] Update get_dashboard_metrics to call both new edge functions
+- [ ] Test Meta Performance table shows calculated fields correctly
+- [ ] Test VSL Performance shows watch percentages correctly
+- [x] Apply Migration 019 to Supabase
+- [ ] Verify no timeout issues
