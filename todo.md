@@ -1693,3 +1693,38 @@
 - [x] Email Clicks: Set to 0 until keap.email.clicked events are configured
 - [x] Verify dashboard displays VSL metrics correctly (47.4% conversion ✅)
 - [x] Run regression test: confirm Kingdom Seekers, Wisdom Sales, Ad Spend still work
+
+## VSL Performance Calculation Fixes (2025-12-23)
+- [ ] Investigate current conversion rate calculation (showing 47.4% but should be ~20.5%)
+- [ ] Fix conversion rate to count only purchases from VSL viewers (not all purchases)
+- [ ] Verify if all purchases have vidalytics.view_video events
+- [ ] Change conversion baseline from 5% to 25% or 50% (5% may be just page load)
+- [ ] Add drop-off percentages between milestones:
+  - [ ] Total Leads → VSL 5% viewed
+  - [ ] VSL 5% → VSL 25%
+  - [ ] VSL 25% → VSL 50%
+  - [ ] VSL 50% → VSL 95%
+  - [ ] VSL viewers → Purchases
+- [ ] Update vsl_analytics materialized view with corrected logic
+- [ ] Update get_dashboard_metrics to use corrected conversion calculation
+- [ ] Test all VSL metrics show accurate percentages
+
+- [x] Investigate current conversion rate calculation (showing 47.4% but should be ~20.5%)
+- [x] Fix conversion rate to count only purchases from VSL viewers (not all purchases)
+- [x] Verify if all purchases have vidalytics.view_video events
+- [x] Change conversion baseline from 5% to 25% or 50% (5% may be just page load)
+- [x] Add drop-off percentages between milestones
+- [x] Update vsl_analytics materialized view with corrected logic
+- [x] Update get_dashboard_metrics to use corrected conversion calculation
+- [ ] Fix ambiguous contact_id reference in vsl_metrics CTE
+- [ ] Test all VSL metrics show accurate percentages
+
+## Senior Dev Review & Optimization (2025-12-23)
+- [x] Fix VSL footer text to show "VSL 50% views" instead of "VSL views"
+- [x] Implement welcome email clicks tracking (now showing 753 paid + 929 organic = 1,682 total)
+- [x] Verify Kingdom Seekers is being counted in paid funnel (0 paid, 600 organic)
+- [x] Fix Total Journals calculation: Wisdom+ (1 each) + Extra Journals (logic confirmed correct)
+- [x] Remove query redundancy (paid vs organic filters optimized with CASE WHEN)
+- [x] Optimize performance with indexes/materialized views (8 indexes added)
+- [x] Test all changes work correctly (VSL 50% baseline: 21.0% conversion)
+- [ ] Create checkpoint with all optimizations

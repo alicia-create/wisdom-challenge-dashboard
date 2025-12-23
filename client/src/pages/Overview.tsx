@@ -125,11 +125,11 @@ export default function Overview() {
     vsl25Percent: vsl?.watched25Percent || 0,
     vsl50Percent: vsl?.watched50Percent || 0,
     vsl95Percent: vsl?.watched95Percent || 0,
-    dropOff5Percent: 0, // Not calculated in current SQL
-    dropOff25Percent: 0, // Not calculated in current SQL
-    dropOff50Percent: 0, // Not calculated in current SQL
-    dropOff95Percent: 0, // Not calculated in current SQL
-    wisdomPurchases: kpis?.totalWisdomSales || 0,
+    dropOff5Percent: vsl?.dropoff5to25 || 0,
+    dropOff25Percent: vsl?.dropoff25to50 || 0,
+    dropOff50Percent: vsl?.dropoff50to95 || 0,
+    dropOff95Percent: 0, // No further milestone after 95%
+    wisdomPurchases: vsl?.purchasesFromVslViewers || 0,
     vslToPurchaseRate: vsl?.conversionRate || 0,
   });
 
