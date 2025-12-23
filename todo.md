@@ -1611,3 +1611,11 @@
 - [x] Create performance alerts system (CPP > $90, conversion < 15%)
 - [x] Test alerts trigger correctly
 - [x] Document alert configuration for future maintenance
+
+## URGENT BUG - Kingdom Seekers Zero Count (2025-12-23)
+- [x] Analyze all Kingdom Seekers orders in database (product names, funnel patterns)
+- [x] Check product_name, product_id, and all relevant columns
+- [x] Identify why SQL query returns 0 when orders exist (was only counting product_id=8, missing product_id=9)
+- [x] Fix get_dashboard_metrics SQL query for Kingdom Seekers (changed to product_id IN (8, 9))
+- [x] Test that Kingdom Seekers count appears correctly (now shows 597)
+- [x] Verify paid vs organic split works correctly (all 607 Kingdom Seekers are organic funnel)
