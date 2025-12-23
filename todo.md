@@ -1559,3 +1559,10 @@
 - [x] Add Charts page to main navigation
 - [x] Test all charts display correctly with real data
 - [x] Ensure responsive design for mobile/desktop
+
+## Fix Overview Page SQL Timeout (2025-12-21)
+- [x] Identify slow queries in get_unified_metrics function
+- [x] Optimize queries with better indexes and query structure
+- [x] Replace manual queries with Supabase edge function call
+- [x] Test query performance with 43k contacts
+- [x] Verify Overview page loads without timeout

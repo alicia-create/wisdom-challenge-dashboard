@@ -48,205 +48,26 @@ export async function getDailyKpis(startDate?: string, endDate?: string) {
  * Helper to fetch overview metrics (aggregated totals)
  */
 export async function getOverviewMetrics(startDate?: string, endDate?: string) {
-  // Calculate nextDayStr for filtering (avoid timezone issues)
-  const nextDayStr = endDate ? (() => {
-    const parts = endDate.split('-').map(Number);
-    const d = new Date(parts[0], parts[1] - 1, parts[2]);
-    d.setDate(d.getDate() + 1);
-    return d.toISOString().split('T')[0];
-  })() : undefined;
+  console.log('[Overview Metrics] Calling Supabase edge function get_dashboard_metrics');
   
-  // Import wisdom filter
-  const { getWisdomContactIds } = await import('./wisdom-filter');
-  const wisdomContactIds = await getWisdomContactIds(startDate, endDate);
+  // Call the optimized edge function instead of manual queries
+  const { data, error } = await supabase.rpc('get_dashboard_metrics', {
+    p_start_date: startDate || null,
+    p_end_date: endDate || null
+  });
 
-  if (wisdomContactIds.length === 0) {
-    console.log('[Overview Metrics] No wisdom contacts found');
-    return {
-      totalLeads: 0,
-      totalSpend: 0,
-      vipSales: 0,
-      totalRevenue: 0,
-      kingdomSeekerTrials: 0,
-      vipTakeRate: 0,
-      costPerLead: 0,
-      costPerPurchase: 0,
-      aov: 0,
-      roas: 0,
-      manychatBotUsers: 0,
-      broadcastSubscribers: 0,
-    };
+  if (error) {
+    console.error('[Overview Metrics] Edge function error:', error);
+    throw new Error(`Failed to fetch unified metrics: ${error.message}`);
   }
 
-  // Total leads = number of wisdom contacts (already filtered by date in getWisdomContactIds)
-  // Note: We use wisdomContactIds.length directly because:
-  // 1. getWisdomContactIds already filters by date range
-  // 2. Supabase .in() has a limit of ~1000 IDs which causes incorrect counts
-  const totalLeads = wisdomContactIds.length;
-  console.log(`[Overview Metrics] Total leads from wisdom filter: ${totalLeads}`);
-
-   // Get total ad spend from ad_performance table (Meta + Google)
-  let metaAdQuery = supabase
-    .from('ad_performance')
-    .select('spend')
-    .ilike('platform', 'meta');
-  
-  if (startDate) {
-    metaAdQuery = metaAdQuery.gte('date', startDate);
-  }
-  if (endDate) {
-    metaAdQuery = metaAdQuery.lte('date', endDate);
-  }
-  
-  let googleAdQuery = supabase
-    .from('ad_performance')
-    .select('spend')
-    .ilike('platform', 'google');
-  
-  if (startDate) {
-    googleAdQuery = googleAdQuery.gte('date', startDate);
-  }
-  if (endDate) {
-    googleAdQuery = googleAdQuery.lte('date', endDate);
-  }
-  
-  const { data: metaAdData, error: metaAdError } = await metaAdQuery;
-  const { data: googleAdData, error: googleAdError } = await googleAdQuery;
-
-  if (metaAdError) {
-    console.error('[Supabase] Error fetching Meta ad spend:', metaAdError);
-  }
-  if (googleAdError) {
-    console.error('[Supabase] Error fetching Google ad spend:', googleAdError);
+  if (!data) {
+    console.error('[Overview Metrics] Edge function returned null');
+    throw new Error('Edge function returned no data');
   }
 
-  const metaSpend = metaAdData?.reduce((sum: number, row: any) => sum + parseFloat(row.spend || '0'), 0) || 0;
-  const googleSpend = googleAdData?.reduce((sum: number, row: any) => sum + parseFloat(row.spend || '0'), 0) || 0;
-  const totalSpend = metaSpend + googleSpend;
-
-  // Get VIP sales count (orders with total >= $31, wisdom funnel contacts only)
-  let ordersCountQuery = supabase
-    .from('orders')
-    .select('*', { count: 'exact', head: true })
-    .in('contact_id', wisdomContactIds)
-    .gte('order_total', 31);
-  
-  if (startDate) {
-    ordersCountQuery = ordersCountQuery.gte('created_at', startDate);
-  }
-  if (nextDayStr) {
-    ordersCountQuery = ordersCountQuery.lt('created_at', nextDayStr);
-  }
-  
-  const { count: vipSales, error: ordersCountError } = await ordersCountQuery;
-
-  if (ordersCountError) {
-    console.error('[Supabase] Error counting orders:', ordersCountError);
-  }
-
-  // Get VIP revenue (orders with total >= $31, wisdom funnel contacts only)
-  let ordersQuery = supabase
-    .from('orders')
-    .select('order_total')
-    .in('contact_id', wisdomContactIds)
-    .gte('order_total', 31);
-  
-  if (startDate) {
-    ordersQuery = ordersQuery.gte('created_at', startDate);
-  }
-  if (nextDayStr) {
-    ordersQuery = ordersQuery.lt('created_at', nextDayStr);
-  }
-  
-  const { data: ordersData, error: ordersError } = await ordersQuery;
-
-  if (ordersError) {
-    console.error('[Supabase] Error fetching orders:', ordersError);
-  }
-
-  const vipRevenue = ordersData?.reduce((sum: number, row: any) => sum + parseFloat(row.order_total || '0'), 0) || 0;
-
-  // Get Kingdom Seeker Trials count (product_id = 8)
-  // Need to join with orders table to filter by date
-  let kingdomSeekerQuery = supabase
-    .from('order_items')
-    .select('order_id, orders!inner(created_at)')
-    .eq('product_id', 8);
-  
-  // Apply date filters to orders.created_at
-  if (startDate) {
-    kingdomSeekerQuery = kingdomSeekerQuery.gte('orders.created_at', startDate);
-  }
-  if (endDate) {
-    kingdomSeekerQuery = kingdomSeekerQuery.lte('orders.created_at', endDate);
-  }
-  
-  const { data: kingdomSeekerData } = await kingdomSeekerQuery;
-  const kingdomSeekerTrials = kingdomSeekerData ? new Set(kingdomSeekerData.map((item: any) => item.order_id)).size : 0;
-
-  // Get TOTAL revenue from ALL orders (not just wisdom contacts, to include organic traffic)
-  let allOrdersQuery = supabase
-    .from('orders')
-    .select('order_total');
-  
-  if (startDate) {
-    allOrdersQuery = allOrdersQuery.gte('created_at', startDate);
-  }
-  if (nextDayStr) {
-    allOrdersQuery = allOrdersQuery.lt('created_at', nextDayStr);
-  }
-  
-  const { data: allOrdersData } = await allOrdersQuery;
-  const totalRevenue = allOrdersData?.reduce((sum: number, row: any) => sum + parseFloat(row.order_total || '0'), 0) || 0;
-
-  // Get ManyChat bot users (contacts with manychat_id)
-  let manychatQuery = supabase
-    .from('contacts')
-    .select('*', { count: 'exact', head: true })
-    .in('id', wisdomContactIds)
-    .not('manychat_id', 'is', null);
-  
-  if (startDate) {
-    manychatQuery = manychatQuery.gte('created_at', startDate);
-  }
-  if (nextDayStr) {
-    manychatQuery = manychatQuery.lt('created_at', nextDayStr);
-  }
-  
-  const { count: manychatBotUsers } = await manychatQuery;
-
-  // Get broadcast subscribers from Keap API
-  let broadcastSubscribers = 0;
-  try {
-    const { getEmailEngagementMetrics } = await import('./keap');
-    const emailMetrics = await getEmailEngagementMetrics();
-    broadcastSubscribers = emailMetrics.reminderOptins + emailMetrics.replayOptins + emailMetrics.promoOptins;
-  } catch (error) {
-    console.error('[Overview Metrics] Failed to fetch Keap email metrics:', error);
-  }
-
-  // Calculate metrics
-  const cpl = totalLeads && totalLeads > 0 ? totalSpend / totalLeads : 0;
-  const cpp = vipSales && vipSales > 0 ? totalSpend / vipSales : 0;
-  const roas = totalSpend > 0 ? vipRevenue / totalSpend : 0;
-  const vipTakeRate = totalLeads && totalLeads > 0 ? (vipSales || 0) / totalLeads * 100 : 0;
-  const aov = vipSales && vipSales > 0 ? vipRevenue / vipSales : 0;
-
-  return {
-    totalLeads: totalLeads || 0,
-    totalSpend,
-    totalRevenue,
-    vipSales: vipSales || 0,
-    kingdomSeekerTrials,
-    cpl,
-    cpp,
-    aov,
-    roas,
-    vipTakeRate,
-    vipRevenue,
-    manychatBotUsers: manychatBotUsers || 0,
-    broadcastSubscribers,
-  };
+  console.log('[Overview Metrics] Edge function returned successfully');
+  return data;
 }
 
 /**
