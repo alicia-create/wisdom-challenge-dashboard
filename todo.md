@@ -1727,4 +1727,17 @@
 - [x] Remove query redundancy (paid vs organic filters optimized with CASE WHEN)
 - [x] Optimize performance with indexes/materialized views (8 indexes added)
 - [x] Test all changes work correctly (VSL 50% baseline: 21.0% conversion)
-- [ ] Create checkpoint with all optimizations
+- [x] Create checkpoint with all optimizations (version: b97cc631)
+
+## Product ID Fixes & Production 404 (2025-12-23)
+- [x] Fix Total Journals to SUM(quantity) from order_items WHERE product_id = 4
+- [x] Fix Wisdom+ Sales to count orders with product_id = 1 in order_items
+- [x] Update all queries that use order_total >= $31 to use product_id = 1
+- [x] Investigate production 404 error (old checkpoint domain)
+- [ ] Fix AOV calculation to exclude order_total = 0 (trials)
+- [ ] Investigate Total Revenue discrepancy ($119k ClickFunnels vs $108k dashboard)
+- [ ] Verify Wisdom+ Sales shows 3,565 in UI
+- [ ] Verify Journals card shows 4,041 in UI
+- [ ] Apply Migration 031 to Supabase
+- [ ] Test all metrics with real data
+- [ ] Create checkpoint with all fixes
