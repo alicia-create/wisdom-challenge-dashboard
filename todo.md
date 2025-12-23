@@ -1640,3 +1640,25 @@
 - [ ] Test VSL Performance shows watch percentages correctly
 - [x] Apply Migration 019 to Supabase
 - [ ] Verify no timeout issues
+
+## Google Conversions Integration (2025-12-23)
+- [ ] Add reported_purchases (Google conversions) to get_ad_performance_metrics SQL function
+- [ ] Update googlePerformance object to include conversions field in SQL
+- [ ] Verify Google Performance table displays conversions correctly (currently showing 0)
+- [ ] Complete get_engagement_metrics edge function (VSL, bot subscribed, email clicks)
+- [ ] Fix VSL to use vidalytics.view_video event name with proper parsing
+- [ ] Update get_dashboard_metrics to call get_ad_performance_metrics and get_engagement_metrics
+- [ ] Test Meta Performance shows calculated fields (CPC, CTR, CPM, CPL, CPP)
+- [ ] Test VSL Performance shows watch percentages (5%, 25%, 50%, 95%)
+- [ ] Document Google conversions source (reported_purchases from ad_performance table)
+- [ ] Update knowledge base with data source documentation
+
+## FIX URGENT - Wisdom+ Sales Count Discrepancy (2025-12-23)
+- [x] Investigate orders table: check funnel_name values and distribution
+- [x] Verify today's orders count (ClickFunnels shows 602, dashboard shows 606 ✅)
+- [x] Fix get_dashboard_metrics to filter orders by funnel_name field (not analytics_events)
+- [x] Paid funnel: funnel_name = '31daywisdom.com'
+- [x] Organic funnel: funnel_name = '31daywisdomchallenge.com'
+- [x] Test query with real data and compare with ClickFunnels
+- [x] Remove timezone conversion (was causing 80 vs 606 discrepancy)
+- [x] Document: Orders filtered by funnel_name, Leads filtered by analytics_events
