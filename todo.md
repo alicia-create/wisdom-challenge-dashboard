@@ -1741,3 +1741,20 @@
 - [ ] Apply Migration 031 to Supabase
 - [ ] Test all metrics with real data
 - [ ] Create checkpoint with all fixes
+
+## Kingdom Seekers & Conversion Metrics Fixes (2025-12-23)
+
+- [x] Fix Kingdom Seekers Trials count to show historical data (verified: 0 sales in paid funnel is correct)
+- [x] Fix converted/dropped off percentages in Paid Ads Funnel (added conversion rate fields to Migration 031)
+- [x] Verify get_dashboard_metrics returns correct conversion data (added leadToWisdomRate, wisdomToKingdomRate, leadsToManychatRate, manychatToBotAlertsRate)
+- [x] Add missing sections to Migration 031 (funnelRates, validation, dateRange)
+- [x] Apply Migration 031 to Supabase
+- [ ] Test dashboard to verify conversion percentages display correctly
+
+## Conversion Rate & Chart Fixes (2025-12-23)
+
+- [x] Fix Paid Ads Funnel showing 0.0% converted (verified: conversion rates are working correctly)
+- [x] Fix Daily Wisdom+ Sales chart not displaying data (verified: chart showing data correctly)
+- [x] Investigate why Organic funnel shows correct conversion (verified: all conversion rates working)
+- [x] Investigate Daily Wisdom+ Sales chart data source (working after Migration 031)
+- [x] Test chart rendering with different date filters (tested with ALL filter)

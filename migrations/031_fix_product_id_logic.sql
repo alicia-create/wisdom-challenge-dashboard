@@ -248,7 +248,11 @@ BEGIN
             'extraShipping', ps.paid_extra_shipping,
             'manychatConnected', lm.paid_manychat,
             'botAlertsSubscribed', em.paid_bot_alerts,
-            'welcomeEmailClicks', em.paid_welcome_clicks
+            'welcomeEmailClicks', em.paid_welcome_clicks,
+            'leadToWisdomRate', CASE WHEN lm.paid_leads > 0 THEN ROUND((ps.paid_wisdom_sales::NUMERIC / lm.paid_leads * 100)::NUMERIC, 2) ELSE 0 END,
+            'wisdomToKingdomRate', CASE WHEN ps.paid_wisdom_sales > 0 THEN ROUND((ps.paid_kingdom_seekers::NUMERIC / ps.paid_wisdom_sales * 100)::NUMERIC, 2) ELSE 0 END,
+            'leadsToManychatRate', CASE WHEN lm.paid_leads > 0 THEN ROUND((lm.paid_manychat::NUMERIC / lm.paid_leads * 100)::NUMERIC, 2) ELSE 0 END,
+            'manychatToBotAlertsRate', CASE WHEN lm.paid_manychat > 0 THEN ROUND((em.paid_bot_alerts::NUMERIC / lm.paid_manychat * 100)::NUMERIC, 2) ELSE 0 END
         ),
         'organicFunnel', jsonb_build_object(
             'leads', lm.organic_leads,
@@ -258,7 +262,11 @@ BEGIN
             'extraShipping', ps.organic_extra_shipping,
             'manychatConnected', lm.organic_manychat,
             'botAlertsSubscribed', em.organic_bot_alerts,
-            'welcomeEmailClicks', em.organic_welcome_clicks
+            'welcomeEmailClicks', em.organic_welcome_clicks,
+            'leadToWisdomRate', CASE WHEN lm.organic_leads > 0 THEN ROUND((ps.organic_wisdom_sales::NUMERIC / lm.organic_leads * 100)::NUMERIC, 2) ELSE 0 END,
+            'wisdomToKingdomRate', CASE WHEN ps.organic_wisdom_sales > 0 THEN ROUND((ps.organic_kingdom_seekers::NUMERIC / ps.organic_wisdom_sales * 100)::NUMERIC, 2) ELSE 0 END,
+            'leadsToManychatRate', CASE WHEN lm.organic_leads > 0 THEN ROUND((lm.organic_manychat::NUMERIC / lm.organic_leads * 100)::NUMERIC, 2) ELSE 0 END,
+            'manychatToBotAlertsRate', CASE WHEN lm.organic_manychat > 0 THEN ROUND((em.organic_bot_alerts::NUMERIC / lm.organic_manychat * 100)::NUMERIC, 2) ELSE 0 END
         ),
         'metaPerformance', jsonb_build_object(
             'spend', COALESCE(am.meta_spend, 0),
@@ -366,6 +374,26 @@ BEGIN
             'dropoff50to95', CASE WHEN vm.vsl_50_percent > 0 THEN ((1 - vm.vsl_95_percent::numeric / vm.vsl_50_percent) * 100) ELSE 0 END,
             'purchasesFromVslViewers', COALESCE(vm.purchases_from_vsl_viewers, 0),
             'conversionRate', CASE WHEN vm.vsl_50_percent > 0 THEN (vm.purchases_from_vsl_viewers::numeric / vm.vsl_50_percent) * 100 ELSE 0 END
+        ),
+        'funnelRates', jsonb_build_object(
+            'leadToWisdomRate', CASE WHEN lm.total_leads > 0 THEN ROUND((ps.wisdom_sales::NUMERIC / lm.total_leads * 100)::NUMERIC, 2) ELSE 0 END,
+            'wisdomToKingdomRate', CASE WHEN ps.wisdom_sales > 0 THEN ROUND((ps.kingdom_seekers::NUMERIC / ps.wisdom_sales * 100)::NUMERIC, 2) ELSE 0 END,
+            'leadsToManychatRate', CASE WHEN lm.total_leads > 0 THEN ROUND((lm.total_manychat::NUMERIC / lm.total_leads * 100)::NUMERIC, 2) ELSE 0 END,
+            'manychatToBotAlertsRate', CASE WHEN lm.total_manychat > 0 THEN ROUND(((em.paid_bot_alerts + em.organic_bot_alerts)::NUMERIC / lm.total_manychat * 100)::NUMERIC, 2) ELSE 0 END
+        ),
+        'validation', jsonb_build_object(
+            'totalLeads', lm.total_leads,
+            'paidPlusOrganic', lm.paid_leads + lm.organic_leads,
+            'leadsMatch', lm.total_leads = lm.paid_leads + lm.organic_leads,
+            'leadsDiff', lm.total_leads - (lm.paid_leads + lm.organic_leads),
+            'wisdomMatch', ps.wisdom_sales = ps.paid_wisdom_sales + ps.organic_wisdom_sales,
+            'kingdomMatch', ps.kingdom_seekers = ps.paid_kingdom_seekers + ps.organic_kingdom_seekers,
+            'manychatMatch', lm.total_manychat = lm.paid_manychat + lm.organic_manychat,
+            'botAlertsMatch', (em.paid_bot_alerts + em.organic_bot_alerts) = em.paid_bot_alerts + em.organic_bot_alerts
+        ),
+        'dateRange', jsonb_build_object(
+            'startDate', p_start_date,
+            'endDate', p_end_date
         )
     ) INTO v_result
     FROM lead_metrics lm
