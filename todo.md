@@ -1593,3 +1593,13 @@
 - [x] Replace all frontend calculations with SQL-provided values
 - [x] Test all KPI cards show real values
 - [x] Verify Performance by Channel table displays correct metrics
+
+## Missing Fields in get_dashboard_metrics (2025-12-23)
+- [x] Audit current analytics_events queries in get_dashboard_metrics
+- [x] Create materialized view for analytics_events to optimize queries
+- [x] Add bot subscribed counts (paid/organic) to get_dashboard_metrics
+- [x] Add Google reported_purchases (conversions) to googlePerformance
+- [x] Add VSL view percentages (5%, 25%, 50%, 95%) to vslPerformance
+- [x] Create appropriate indexes for materialized view
+- [x] Apply migration to Supabase
+- [x] Test all new fields display correctly in Overview page
