@@ -1597,3 +1597,10 @@
 - [x] Verify calculations are using correct spend and count values
 - [x] Fix CPP/CPL cards to display correct values
 - [x] Test cards show accurate cost metrics
+
+## True Cost Fields Investigation - Dec 23, 2025 18:08
+
+- [x] Check if backend returns trueCpl and trueCpp fields
+- [x] Verify difference between regular CPL/CPP and true CPL/CPP
+- [x] Determine which metrics should be displayed in Overview cards
+- [x] Update UI if true costs should be shown instead
