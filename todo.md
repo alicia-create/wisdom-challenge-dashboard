@@ -1662,3 +1662,14 @@
 - [x] Test query with real data and compare with ClickFunnels
 - [x] Remove timezone conversion (was causing 80 vs 606 discrepancy)
 - [x] Document: Orders filtered by funnel_name, Leads filtered by analytics_events
+
+## URGENT BUG - Missing Fields in get_dashboard_metrics (2025-12-23)
+- [x] Compare Migration 022 with Migration 013 to find missing fields
+- [x] Restore Kingdom Seekers to kpis object
+- [x] Restore Ad Spend (Meta + Google) to kpis object
+- [x] Restore metaPerformance object with all calculated fields
+- [x] Restore metaCampaignBreakdown object
+- [x] Restore googlePerformance object with conversions
+- [x] Restore vslPerformance object
+- [x] Test function returns complete data structure
+- [x] Verify dashboard displays all metrics correctly (Ad Spend: $149,459.62 ✅)
