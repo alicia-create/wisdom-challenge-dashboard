@@ -62,3 +62,10 @@
 - [x] Confirm CPP/CPL Ads and True values display correctly
 - [x] Remove debug logging after verification
 - [x] Create checkpoint with migration 032 changes
+
+## Date Range Filter Redesign (2025-12-23)
+- [x] Replace calendar picker with simple text input fields (MM/DD/YYYY format)
+- [x] Add date validation and error messages
+- [x] Test with various date ranges (tested 12/21/2025 single day)
+- [x] Keep preset buttons (TODAY, YESTERDAY, 7 DAYS, etc.)
+- [x] Verify data updates correctly when custom range is applied

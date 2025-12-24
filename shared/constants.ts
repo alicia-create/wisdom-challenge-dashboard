@@ -36,7 +36,7 @@ export const DATE_RANGES = {
   ALL: 'ALL',
 } as const;
 
-export type DateRange = typeof DATE_RANGES[keyof typeof DATE_RANGES];
+export type DateRange = typeof DATE_RANGES[keyof typeof DATE_RANGES] | string;
 
 /**
  * Get start and end dates for a given date range preset
@@ -74,6 +74,15 @@ export function getDateRangeValues(range: DateRange): { startDate: string; endDa
   
   let startDateStr: string;
   let endDateStr: string;
+  
+  // Check if it's a custom range in format "YYYY-MM-DD to YYYY-MM-DD"
+  if (range.includes(' to ')) {
+    const [start, end] = range.split(' to ');
+    return {
+      startDate: start.trim(),
+      endDate: end.trim(),
+    };
+  }
   
   switch (range) {
     case DATE_RANGES.TODAY:

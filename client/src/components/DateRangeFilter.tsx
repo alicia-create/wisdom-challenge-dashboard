@@ -1,10 +1,9 @@
-import { DATE_RANGES, type DateRange } from "@shared/constants";
-import { Button } from "./ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Calendar } from "./ui/calendar";
-import { CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { useState } from "react";
-import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import { DATE_RANGES, type DateRange } from "@shared/constants";
 
 interface DateRangeFilterProps {
   value: DateRange;
@@ -12,76 +11,151 @@ interface DateRangeFilterProps {
 }
 
 export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
-  const [customStart, setCustomStart] = useState<Date>();
-  const [customEnd, setCustomEnd] = useState<Date>();
-  const [isCustom, setIsCustom] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [error, setError] = useState("");
 
-  const ranges: DateRange[] = [
-    DATE_RANGES.TODAY,
-    DATE_RANGES.YESTERDAY,
-    DATE_RANGES.LAST_7_DAYS,
-    DATE_RANGES.LAST_14_DAYS,
-    DATE_RANGES.LAST_30_DAYS,
-    DATE_RANGES.ALL,
-  ];
-
-  const handleCustomRange = () => {
-    if (customStart && customEnd) {
-      const customRange = `${format(customStart, 'yyyy-MM-dd')} to ${format(customEnd, 'yyyy-MM-dd')}` as DateRange;
-      onChange(customRange);
-      setIsCustom(true);
-      setIsPopoverOpen(false);
-    }
+  const handlePresetClick = (range: DateRange) => {
+    onChange(range);
   };
 
+  const validateDate = (dateStr: string): boolean => {
+    // MM/DD/YYYY format
+    const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;
+    if (!regex.test(dateStr)) return false;
+
+    const [month, day, year] = dateStr.split("/").map(Number);
+    const date = new Date(year, month - 1, day);
+    
+    return (
+      date.getFullYear() === year &&
+      date.getMonth() === month - 1 &&
+      date.getDate() === day
+    );
+  };
+
+  const handleApply = () => {
+    setError("");
+
+    if (!startDate || !endDate) {
+      setError("Both dates are required");
+      return;
+    }
+
+    if (!validateDate(startDate)) {
+      setError("Invalid start date. Use MM/DD/YYYY format");
+      return;
+    }
+
+    if (!validateDate(endDate)) {
+      setError("Invalid end date. Use MM/DD/YYYY format");
+      return;
+    }
+
+    // Convert MM/DD/YYYY to YYYY-MM-DD for backend
+    const [startMonth, startDay, startYear] = startDate.split("/");
+    const [endMonth, endDay, endYear] = endDate.split("/");
+    
+    const startFormatted = `${startYear}-${startMonth.padStart(2, "0")}-${startDay.padStart(2, "0")}`;
+    const endFormatted = `${endYear}-${endMonth.padStart(2, "0")}-${endDay.padStart(2, "0")}`;
+    
+    const customRange = `${startFormatted} to ${endFormatted}` as DateRange;
+    onChange(customRange);
+    setIsPopoverOpen(false);
+    setStartDate("");
+    setEndDate("");
+  };
+
+  const isActive = (range: DateRange) => value === range;
+
   return (
-    <div className="flex gap-2 flex-wrap items-center">
-      {ranges.map((range) => (
-        <Button
-          key={range}
-          variant={value === range && !isCustom ? "default" : "outline"}
-          size="sm"
-          onClick={() => { onChange(range); setIsCustom(false); }}
-          className="text-xs font-medium"
-        >
-          {range}
-        </Button>
-      ))}
-      
+    <div className="flex items-center gap-2 flex-wrap">
+      <Button
+        variant={isActive(DATE_RANGES.TODAY) ? "default" : "outline"}
+        size="sm"
+        onClick={() => handlePresetClick(DATE_RANGES.TODAY)}
+      >
+        TODAY
+      </Button>
+      <Button
+        variant={isActive(DATE_RANGES.YESTERDAY) ? "default" : "outline"}
+        size="sm"
+        onClick={() => handlePresetClick(DATE_RANGES.YESTERDAY)}
+      >
+        YESTERDAY
+      </Button>
+      <Button
+        variant={isActive(DATE_RANGES.LAST_7_DAYS) ? "default" : "outline"}
+        size="sm"
+        onClick={() => handlePresetClick(DATE_RANGES.LAST_7_DAYS)}
+      >
+        7 DAYS
+      </Button>
+      <Button
+        variant={isActive(DATE_RANGES.LAST_14_DAYS) ? "default" : "outline"}
+        size="sm"
+        onClick={() => handlePresetClick(DATE_RANGES.LAST_14_DAYS)}
+      >
+        14 DAYS
+      </Button>
+      <Button
+        variant={isActive(DATE_RANGES.LAST_30_DAYS) ? "default" : "outline"}
+        size="sm"
+        onClick={() => handlePresetClick(DATE_RANGES.LAST_30_DAYS)}
+      >
+        30 DAYS
+      </Button>
+      <Button
+        variant={isActive(DATE_RANGES.ALL) ? "default" : "outline"}
+        size="sm"
+        onClick={() => handlePresetClick(DATE_RANGES.ALL)}
+      >
+        ALL
+      </Button>
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant={isCustom ? "default" : "outline"}
+            variant={
+              !Object.values(DATE_RANGES).includes(value) ? "default" : "outline"
+            }
             size="sm"
-            className="text-xs font-medium"
           >
             <CalendarIcon className="h-3 w-3 mr-1" />
             Custom
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-4" align="end">
+        <PopoverContent className="w-80 p-4" align="end">
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Start Date</label>
-              <Calendar
-                mode="single"
-                selected={customStart}
-                onSelect={setCustomStart}
-                initialFocus
+              <label className="text-sm font-medium mb-2 block">
+                Start Date
+              </label>
+              <Input
+                type="text"
+                placeholder="MM/DD/YYYY"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="font-mono"
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">End Date</label>
-              <Calendar
-                mode="single"
-                selected={customEnd}
-                onSelect={setCustomEnd}
+              <label className="text-sm font-medium mb-2 block">
+                End Date
+              </label>
+              <Input
+                type="text"
+                placeholder="MM/DD/YYYY"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="font-mono"
               />
             </div>
+            {error && (
+              <p className="text-sm text-red-500">{error}</p>
+            )}
             <Button
-              onClick={handleCustomRange}
-              disabled={!customStart || !customEnd}
+              onClick={handleApply}
               className="w-full"
               size="sm"
             >
